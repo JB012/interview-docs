@@ -5,14 +5,13 @@ Interview Docs is a website where you can practice interview questions.
 
 ## Why Interview Docs?
 
-- All-in-one site where you can add interview questions along with your answers via text or video.
-- Create personalized notes for questions
-- Categorize questions for a specific type of job or company. 
+- Add interview questions along with your personalized answers via text or video.
+- Create folders to organize questions and use them in Session Mode.
 
 ## Features
 
 ### Session Mode
-Answer a custom amount of interview questions of your choice (i.e. categorized questions, random)
+Answer a custom amount of interview questions of your choice under a custom time. 
 
 ## Built With
 - Angular
