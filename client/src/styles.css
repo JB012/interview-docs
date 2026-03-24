@@ -1,0 +1,12 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import 'tailwindcss';
+
+@theme {
+    --breakpoint-xs: 30rem;
+    --breakpoint-xxs: 20rem;
+}
+
+html {
+    background-color: rgb(220, 214, 207);
+}
