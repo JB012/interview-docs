@@ -11,3 +11,7 @@ html {
     background-color: rgb(220, 214, 207);
 }
 
+span {
+    cursor: pointer;
+}
+

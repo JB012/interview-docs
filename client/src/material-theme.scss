@@ -36,3 +36,9 @@ body {
   margin: 0;
   height: 100%;
 }
+
+mat-sidenav {
+  @include mat.sidenav-overrides((
+    container-width: 200px,
+  ));
+}

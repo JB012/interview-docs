@@ -1,0 +1,9 @@
+<main class="flex flex-col w-full h-full p-4">
+    <app-header [(opened)]="opened"/>
+    <mat-sidenav-container class="example-container">
+        <mat-sidenav mode="side" [(opened)]="opened">Sidenav content</mat-sidenav>
+        <mat-sidenav-content>
+                <router-outlet />
+        </mat-sidenav-content>
+    </mat-sidenav-container>
+</main>

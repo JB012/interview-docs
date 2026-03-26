@@ -1,10 +1,12 @@
 import { Component } from "@angular/core";
+import { MatButtonModule } from "@angular/material/button";
 import { MatPaginatorModule } from "@angular/material/paginator";
 
 @Component ({
-    template: './home.html',
+    templateUrl: './home.html',
     imports: [
-        MatPaginatorModule
+        MatPaginatorModule,
+        MatButtonModule,
     ]
 })
 

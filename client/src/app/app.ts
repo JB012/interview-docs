@@ -1,13 +1,20 @@
 import { Component, signal } from '@angular/core';
-import {MatPaginatorModule} from '@angular/material/paginator';
-import {MatButtonModule} from '@angular/material/button';
+import { RouterOutlet } from '@angular/router';
+import { Header } from './components/Header';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './routes/home.html',
+  templateUrl: 'app.html',
   styleUrl: '../styles.css',
-  imports: [ MatPaginatorModule, MatButtonModule],
+  imports: [ 
+    RouterOutlet, 
+    Header,
+    MatSidenavModule,
+  ],
 })
+
 export class App {
+  opened=false;
   protected readonly title = signal('client');
 }
