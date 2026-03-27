@@ -1,7 +1,20 @@
 <main class="flex flex-col w-full h-full p-4">
     <app-header [(opened)]="opened"/>
     <mat-sidenav-container class="example-container">
-        <mat-sidenav mode="side" [(opened)]="opened">Sidenav content</mat-sidenav>
+        <mat-sidenav class="flex-col" mode="side" [(opened)]="opened">
+            <div class="flex gap-4 p-4 items-center hover:backdrop-brightness-95 hover:rounded-full cursor-pointer">
+                <span class="material-symbols-outlined">&#xe88a;</span>
+                <div>Home</div>
+            </div>
+            <div class="flex gap-4 p-4 items-center hover:backdrop-brightness-95 hover:rounded-full cursor-pointer">
+                <span class="material-symbols-outlined">&#xe2c7;</span>
+                <div>Folders</div>
+            </div>
+            <div class="flex gap-4 p-4 items-center hover:backdrop-brightness-95 hover:rounded-full cursor-pointer">
+                <span class="material-symbols-outlined">&#xf04c;</span>
+                <div>Session Mode</div>
+            </div>
+        </mat-sidenav>
         <mat-sidenav-content>
                 <router-outlet />
         </mat-sidenav-content>
