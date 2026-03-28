@@ -13,8 +13,6 @@ export class ClickOutside {
 
   onClick(event : Event) {
     const clickedInside = this.elementRef.nativeElement.contains(event.target);
-
-    console.log(clickedInside);
     
     if (!clickedInside) {
       this.clickOutside.emit();

@@ -3,7 +3,7 @@ import { ClickOutside } from "../click-outside";
 
 @Component ({
     selector: "menu-button",
-    templateUrl: 'menubutton.html',
+    templateUrl: 'menu-button.html',
     imports: [ClickOutside]
 })
 

@@ -4,24 +4,21 @@
         <span class="material-symbols-outlined">&#xe313;</span>
     </div>
     @if (menuOpened()) {
-        <div appClickOutside (clickOutside)="onClickOutside()" class="absolute top-6 flex flex-col bg-gray-800 rounded-2xl p-4">
+        <div appClickOutside (clickOutside)="onClickOutside()" class="absolute top-6 flex flex-col bg-[#FDF9F0] rounded-2xl p-3">
         <div id="title()-sort-options" class="flex flex-col w-full">
             <div class="text-gray-500 self-center">Sort By</div>
-            <div class="text-white">
-                <div class="flex hover:bg-sky-400 cursor-pointer rounded-md">
-                    <span class="material-symbols-outlined">&#xf88b;</span>
-                    <div>Alphabetical</div>
-                </div>
-                <div class="flex hover:bg-sky-400 cursor-pointer rounded-md">
-                    <div class="pl-6"></div>
-                    <div>Date created</div>
-                </div>
+            <div class="flex hover:bg-sky-400 cursor-pointer rounded-md">
+                <span class="material-symbols-outlined">&#xf88b;</span>
+                <div>Alphabetical</div>
+            </div>
+            <div class="flex hover:bg-sky-400 cursor-pointer rounded-md">
+                <div class="pl-5"></div>
+                <div>Date created</div>
             </div>
         </div>
-        <div class="py-2 text-white"><hr/></div>
+        <div class="py-2"><hr/></div>
         <div id="title()-order-options" class="flex flex-col w-full">
-            <div class="text-gray-500 self-center">Order</div>
-            <div class="text-white">
+            <div class="self-center">Order</div>
                 <div class="flex hover:bg-sky-400 cursor-pointer rounded-md">
                     <span class="material-symbols-outlined">&#xf88b;</span>
                     <div>Z-A</div>
@@ -31,7 +28,6 @@
                     <div>A-Z</div>
                 </div>
             </div>
-        </div>
     </div>
     }
 </div>

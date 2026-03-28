@@ -1,13 +1,13 @@
 <div class="flex flex-col w-full h-full">
     <div id="AddQuestion" class="flex pt-40 pb-10 xs:justify-center xxs:justify-between gap-4 items-start">
-        <div class="flex flex-col gap-2">
+        <div class="flex wrap flex-col gap-2 xxs:w-52 xs:w-77 sm:w-102">
             <input id="add-question" class="xxs:w-50 xs:w-75 sm:w-100 px-2 rounded-full outline outline-black" placeholder="Add question here..." />
-            <span class="material-symbols-outlined">&#xe2c7;</span>
+            <folder-search />
         </div>
         <button matButton="filled">Add</button>
     </div>
-    <div id="menus" class="flex gap-4">
-        <menu-button [title]="title" />
+    <div id="menus" class="flex justify-end gap-4">
+        <menu-button class="py-2" [title]="title" />
     </div>
     <ul id="questions-list" style="background-color: rgb(205, 207, 192)" class="xxs:h-80">
         <li class="flex justify-between">
