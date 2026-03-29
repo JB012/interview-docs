@@ -1,83 +1,52 @@
-import { Component, ElementRef, signal, ViewChild } from "@angular/core";
-import { ClickOutside } from "../click-outside";
-import {MatChipEditedEvent, MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
-import {COMMA, ENTER} from '@angular/cdk/keycodes';
-import { MatInputModule } from "@angular/material/input";
-import {MatIconModule} from '@angular/material/icon';
+import { Component, signal } from "@angular/core";
+import { TuiTextfield, TuiDataListComponent, TuiOptGroup, TuiDataList } from '@taiga-ui/core';
+import { TuiChevron, TuiDataListWrapper, TuiInputChip, TuiMultiSelect} from '@taiga-ui/kit';
+import { FormsModule } from "@angular/forms";
+import { tuiIsString } from "@taiga-ui/cdk/utils/miscellaneous";
+import { CdkFixedSizeVirtualScroll, CdkVirtualScrollViewport } from "@angular/cdk/scrolling";
 
 export interface Folder {
     name: string
+    id: string
+    checked: boolean
 }
 
 @Component({
     selector: "folder-search",
     templateUrl: 'folder-search.html',
     imports: [
-        ClickOutside,
-        MatChipsModule,
-        MatInputModule,
-        MatIconModule
-    ]
+    FormsModule,
+    CdkFixedSizeVirtualScroll,
+    CdkVirtualScrollViewport,
+    TuiTextfield,
+    TuiInputChip,
+    TuiMultiSelect,
+    TuiDataListComponent,
+    TuiOptGroup, 
+    TuiChevron,
+    TuiChevron,
+    TuiDataList,
+    TuiDataListWrapper
+]
 })
 
 export class FolderSearch {
-    folderMenuOpened=signal(false);
-    @ViewChild('folderInput') folderInput : ElementRef<HTMLInputElement> | undefined;
-    @ViewChild('testRef') testRef : ElementRef<HTMLInputElement> | undefined
+    maxAddedFoldersLimit = 5;
     
-    readonly addOnBlur = true;
-    readonly separatorKeysCodes = [ENTER, COMMA] as const;
-    readonly allFolders = signal<Folder[]>([{name: 'Lemon'}, {name: 'Lime'}, {name: 'Apple'}]);
+    protected readonly strings = tuiIsString;
+    protected readonly stringify = ({name}: Folder): string => name;
+
+    readonly allFolders = signal<Folder[]>([{name: 'Lemon', id: "1", checked: false}, {name: 'Lime', id: "2", checked: false}, {name: 'Apple', id: "3", checked: false}, 
+        {name: 'Lemon', id: "4", checked: false}, {name: 'Lime', id: "5", checked: false}, {name: 'Apple', id: "6", checked: false},
+        {name: 'Lemon', id: "7", checked: false}, {name: 'Lime', id: "8", checked: false}, {name: 'Apple', id: "9", checked: false}
+    ]);
     readonly addedFolders = signal<Folder[]>([]);
 
-    updateFolderMenuOpened() {
-        this.folderMenuOpened.update((value) => !value);
+    shouldDisable(folder: Folder) {
+        return this.addedFolders().length === 5 && !this.addedFolders().some((elem) => elem.id === folder.id);
     }
-
-    onClick(event : Event, folder : Folder) {
-        if (event.target) {
-            const target = event.target as HTMLInputElement;
-            
-            if (target.checked) {
-                this.addedFolders.update(addedFolders => [...addedFolders, folder]);
-            }
-            else {
-                this.remove(folder);
-            }
-        }
+    
+    content() {
+        return `Pick folders (${this.addedFolders().length}/5)`
     }
-
-    onClickOutside() {
-        if (this.folderMenuOpened()) {
-            this.folderMenuOpened.set(false);
-        }
-    }
-
-    add(event: MatChipInputEvent): void {
-        const value = (event.value || '').trim().toLowerCase();
-
-        const findFolder = this.allFolders().find((folder) => folder.name.toLowerCase() === value);
-        const inFolder = this.addedFolders().some((folder) => folder.name.toLowerCase() === value);
-
-        if (findFolder && !inFolder) {
-            this.addedFolders.update(addedFolders => [...addedFolders, findFolder]);
-        }
-
-        // Clear the input value
-        event.chipInput!.clear();
-    }
-
-    remove(folder: Folder): void {
-        this.addedFolders.update(addedFolders => {
-        const index = addedFolders.indexOf(folder);
-
-        if (index < 0) {
-            return addedFolders;
-        }
-
-        addedFolders.splice(index, 1);
-        return [...addedFolders];
-        });
-    }
-
 }

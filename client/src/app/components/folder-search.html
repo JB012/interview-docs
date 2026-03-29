@@ -1,45 +1,38 @@
 <div class="relative flex flex-col gap-10">
-    <div class="flex gap-4 items-start">
-        <span (click)="updateFolderMenuOpened()" class="w-7 text-center hover:backdrop-brightness-85 rounded-full material-symbols-outlined">&#xe2c7;</span>
-        <mat-chip-grid class="max-h-20 overflow-x-hidden overflow-y-auto" #chipGrid aria-label="Enter folder name">
-            @for (folder of addedFolders(); track folder) {
-            <mat-chip-row
-                (removed)="remove(folder)"
-                [aria-description]="folder.name"
-            >
-                {{folder.name}}
-                <button matChipRemove [attr.aria-label]="'remove ' + folder.name">
-                    <mat-icon>cancel</mat-icon>
-                </button>
-            </mat-chip-row>
-            }
-        </mat-chip-grid>
-    </div>
-    @if (folderMenuOpened()) {
-       <div appClickOutside (clickOutside)="onClickOutside()" class="bg-[#FDF9F0] z-10 flex flex-col absolute top-7 rounded-md outline w-62.5 xxs:w-40">  
-            <div class="flex items-center gap-2 p-2 focus:outline">
-                <span class="material-symbols-outlined">&#xe8b6;</span>
-                <input #folderInput
-                    class="w-full focus:outline-0" 
-                    id="folder-search-input" 
-                    placeholder="Search for folder"
-                    [matChipInputFor]="chipGrid"    
-                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                    [matChipInputAddOnBlur]="addOnBlur"
-                    (matChipInputTokenEnd)="add($event)"
-                />    
-            </div>
-            <div id="folder-list" class="flex flex-col max-h-50 overflow-x-hidden overflow-y-auto">
-                @for (folder of allFolders(); track folder) {
-                    <label class="flex justify-between hover:backdrop-brightness-95 p-2 cursor-pointer" for={{folder.name}} >
-                        <div class="flex gap-2 w-full h-full truncate">
-                            <span class="material-symbols-outlined">&#xe2c7;</span>
-                            <div>{{folder.name}}</div>
-                        </div>
-                        <input #testRef type="checkbox" name={{folder.name}} id={{folder.name}} (change)="onClick($event, folder)"  />
-                    </label>
-                }
-            </div>
-        </div> 
-    }
+    <tui-textfield
+        multi
+        tuiChevron
+        [disabledItemHandler]="strings"
+        [stringify]="stringify"
+    >
+        <input
+            tuiInputChip
+            [placeholder]="addedFolders.length ? '' : content()"
+            [(ngModel)]="addedFolders"
+        />
+        <tui-input-chip *tuiItem />
+        <cdk-virtual-scroll-viewport
+            tuiScrollable
+            [itemSize]="48"
+            [style.max-height.px]="100"
+            [style.min-height.px]="56"
+        >
+            <tui-data-list *tuiTextfieldDropdown>
+                <tui-opt-group
+                    tuiMultiSelectGroup
+                >
+                    @for (folder of allFolders(); track folder) {
+                        <button
+                            new
+                            tuiOption
+                            [value]="folder"
+                            [disabled]="shouldDisable(folder)"
+                        >
+                            {{ folder.name }}
+                        </button>
+                    }
+                </tui-opt-group>
+            </tui-data-list>
+        </cdk-virtual-scroll-viewport>
+    </tui-textfield>
 </div>

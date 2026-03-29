@@ -1,4 +1,6 @@
+
 <main class="flex flex-col w-full h-full p-4">
+    <tui-root>
     <app-header [(opened)]="opened"/>
     <mat-sidenav-container class="example-container">
         <mat-sidenav class="flex-col" mode="side" [(opened)]="opened">
@@ -19,4 +21,5 @@
                 <router-outlet />
         </mat-sidenav-content>
     </mat-sidenav-container>
+    </tui-root>
 </main>
