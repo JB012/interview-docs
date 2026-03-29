@@ -1,4 +1,4 @@
-import { Component, signal } from "@angular/core";
+import { Component, ElementRef, signal, ViewChild } from "@angular/core";
 import { ClickOutside } from "../click-outside";
 import {MatChipEditedEvent, MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
@@ -22,13 +22,29 @@ export interface Folder {
 
 export class FolderSearch {
     folderMenuOpened=signal(false);
-
+    @ViewChild('folderInput') folderInput : ElementRef<HTMLInputElement> | undefined;
+    @ViewChild('testRef') testRef : ElementRef<HTMLInputElement> | undefined
+    
     readonly addOnBlur = true;
     readonly separatorKeysCodes = [ENTER, COMMA] as const;
-    readonly folders = signal<Folder[]>([{name: 'Lemon'}, {name: 'Lime'}, {name: 'Apple'}]);
+    readonly allFolders = signal<Folder[]>([{name: 'Lemon'}, {name: 'Lime'}, {name: 'Apple'}]);
+    readonly addedFolders = signal<Folder[]>([]);
 
     updateFolderMenuOpened() {
         this.folderMenuOpened.update((value) => !value);
+    }
+
+    onClick(event : Event, folder : Folder) {
+        if (event.target) {
+            const target = event.target as HTMLInputElement;
+            
+            if (target.checked) {
+                this.addedFolders.update(addedFolders => [...addedFolders, folder]);
+            }
+            else {
+                this.remove(folder);
+            }
+        }
     }
 
     onClickOutside() {
@@ -37,18 +53,14 @@ export class FolderSearch {
         }
     }
 
-    onChange(event : InputEvent, value : string) {
-        const target = event.target as HTMLInputElement;
-        if (target.checked) {
-            // TODO: Clicking on label should add chip
-        }
-    }
-
     add(event: MatChipInputEvent): void {
-        const value = (event.value || '').trim();
+        const value = (event.value || '').trim().toLowerCase();
 
-        if (value) {
-        this.folders.update(folders => [...folders, {name: value}]);
+        const findFolder = this.allFolders().find((folder) => folder.name.toLowerCase() === value);
+        const inFolder = this.addedFolders().some((folder) => folder.name.toLowerCase() === value);
+
+        if (findFolder && !inFolder) {
+            this.addedFolders.update(addedFolders => [...addedFolders, findFolder]);
         }
 
         // Clear the input value
@@ -56,15 +68,16 @@ export class FolderSearch {
     }
 
     remove(folder: Folder): void {
-    this.folders.update(folders => {
-      const index = folders.indexOf(folder);
-      if (index < 0) {
-        return folders;
-      }
+        this.addedFolders.update(addedFolders => {
+        const index = addedFolders.indexOf(folder);
 
-      folders.splice(index, 1);
-      return [...folders];
-    });
-  }
+        if (index < 0) {
+            return addedFolders;
+        }
+
+        addedFolders.splice(index, 1);
+        return [...addedFolders];
+        });
+    }
 
 }
