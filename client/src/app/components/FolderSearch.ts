@@ -7,8 +7,6 @@ import { CdkFixedSizeVirtualScroll, CdkVirtualScrollViewport } from "@angular/cd
 
 export interface Folder {
     name: string
-    id: string
-    checked: boolean
 }
 
 @Component({
@@ -21,8 +19,6 @@ export interface Folder {
     TuiTextfield,
     TuiInputChip,
     TuiMultiSelect,
-    TuiDataListComponent,
-    TuiOptGroup, 
     TuiChevron,
     TuiChevron,
     TuiDataList,
@@ -36,14 +32,13 @@ export class FolderSearch {
     protected readonly strings = tuiIsString;
     protected readonly stringify = ({name}: Folder): string => name;
 
-    readonly allFolders = signal<Folder[]>([{name: 'Lemon', id: "1", checked: false}, {name: 'Lime', id: "2", checked: false}, {name: 'Apple', id: "3", checked: false}, 
-        {name: 'Lemon', id: "4", checked: false}, {name: 'Lime', id: "5", checked: false}, {name: 'Apple', id: "6", checked: false},
-        {name: 'Lemon', id: "7", checked: false}, {name: 'Lime', id: "8", checked: false}, {name: 'Apple', id: "9", checked: false}
+    readonly allFolders = signal<Folder[]>([{name: 'Lemon'}, {name: 'Lime'}, {name: 'Apple'}
     ]);
     readonly addedFolders = signal<Folder[]>([]);
 
-    shouldDisable(folder: Folder) {
-        return this.addedFolders().length === 5 && !this.addedFolders().some((elem) => elem.id === folder.id);
+
+    shouldDisable = (folder: Folder) => {
+        return this.addedFolders().length === 5 && !this.addedFolders().some((elem) => elem.name === folder.name);
     }
     
     content() {

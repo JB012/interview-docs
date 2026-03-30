@@ -7,6 +7,7 @@
     >
         <input
             tuiInputChip
+            tuiSelectLike
             [placeholder]="addedFolders.length ? '' : content()"
             [(ngModel)]="addedFolders"
         />
@@ -17,22 +18,13 @@
             [style.max-height.px]="100"
             [style.min-height.px]="56"
         >
-            <tui-data-list *tuiTextfieldDropdown>
-                <tui-opt-group
-                    tuiMultiSelectGroup
-                >
-                    @for (folder of allFolders(); track folder) {
-                        <button
-                            new
-                            tuiOption
-                            [value]="folder"
-                            [disabled]="shouldDisable(folder)"
-                        >
-                            {{ folder.name }}
-                        </button>
-                    }
-                </tui-opt-group>
-            </tui-data-list>
+        <tui-data-list-wrapper
+            *tuiTextfieldDropdown
+            new
+            tuiMultiSelectGroup
+            [items]="allFolders()"
+            [disabledItemHandler]="shouldDisable"
+            />
         </cdk-virtual-scroll-viewport>
     </tui-textfield>
 </div>
