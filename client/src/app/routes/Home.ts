@@ -14,6 +14,4 @@ import { FolderSearch } from "../components/FolderSearch";
     ]
 })
 
-export class Home {
-    title="Alphabetical"
-}
+export class Home {}

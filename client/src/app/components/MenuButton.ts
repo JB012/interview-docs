@@ -8,8 +8,26 @@ import { ClickOutside } from "../click-outside";
 })
 
 export class MenuButton {
-    title = input('');
+    sortBy = signal('Alphabetical');
+    orderBy = signal('Z-A');
     menuOpened = signal(false);
+
+    updateSortBy(sortValue : string) {
+        if (this.sortBy() === "Alphabetical" && sortValue === "Date created") {
+            this.updateOrderBy('Newest first');
+        }
+        else if (this.sortBy() === "Date created" && sortValue === "Alphabetical") {
+            this.updateOrderBy("Z-A");
+        }
+        
+        this.sortBy.update(() => sortValue);
+        
+        this.updateMenuView();
+    }
+
+    updateOrderBy(orderValue : string) {
+        this.orderBy.set(orderValue);
+    }
 
     updateMenuView() {
         this.menuOpened.update((value) => !value);

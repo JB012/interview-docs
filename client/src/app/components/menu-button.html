@@ -1,6 +1,6 @@
 <div class="flex flex-col relative gap-2">
-    <div id="menu-button" (click)="updateMenuView()" class="flex gap-4 rounded-full outline px-2 hover:backdrop-brightness-95 cursor-pointer">    
-        <div>{{title()}}</div>
+    <div id="menu-button" (click)="updateMenuView()" class="flex gap-2 rounded-full outline px-2 hover:backdrop-brightness-95 cursor-pointer">    
+        <div>{{sortBy()}}</div>
         <span class="material-symbols-outlined">&#xe313;</span>
     </div>
     @if (menuOpened()) {
@@ -8,24 +8,44 @@
         <div id="title()-sort-options" class="flex flex-col w-full">
             <div class="text-gray-500 self-center">Sort By</div>
             <div class="flex hover:bg-sky-400 cursor-pointer rounded-md">
-                <span class="material-symbols-outlined">&#xf88b;</span>
-                <div>Alphabetical</div>
+                @if (sortBy() === "Alphabetical") {
+                    <span class="material-symbols-outlined">&#xf88b;</span>
+                }
+                @else {
+                    <div class="pl-5"></div>    
+                }
+                <div (click)="updateSortBy('Alphabetical');">Alphabetical</div>
             </div>
             <div class="flex hover:bg-sky-400 cursor-pointer rounded-md">
-                <div class="pl-5"></div>
-                <div>Date created</div>
+                @if (sortBy() === "Date created") {
+                    <span class="material-symbols-outlined">&#xf88b;</span>
+                }
+                @else {
+                    <div class="pl-5"></div>    
+                }
+                <div (click)="updateSortBy('Date created');">Date created</div>
             </div>
         </div>
         <div class="py-2"><hr/></div>
         <div id="title()-order-options" class="flex flex-col w-full">
             <div class="self-center">Order</div>
                 <div class="flex hover:bg-sky-400 cursor-pointer rounded-md">
-                    <span class="material-symbols-outlined">&#xf88b;</span>
-                    <div>Z-A</div>
+                    @if (orderBy() === "Z-A" || orderBy() === "Newest first") {
+                        <span class="material-symbols-outlined">&#xf88b;</span>
+                    }
+                    @else {
+                        <div class="pl-6"></div>    
+                    }
+                    <div (click)="updateOrderBy(sortBy() === 'Alphabetical' ? 'Z-A' : 'Newest first'); updateMenuView()">{{sortBy() === "Alphabetical" ? "Z-A" : "Newest first"}}</div>
                 </div>
                 <div class="flex hover:bg-sky-400 cursor-pointer rounded-md">
-                    <div class="pl-6"></div>
-                    <div>A-Z</div>
+                    @if (orderBy() === "A-Z" || orderBy() === "Oldest first") {
+                        <span class="material-symbols-outlined">&#xf88b;</span>
+                    }
+                    @else {
+                        <div class="pl-6"></div>    
+                    }
+                    <div (click)="updateOrderBy(sortBy() === 'Alphabetical' ? 'A-Z' : 'Oldest first'); updateMenuView()">{{sortBy() === "Alphabetical" ? "A-Z" : "Oldest first"}}</div>
                 </div>
             </div>
     </div>
