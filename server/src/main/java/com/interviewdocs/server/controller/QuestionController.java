@@ -28,13 +28,13 @@ public class QuestionController {
     }
 
     @GetMapping("/questions/{id}")
-    Question one(@PathVariable Long id) {
+    Question one(@PathVariable("id") Long id) {
         return repository.findById(id)
         .orElseThrow(() -> new QuestionNotFoundException(id));
     }
 
     @PutMapping("/questions/{id}")
-    Question replaceQuestion(@RequestBody Question newQuestion, @PathVariable Long id) {
+    Question replaceQuestion(@RequestBody Question newQuestion, @PathVariable("id") Long id) {
         
         return repository.findById(id)
         .map(question -> {
@@ -47,7 +47,7 @@ public class QuestionController {
     }
 
     @DeleteMapping("/questions/{id}")
-    void deleteQuestion(@PathVariable Long id) {
+    void deleteQuestion(@PathVariable("id") Long id) {
         repository.deleteById(id);
     }
     
