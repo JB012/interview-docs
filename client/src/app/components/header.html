@@ -5,6 +5,12 @@
     </div>
     <div class="flex xxs:gap-4 xs:gap-8 items-center">
         <span class="material-symbols-outlined">&#xe8b8;</span>
-        <button matButton="filled">Log In</button>
+        @if (auth.isAuthenticated$ | async) {
+            <app-logout-button />
+        }
+        @else {
+            <app-login-button />
+        }
+
     </div>
 </header>
