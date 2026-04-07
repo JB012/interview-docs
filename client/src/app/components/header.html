@@ -1,9 +1,15 @@
-<header class="flex bg-[#FDF9F0] justify-between items-center w-full">
+<header class="flex bg-[#FDF9F0] p-4 justify-between items-center w-full">
     <div class="flex gap-4">
-        <span (click)="updateOpened(opened())" id="menu" class="material-symbols-outlined">&#xe5d2;</span>
-        <span id="logo" class="material-symbols-outlined">&#xef42;</span>
+        <div class="xxs:block md:hidden">
+            <span (click)="updateOpened(opened())" id="menu" class="material-symbols-outlined">&#xe5d2;</span>
+        </div>
+        <a href="/">
+            <span id="logo" class="material-symbols-outlined">&#xef42;</span>
+        </a>
     </div>
     <div class="flex xxs:gap-4 xs:gap-8 items-center">
+        <a class="xxs:hidden md:block" href="#">Folders</a>
+        <a class="xxs:hidden md:block" href="#">Session Mode</a>
         <span class="material-symbols-outlined">&#xe8b8;</span>
         @if (auth.isAuthenticated$ | async) {
             <app-logout-button />

@@ -4,6 +4,7 @@ import { MatPaginatorModule } from "@angular/material/paginator";
 import { MenuButton } from "../components/MenuButton";
 import { FolderSearch } from "../components/FolderSearch";
 import {AsyncPipe} from '@angular/common';
+import { Question } from "../components/Question";
 
 @Component ({
     templateUrl: './home.html',
@@ -12,6 +13,7 @@ import {AsyncPipe} from '@angular/common';
         MatButtonModule,
         MenuButton,
         FolderSearch,
+        Question
     ]
 })
 

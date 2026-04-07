@@ -7,12 +7,27 @@
     --breakpoint-xxs: 20rem;
 }
 
+:host, app-root {
+    display: block;
+    height: 100%
+}
+
 html {
     background-color: rgb(220, 214, 207);
 }
 
 span {
     cursor: pointer;
+}
+
+.selected-option {
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 16px;
+    cursor: pointer;
+
 }
 
 ::-webkit-scrollbar {

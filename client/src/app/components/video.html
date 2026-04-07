@@ -1,0 +1,19 @@
+<div class="flex w-full hover:backdrop-brightness-95 rounded-2xl cursor-pointer justify-between p-2 items-center">
+    <div class="flex gap-2">    
+        <span class="material-symbols-outlined">&#xeb87;</span>
+        <div class="flex flex-col">
+            <div>{{this.title()}}</div>
+            <div>Created at 10:00 PM</div>
+        </div>
+    </div>
+    <div class="flex relative">
+        <span (click)="updateQuestionMenu()" class="material-symbols-outlined">&#xe5d4;</span>
+        @if (questionMenu()) {
+            <div appClickOutside (clickOutside)="onClickOutside()" class="bg-white w-18.75 rounded-2xl absolute top-5 right-5 flex flex-col gap-2 p-2">
+                <div class="rounded-full hover:backdrop-brightness-95">Edit</div>
+                <div class="rounded-full hover:backdrop-brightness-95">Save As</div>
+                <div class="rounded-full hover:backdrop-brightness-95">Delete</div>
+            </div>
+        }
+    </div>
+</div>

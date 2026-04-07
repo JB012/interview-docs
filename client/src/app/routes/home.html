@@ -1,4 +1,4 @@
-<div class="flex flex-col w-full h-full">
+<div class="flex flex-col w-full h-full p-4">
     <div id="AddQuestion" class="flex pt-40 pb-10 xs:justify-center xxs:justify-between gap-4 items-start">
         <div class="flex wrap flex-col gap-2 xxs:w-52 xs:w-77 sm:w-102">
             <input id="add-question" class="xxs:w-50 xs:w-75 sm:w-100 px-2 rounded-full outline outline-black" placeholder="Add question here..." />
@@ -10,11 +10,8 @@
         <menu-button class="py-2" />
     </div>
     <ul id="questions-list" style="background-color: rgb(205, 207, 192)" class="xxs:h-80">
-        <li class="flex justify-between">
-            <div class="truncate cursor-pointer p-4 w-full hover:backdrop-brightness-97">
-                What makes you want to work here?
-            </div>
-        </li>
+        <div class="text-lg p-2">Questions</div>
+        <question id="1" question="What makes you want to work here?"/>
     </ul>
     <mat-paginator
         [hidePageSize]="true"

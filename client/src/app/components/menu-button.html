@@ -4,7 +4,7 @@
         <span class="material-symbols-outlined">&#xe313;</span>
     </div>
     @if (menuOpened()) {
-        <div appClickOutside (clickOutside)="onClickOutside()" class="absolute top-6 flex flex-col bg-[#FDF9F0] rounded-2xl p-3">
+        <div appClickOutside (clickOutside)="onClickOutside()" class="absolute top-6 z-10 flex flex-col bg-[#FDF9F0] rounded-2xl p-3">
         <div id="title()-sort-options" class="flex flex-col w-full">
             <div class="text-gray-500 self-center">Sort By</div>
             <div class="flex hover:bg-sky-400 cursor-pointer rounded-md">

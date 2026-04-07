@@ -1,0 +1,28 @@
+<div class="flex flex-col w-full h-full p-4">
+    <div id="question" class="text-md xs:text-2xl truncate py-4">
+        Q. Why do you want to work here?
+    </div>
+    <hr>
+    <div class="flex">
+        <div (click)="updateOption('text')" [class]="this.option() === 'text' ? 'selected-option backdrop-brightness-95 hover:backdrop-brightness-95' : 'selected-option hover:backdrop-brightness-95'">Text</div>
+        <div (click)="updateOption('video')" [class]="this.option() === 'video' ? 'selected-option backdrop-brightness-95 hover:backdrop-brightness-95' : 'selected-option hover:backdrop-brightness-95'">Video</div>
+    </div>
+    @if (this.option() === "text") {
+        <div class="flex flex-col w-full h-full gap-2">
+            <button matButton="filled" class="self-end">Save</button>
+            <textarea class="w-full h-full p-2" placeholder="Enter response here..."></textarea>
+        </div>
+    }
+    @else {
+        <div class="flex flex-col gap-4 w-full h-full transition-discrete">
+            <button matButton="filled" class="self-end">New Video</button>
+            <div id="video-list" class="flex w-full h-full flex-col">
+                <div class="flex justify-end">
+                    <menu-button />
+                </div>
+                <custom-video title="Video title"/>
+            </div>
+        </div>
+    }
+    
+</div>
