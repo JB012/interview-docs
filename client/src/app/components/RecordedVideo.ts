@@ -1,9 +1,9 @@
 import {
   Component,
-  VERSION,
   ViewChild,
   OnInit,
-  ElementRef
+  ElementRef,
+  signal
 } from '@angular/core';
 import { VideoControls } from "./VideoControls";
 
@@ -19,27 +19,34 @@ export class RecordedVideo implements OnInit {
     recordVideoElementRef!: ElementRef;
     @ViewChild('video')
     videoElementRef!: ElementRef;
+    @ViewChild('videoContainer')
+    videoContainerRef!: ElementRef;
 
     videoElement!: HTMLVideoElement;
     recordVideoElement!: HTMLVideoElement;
+    videoContainerElement!: HTMLDivElement;
+
     mediaRecorder: any;
     recordedBlobs: Blob[] = [];
     isRecording: boolean = false;
     downloadUrl!: string;
     stream!: MediaStream;
-
+    
+    inFullScreen = signal(false);
+    
     constructor() {}
 
     async ngOnInit() {
         navigator.mediaDevices
         .getUserMedia({
             video: {
-            width: 360
+            width: 720
             }
         })
         .then(stream => {
             this.videoElement = this.videoElementRef.nativeElement;
             this.recordVideoElement = this.recordVideoElementRef.nativeElement;
+            this.videoContainerElement = this.videoContainerRef.nativeElement;
 
             this.stream = stream;
             this.videoElement.srcObject = this.stream;
@@ -76,6 +83,19 @@ export class RecordedVideo implements OnInit {
         this.recordVideoElement.play();
     }
 
+    async updateFullScreen() {
+        const updatedFullScreenValue = !this.inFullScreen();
+
+        if (updatedFullScreenValue) {
+            this.videoContainerElement.requestFullscreen();
+        }
+        else {
+            await document.exitFullscreen();
+        }
+
+        this.inFullScreen.set(updatedFullScreenValue);
+    }
+    
     onDataAvailableEvent() {
         try {
         this.mediaRecorder.ondataavailable = (event: any) => {
