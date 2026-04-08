@@ -15,14 +15,26 @@
     }
     @else {
         <div class="flex flex-col gap-4 w-full h-full transition-discrete">
-            <button matButton="filled" class="self-end">New Video</button>
-            <div id="video-list" class="flex w-full h-full flex-col">
-                <div class="flex justify-end">
-                    <menu-button />
+            @if (!clickedNewVideo()) {
+                <button matButton="filled" (click)="updateClickedNewVideo(true)" class="self-end">New Video</button>
+                <div id="video-list" class="flex w-full h-full flex-col">
+                    <div class="flex justify-end">
+                        <menu-button />
+                    </div>
+                    <video-file title="Video title"/>
                 </div>
-                <custom-video title="Video title"/>
-            </div>
+            }
+            @else {
+                <div class="flex flex-col w-full h-full">
+                    <div class="flex gap-2 cursor-pointer" (click)="updateClickedNewVideo(false)">
+                        <span class="self-start material-symbols-outlined">&#xe5c4;</span>
+                        <div>Back to List</div>
+                    </div>
+                    <recorded-video />
+                </div>
+            }
         </div>
+        
     }
     
 </div>

@@ -2,14 +2,14 @@ import { Component, input, signal } from "@angular/core";
 import { ClickOutside } from "../click-outside";
 
 @Component({
-    selector: 'custom-video',
-    templateUrl: './video.html',
+    selector: 'video-file',
+    templateUrl: './video-file.html',
     imports: [
         ClickOutside
     ]
 })
 
-export class Video {
+export class VideoFile {
     title = input.required<string>();
     option = signal('text');
     questionMenu = signal(false);

@@ -1,0 +1,15 @@
+<div class="flex justify-center text-white items-center w-full">
+    <div class="flex absolute bottom-2 left-1 text-xs rounded-full bg-gray-800">
+        <div class="text-white">0:00</div>
+        <div class="text-gray-600">/5:00</div>
+    </div>
+    <div (click)="updatePressRecord()" class="flex cursor-pointer justify-center items-center w-10 h-10 rounded-[50%] bg-gray-500">
+        @if (!pressRecord()) {
+            <div class="rounded-[50%] w-6.25 h-6.25 hover:w-7.5 hover:h-7.5 bg-red-600"></div>
+        }
+        @else {
+            <div class="rounded-md w-5 h-5 hover:w-6 hover:h-6 bg-red-600"></div>
+        }
+    </div>
+    <span class="absolute bottom-2 right-1 material-symbols-outlined">&#xe5d0;</span>
+</div>
