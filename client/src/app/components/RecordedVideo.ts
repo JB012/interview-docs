@@ -6,12 +6,16 @@ import {
   signal
 } from '@angular/core';
 import { VideoControls } from "./VideoControls";
+import { MatButtonModule } from '@angular/material/button';
 
 declare var MediaRecorder: any;
 @Component({
     selector: 'recorded-video',
     templateUrl: './recorded-video.html',
-    imports: [VideoControls],
+    imports: [
+        VideoControls,
+        MatButtonModule
+    ],
 })
 
 export class RecordedVideo implements OnInit {
@@ -32,11 +36,16 @@ export class RecordedVideo implements OnInit {
     downloadUrl!: string;
     stream!: MediaStream;
     
+    currentVideo = signal('preview');
     inFullScreen = signal(false);
     
     constructor() {}
 
     async ngOnInit() {
+        this.retrieveStream();
+    }
+
+    retrieveStream() {
         navigator.mediaDevices
         .getUserMedia({
             video: {
@@ -45,12 +54,15 @@ export class RecordedVideo implements OnInit {
         })
         .then(stream => {
             this.videoElement = this.videoElementRef.nativeElement;
-            this.recordVideoElement = this.recordVideoElementRef.nativeElement;
             this.videoContainerElement = this.videoContainerRef.nativeElement;
 
             this.stream = stream;
             this.videoElement.srcObject = this.stream;
         });
+    }
+
+    updateCurrentVideo(video : string) {
+        this.currentVideo.set(video);
     }
 
     startRecording() {
@@ -72,6 +84,7 @@ export class RecordedVideo implements OnInit {
     stopRecording() {
         this.mediaRecorder.stop();
         this.isRecording = !this.isRecording;
+        this.updateCurrentVideo('recorded');
         console.log('Recorded Blobs: ', this.recordedBlobs);
     }
 
@@ -115,6 +128,8 @@ export class RecordedVideo implements OnInit {
             type: 'video/webm'
             });
             this.downloadUrl = window.URL.createObjectURL(videoBuffer); // you can download with <a> tag
+            
+            this.recordVideoElement = this.recordVideoElementRef.nativeElement;
             this.recordVideoElement.src = this.downloadUrl;
         };
         } catch (error) {

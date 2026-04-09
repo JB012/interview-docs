@@ -1,10 +1,19 @@
-<div class="flex flex-col w-full h-full justify-center">
+<div class="flex flex-col w-full h-full gap-4 justify-center">
+  @if (currentVideo() === "recorded") {
+      <div class="flex justify-center gap-8">
+        <button matButton="outlined" (click)="updateCurrentVideo('preview'); retrieveStream();">Record New Video</button>
+        <button matButton="filled">Save</button>
+      </div>
+    }
     <div class="flex justify-center relative">
         <div #videoContainer class="relative">
-            <video class="w-full" #video autoplay></video>
-            <video-controls (updateFullScreen)="updateFullScreen()" (startRecording)="startRecording()" (stopRecording)="stopRecording()" class="flex w-full absolute z-10 bottom-0"/>
+            @if (currentVideo() === "preview") {
+              <video class="w-full" #video autoplay></video>
+              <video-controls (updateFullScreen)="updateFullScreen()" (startRecording)="startRecording()" (stopRecording)="stopRecording()" class="flex w-full absolute z-10 bottom-0"/>
+            }  
+            @else {
+              <video class="w-180 h-101.25" controls #recordedVideo></video>
+            }
         </div>
     </div>
-  <span class="m-1"></span>
-  <video class="video" style="width:360 !important;" controls #recordedVideo></video>
 </div>
