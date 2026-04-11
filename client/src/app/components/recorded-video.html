@@ -8,8 +8,10 @@
     <div class="flex justify-center relative">
         <div #videoContainer class="relative">
             @if (currentVideo() === "preview") {
-              <video class="w-full" #video autoplay></video>
-              <video-controls (updateFullScreen)="updateFullScreen()" (startRecording)="startRecording()" (stopRecording)="stopRecording()" class="flex w-full absolute z-10 bottom-0"/>
+              <video class="w-full" #video autoplay muted></video>
+              @if (videoLoaded()) {
+                <video-controls (updateFullScreen)="updateFullScreen()" (startRecording)="startRecording()" (stopRecording)="stopRecording()" class="flex w-full absolute z-10 bottom-0"/>
+              }
             }  
             @else {
               <video class="w-180 h-101.25" controls #recordedVideo></video>

@@ -15,7 +15,7 @@ declare var MediaRecorder: any;
     imports: [
         VideoControls,
         MatButtonModule
-    ],
+    ]
 })
 
 export class RecordedVideo implements OnInit {
@@ -36,6 +36,7 @@ export class RecordedVideo implements OnInit {
     downloadUrl!: string;
     stream!: MediaStream;
     
+    videoLoaded = signal(false);
     currentVideo = signal('preview');
     inFullScreen = signal(false);
     
@@ -50,7 +51,8 @@ export class RecordedVideo implements OnInit {
         .getUserMedia({
             video: {
             width: 720
-            }
+            },
+            audio: true
         })
         .then(stream => {
             this.videoElement = this.videoElementRef.nativeElement;
@@ -58,7 +60,11 @@ export class RecordedVideo implements OnInit {
 
             this.stream = stream;
             this.videoElement.srcObject = this.stream;
+            this.videoElement.muted = true;
+
+            this.videoLoaded.set(true);
         });
+
     }
 
     updateCurrentVideo(video : string) {
