@@ -13,6 +13,6 @@ import { Component, input } from "@angular/core";
 })
 
 export class Question {
-    id = input.required<string>();
+    id = input.required<number>();
     question = input.required<string>();
 }

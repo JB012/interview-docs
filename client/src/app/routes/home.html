@@ -11,7 +11,11 @@
     </div>
     <ul id="questions-list" style="background-color: rgb(205, 207, 192)" class="xxs:h-80">
         <div class="text-lg p-2">Questions</div>
-        <question id="1" question="What makes you want to work here?"/>
+        @if (questions$ | async; as questions) {
+            @for (question of questions; track question) {
+                <question [id]="question.id" [question]="question.question" />
+            }
+        }
     </ul>
     <mat-paginator
         [hidePageSize]="true"
