@@ -26,6 +26,7 @@ public class QuestionController {
 
     @PostMapping("/questions")
     Question newQuestion(@RequestBody Question newQuestion) {
+        System.out.println(newQuestion.toString());
         return repository.save(newQuestion);
     }
 

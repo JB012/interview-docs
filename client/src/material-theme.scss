@@ -42,3 +42,10 @@ mat-sidenav {
     container-width: 200px,
   ));
 }
+
+mat-spinner {
+  @include mat.progress-spinner-overrides((
+    active-indicator-width: 10px,
+    size: 10px
+  ));
+}

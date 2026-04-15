@@ -16,15 +16,12 @@ export class QuestionService {
   }
 
   postQuestion(question: QuestionType): Observable<QuestionType> {
-    return this.http.post<QuestionType>(`http://localhost:8080/questions`, {
-        question: question
-    });
+    console.log(question);
+    return this.http.post<QuestionType>(`http://localhost:8080/questions`, question);
   }
 
   putQuestion(question: QuestionType, id: number): Observable<QuestionType> {
-    return this.http.put<QuestionType>(`http://localhost:8080/questions/${id}`, {
-        question: question
-    });
+    return this.http.put<QuestionType>(`http://localhost:8080/questions/${id}`, question);
   }
 
   deleteQuestion(id: string): Observable<QuestionType> {

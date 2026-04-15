@@ -1,4 +1,5 @@
 export interface QuestionType {
-    id: number,
-    question: string
+    id?: number,
+    question: string,
+    user_id: string
 }
