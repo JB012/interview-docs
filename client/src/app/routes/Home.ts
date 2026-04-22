@@ -1,6 +1,6 @@
 import { Component, DOCUMENT, effect, ElementRef, Inject, inject, signal, ViewChild } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
-import { MatPaginatorModule } from "@angular/material/paginator";
+import { MatPaginatorModule, PageEvent } from "@angular/material/paginator";
 import { MenuButton } from "../components/MenuButton";
 import { FolderSearch } from "../components/FolderSearch";
 import { AsyncPipe } from '@angular/common';
@@ -11,6 +11,7 @@ import { QuestionService } from "../services/QuestionService";
 
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { AuthService } from "@auth0/auth0-angular";
+import { PagedQuestionType } from "../types/PagedQuestionType";
 @Component ({
     templateUrl: './home.html',
     imports: [
@@ -27,15 +28,24 @@ import { AuthService } from "@auth0/auth0-angular";
 export class Home {  
     @ViewChild('questionInput')
     questionInput! : ElementRef<HTMLInputElement>;
-    questions$!: Observable<QuestionType[]>;
+    questions$!: Observable<PagedQuestionType>;
     addQuestion$!: Observable<QuestionType>;
     userId? : string;
 
+    pageEvent: PageEvent | undefined;
+
+    handlePageEvent(e: PageEvent) {
+        const pageIndex = e.pageIndex;
+        const pageSize = e.pageSize;
+
+        this.questions$ = this.questionService.getQuestions(pageSize, pageIndex);
+    }
+    
     private questionService = inject(QuestionService);
     
     constructor(@Inject(DOCUMENT) private doc: Document, public auth: AuthService) {
         effect(() => {
-            this.questions$ = this.questionService.getAllQuestions();
+            this.questions$ = this.questionService.getQuestions();  
         });
     }
 

@@ -2,13 +2,14 @@ import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { QuestionType } from "../types/QuestionType";
+import { PagedQuestionType } from "../types/PagedQuestionType";
 
 @Injectable({providedIn: 'root'})
 export class QuestionService {
   private http = inject(HttpClient);
 
-  getAllQuestions(): Observable<QuestionType[]> {
-    return this.http.get<QuestionType[]>(`http://localhost:8080/questions`);
+  getQuestions(pageIndex = 0, pageSize = 7): Observable<PagedQuestionType> {
+    return this.http.get<PagedQuestionType>(`http://localhost:8080/questions?page=${pageIndex}&size=${pageSize}`);
   }
 
   getQuestion(id: number): Observable<QuestionType> {
