@@ -28,11 +28,12 @@
             <div>Add questions</div>
         }
     </ul>
-    <mat-paginator
+        <mat-paginator
         (page)="handlePageEvent($event)"
         [hidePageSize]="true"
-        [length]="(questions$ | async) ? (questions$ | async)!.content.length : 1"
-        [pageSize]="7"
-        [pageIndex]="0"
-    ></mat-paginator>
+        [length]="length"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        ></mat-paginator>
+    
 </div>

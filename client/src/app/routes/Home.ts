@@ -1,4 +1,4 @@
-import { Component, DOCUMENT, effect, ElementRef, Inject, inject, signal, ViewChild } from "@angular/core";
+import { Component, DOCUMENT, effect, ElementRef, Inject, inject, OnInit, signal, ViewChild } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
 import { MatPaginatorModule, PageEvent } from "@angular/material/paginator";
 import { MenuButton } from "../components/MenuButton";
@@ -6,12 +6,13 @@ import { FolderSearch } from "../components/FolderSearch";
 import { AsyncPipe } from '@angular/common';
 import { Question } from "../components/Question";
 import { QuestionType } from "../types/QuestionType";
-import { Observable } from "rxjs";
+import { Observable, shareReplay } from "rxjs";
 import { QuestionService } from "../services/QuestionService";
 
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { AuthService } from "@auth0/auth0-angular";
 import { PagedQuestionType } from "../types/PagedQuestionType";
+
 @Component ({
     templateUrl: './home.html',
     imports: [
@@ -25,28 +26,35 @@ import { PagedQuestionType } from "../types/PagedQuestionType";
     ]
 })
 
-export class Home {  
+export class Home implements OnInit {  
     @ViewChild('questionInput')
     questionInput! : ElementRef<HTMLInputElement>;
-    questions$!: Observable<PagedQuestionType>;
     addQuestion$!: Observable<QuestionType>;
     userId? : string;
-
     pageEvent: PageEvent | undefined;
-
-    handlePageEvent(e: PageEvent) {
-        const pageIndex = e.pageIndex;
-        const pageSize = e.pageSize;
-
-        this.questions$ = this.questionService.getQuestions(pageSize, pageIndex);
-    }
     
     private questionService = inject(QuestionService);
+    questions$ = this.questionService.getQuestions().pipe(shareReplay(1)); 
     
-    constructor(@Inject(DOCUMENT) private doc: Document, public auth: AuthService) {
-        effect(() => {
-            this.questions$ = this.questionService.getQuestions();  
+    length = 0;
+    pageSize = 0;
+    pageIndex = 0;
+
+    constructor(public auth: AuthService) {}
+    
+    ngOnInit(): void {
+        this.questions$.subscribe((questions) => {
+            this.length = questions.page.totalElements;
+            this.pageSize = questions.page.size;
+            this.pageIndex = questions.page.number;
         });
+    }
+
+    handlePageEvent(e: PageEvent) {
+        const pageSize = e.pageSize;
+        const pageIndex = e.pageIndex;
+
+        this.questions$ = this.questionService.getQuestions(pageIndex, pageSize);
     }
 
     addQuestion() {

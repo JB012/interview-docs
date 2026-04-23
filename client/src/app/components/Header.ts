@@ -16,9 +16,10 @@ import { AsyncPipe } from "@angular/common";
 })
 
 export class Header {
-    protected auth = inject(AuthService);
     opened = model<boolean>(false);
 
+    constructor(public auth: AuthService) {}
+    
     updateOpened(val : boolean):void {
         this.opened.update((currentValue) => !currentValue);
     }
