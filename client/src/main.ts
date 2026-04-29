@@ -12,8 +12,8 @@ const auth0Config = mergeApplicationConfig(appConfig, {
       domain: environment.auth0.domain,
       clientId: environment.auth0.clientId,
       authorizationParams: {
-        redirect_uri: window.location.origin,
-        audience: 'http://localhost:8080/'
+        redirect_uri: "http://localhost:4200/home",
+        audience: environment.auth0.audience
       },
       httpInterceptor: {
         allowedList: [

@@ -2,16 +2,21 @@ package com.interviewdocs.server.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.interviewdocs.server.error.VideoNotFoundException;
 import com.interviewdocs.server.model.Video;
 import com.interviewdocs.server.repository.*;
+import com.interviewdocs.server.services.S3Service;
 
 @RestController
 public class VideoController {
     private final VideoRepository repository;
 
+    @Autowired
+    S3Service s3Service;
+    
     VideoController(VideoRepository repository) {
         this.repository = repository;
     }
@@ -19,10 +24,11 @@ public class VideoController {
     @GetMapping("/videos")
     List<Video> all() {
         return repository.findAll();
+        // Modify list and add S3 signed URL to each object
     }
 
     @PostMapping("/videos")
-    Video newQuestion(@RequestBody Video newVideo) {
+    Video newVideo(@RequestBody Video newVideo) {
         return repository.save(newVideo);
     }
 

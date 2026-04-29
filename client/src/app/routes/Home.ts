@@ -12,6 +12,7 @@ import { QuestionService } from "../services/QuestionService";
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { AuthService } from "@auth0/auth0-angular";
 import { PagedQuestionType } from "../types/PagedQuestionType";
+import {Router} from '@angular/router';
 
 @Component ({
     templateUrl: './home.html',
@@ -40,6 +41,9 @@ export class Home implements OnInit {
     pageSize = 0;
     pageIndex = 0;
 
+    
+    private router = inject(Router);
+
     constructor(public auth: AuthService) {}
     
     ngOnInit(): void {
@@ -64,7 +68,9 @@ export class Home implements OnInit {
                     if (user) {
                         this.userId = user.sub;
                         if (this.userId) {
-                            this.questionService.postQuestion({question: this.questionInput.nativeElement.value, user_id: this.userId}).subscribe();
+                            this.questionService.postQuestion({question: this.questionInput.nativeElement.value, user_id: this.userId}).subscribe((question) => {
+                                this.router.navigate(['questions', question.id]);
+                            });
                         }
                     }
                     else {

@@ -1,6 +1,6 @@
 import { TuiRoot } from '@taiga-ui/core';
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { Header } from './components/Header';
 import { MatSidenavModule } from '@angular/material/sidenav';
 
@@ -13,4 +13,10 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 export class App {
   opened = false;
   protected readonly title = signal('client');
+
+  constructor(private router : Router) {}
+
+  isLandingPage() : boolean {
+    return this.router.url === '/';
+  }
 }

@@ -20,14 +20,14 @@ declare var MediaRecorder: any;
 
 export class RecordedVideo implements OnInit {
     @ViewChild('recordedVideo')
-    recordVideoElementRef!: ElementRef;
+    recordedVideoElementRef!: ElementRef;
     @ViewChild('video')
-    videoElementRef!: ElementRef;
+    previewVideoElementRef!: ElementRef;
     @ViewChild('videoContainer')
     videoContainerRef!: ElementRef;
 
-    videoElement!: HTMLVideoElement;
-    recordVideoElement!: HTMLVideoElement;
+    previewVideoElement!: HTMLVideoElement;
+    recordedVideoElement!: HTMLVideoElement;
     videoContainerElement!: HTMLDivElement;
 
     mediaRecorder: any;
@@ -55,16 +55,20 @@ export class RecordedVideo implements OnInit {
             audio: true
         })
         .then(stream => {
-            this.videoElement = this.videoElementRef.nativeElement;
+            this.previewVideoElement = this.previewVideoElementRef.nativeElement;
             this.videoContainerElement = this.videoContainerRef.nativeElement;
 
             this.stream = stream;
-            this.videoElement.srcObject = this.stream;
-            this.videoElement.muted = true;
+            this.previewVideoElement.srcObject = this.stream;
+            this.previewVideoElement.muted = true;
 
             this.videoLoaded.set(true);
         });
 
+    }
+
+    saveVideo() {
+        
     }
 
     updateCurrentVideo(video : string) {
@@ -99,7 +103,7 @@ export class RecordedVideo implements OnInit {
         console.log('cannot play.');
         return;
         }
-        this.recordVideoElement.play();
+        this.recordedVideoElement.play();
     }
 
     async updateFullScreen() {
@@ -133,10 +137,11 @@ export class RecordedVideo implements OnInit {
             const videoBuffer = new Blob(this.recordedBlobs, {
             type: 'video/webm'
             });
-            this.downloadUrl = window.URL.createObjectURL(videoBuffer); // you can download with <a> tag
             
-            this.recordVideoElement = this.recordVideoElementRef.nativeElement;
-            this.recordVideoElement.src = this.downloadUrl;
+            this.downloadUrl = window.URL.createObjectURL(videoBuffer);
+            
+            this.recordedVideoElement = this.recordedVideoElementRef.nativeElement;
+            this.recordedVideoElement.src = this.downloadUrl;
         };
         } catch (error) {
         console.log(error);

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 public class Video {
     private @Id
     @GeneratedValue Long id;
+    private String source;
     private String title;
     private String userId;
     
@@ -15,6 +16,11 @@ public class Video {
         this.title = title;
     }
     
+    Video(String title, String source) {
+        this.title = title;
+        this.source = source;
+    }
+
     public void setUserId(String userId) {
         this.userId = userId;
     }
@@ -37,6 +43,14 @@ public class Video {
     
     public String getVideoTitle() {
         return title;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getSource() {
+        return source;
     }
 
     @Override

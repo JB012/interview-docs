@@ -17,7 +17,7 @@ import { AsyncPipe } from "@angular/common";
 
 export class Header {
     opened = model<boolean>(false);
-
+    
     constructor(public auth: AuthService) {}
     
     updateOpened(val : boolean):void {

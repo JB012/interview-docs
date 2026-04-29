@@ -22,6 +22,6 @@ export class LoginButtonComponent {
   private auth = inject(AuthService);
 
   loginWithRedirect(): void {
-    this.auth.loginWithRedirect();
+    this.auth.loginWithRedirect({appState: {target: '/home'}});
   }
 }
