@@ -15,10 +15,8 @@ export class VideoService {
     return this.http.get<VideoType>(`http://localhost:8080/videos/${id}`);
   }
 
-  postVideo(question: VideoType): Observable<VideoType> {
-    return this.http.post<VideoType>(`http://localhost:8080/videos`, {
-        question: question
-    });
+  postVideo(video: VideoType): Observable<VideoType> {
+    return this.http.post<VideoType>(`http://localhost:8080/videos`, video);
   }
 
   putVideo(video: VideoType, id: number): Observable<VideoType> {

@@ -3,10 +3,15 @@ import {
   ViewChild,
   OnInit,
   ElementRef,
-  signal
+  signal,
+  inject
 } from '@angular/core';
 import { VideoControls } from "./VideoControls";
 import { MatButtonModule } from '@angular/material/button';
+import { VideoService } from '../services/VideoService';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
+import { s3Client } from  '../../utils';
+import { AuthService } from '@auth0/auth0-angular';
 
 declare var MediaRecorder: any;
 @Component({
@@ -39,11 +44,20 @@ export class RecordedVideo implements OnInit {
     videoLoaded = signal(false);
     currentVideo = signal('preview');
     inFullScreen = signal(false);
+
+    videoService = inject(VideoService);
     
-    constructor() {}
+    userID: string | undefined;
+
+    constructor(public auth: AuthService) {
+    }
 
     async ngOnInit() {
         this.retrieveStream();
+
+        this.auth.user$.subscribe((user) => {
+            this.userID = user?.sub;
+        })
     }
 
     retrieveStream() {
@@ -67,8 +81,24 @@ export class RecordedVideo implements OnInit {
 
     }
 
-    saveVideo() {
-        
+    async saveVideo() {
+        try {          
+            const videoBuffer = new Blob(this.recordedBlobs, {type: 'video/webm'});
+            const videoFile = new File([videoBuffer], "test.mp4", {type: 'video/webm'});
+
+            const command = new PutObjectCommand({
+                Key: `${this.userID}/title`,
+                Bucket: 'interviewdocs-videos',
+                Body: videoFile,
+                ContentType: videoFile.type
+            });
+
+            await s3Client.send(command);
+
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
 
     updateCurrentVideo(video : string) {

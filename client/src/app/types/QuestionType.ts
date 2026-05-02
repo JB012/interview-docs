@@ -1,5 +1,5 @@
 export interface QuestionType {
     id?: number,
+    user_id?: string,
     question: string,
-    user_id: string
 }
