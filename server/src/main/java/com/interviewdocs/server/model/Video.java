@@ -1,4 +1,6 @@
 package com.interviewdocs.server.model;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -6,8 +8,11 @@ import jakarta.persistence.*;
 public class Video {
     private @Id
     @GeneratedValue Long id;
+    @JsonProperty("source")
     private String source;
+    @JsonProperty("title")
     private String title;
+    @JsonProperty("user_id")
     private String userId;
     
     Video() {}
@@ -37,11 +42,11 @@ public class Video {
         return id;
     }
 
-    public void setVideoTitle(String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
     
-    public String getVideoTitle() {
+    public String getTitle() {
         return title;
     }
 

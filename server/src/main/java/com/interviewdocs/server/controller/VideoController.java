@@ -8,23 +8,33 @@ import org.springframework.web.bind.annotation.*;
 import com.interviewdocs.server.error.VideoNotFoundException;
 import com.interviewdocs.server.model.Video;
 import com.interviewdocs.server.repository.*;
-import com.interviewdocs.server.services.S3Service;
+import com.interviewdocs.server.services.VideoService;
 
 @RestController
 public class VideoController {
     private final VideoRepository repository;
-
-    @Autowired
-    S3Service s3Service;
     
+    @Autowired
+    private VideoService videoService;
+
     VideoController(VideoRepository repository) {
         this.repository = repository;
     }
 
     @GetMapping("/videos")
     List<Video> all() {
-        return repository.findAll();
-        // Modify list and add S3 signed URL to each object
+        List<Video> videoList = repository.findAll();
+
+        for (int i = 0; i < videoList.size(); i++) {
+            try {
+                videoService.setSourceToPresignedURL(videoList.get(i));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return videoList;
+     
     }
 
     @PostMapping("/videos")
@@ -34,8 +44,16 @@ public class VideoController {
 
     @GetMapping("/videos/{id}")
     Video one(@PathVariable("id") Long id) {
-        return repository.findById(id)
+        Video video = repository.findById(id)
         .orElseThrow(() -> new VideoNotFoundException(id));
+
+        try {
+            videoService.setSourceToPresignedURL(video);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return video;
     }
 
     @PutMapping("/videos/{id}")
@@ -43,7 +61,7 @@ public class VideoController {
         
         return repository.findById(id)
         .map(video -> {
-            video.setVideoTitle(newVideo.getVideoTitle());
+            video.setTitle(newVideo.getTitle());
             return repository.save(video);
         })
         .orElseGet(() -> {

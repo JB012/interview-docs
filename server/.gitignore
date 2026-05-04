@@ -38,3 +38,5 @@ out/
 
 *.env
 *.aws
+*.pem
+*.der

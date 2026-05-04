@@ -2,11 +2,11 @@
   @if (currentVideo() === "recorded") {
       <div class="flex justify-center gap-8">
         <button matButton="outlined" (click)="updateCurrentVideo('preview'); retrieveStream();">Record New Video</button>
-        <button matButton="filled" (click)="saveVideo()">Save</button>
+        <button [disabled]="disableSave()" matButton="filled" (click)="saveVideo()">Save</button>
       </div>
     }
-    <div class="flex justify-center relative">
-        <div #videoContainer class="relative">
+    <div class="flex justify-center">
+        <div #videoContainer class="w-180 h-101.25 relative">
             @if (currentVideo() === "preview") {
               <video class="w-full" #video autoplay muted></video>
               @if (videoLoaded()) {
@@ -14,7 +14,7 @@
               }
             }  
             @else {
-              <video class="w-180 h-101.25" controls #recordedVideo></video>
+              <video class="w-full" controls #recordedVideo></video>
             }
         </div>
     </div>

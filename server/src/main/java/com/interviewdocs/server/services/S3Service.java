@@ -1,56 +1,63 @@
 package com.interviewdocs.server.services;
-import java.io.IOException;
+import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.concurrent.CompletableFuture;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Base64;
 
-import com.interviewdocs.server.utils.ServiceClientSource;
+import org.springframework.stereotype.Service;
 
-import software.amazon.awssdk.core.ResponseBytes;
-import software.amazon.awssdk.core.async.AsyncRequestBody;
-import software.amazon.awssdk.core.async.AsyncResponseTransformer;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
+import software.amazon.awssdk.services.cloudfront.model.CannedSignerRequest;
+import software.amazon.awssdk.services.cloudfront.url.SignedUrl;
+import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities;
 
+import com.interviewdocs.server.utils.CreateCannedPolicyRequest;
+
+@Service
 public class S3Service {
-    public CompletableFuture<Void> getObjectBytesAsync(String bucketName, String keyName, String path) {
-        GetObjectRequest objectRequest = GetObjectRequest.builder()
-            .key(keyName)
-            .bucket(bucketName)
-            .build();
+    private static final CloudFrontUtilities cloudFrontUtilities = CloudFrontUtilities.create();
+    
+    public String createPresignedGetUrl(String bucketName, String keyName) {
+        try (S3Presigner presigner = S3Presigner.create()) {
 
-        CompletableFuture<ResponseBytes<GetObjectResponse>> response = ServiceClientSource.getS3Client().getObject(objectRequest, AsyncResponseTransformer.toBytes());
-        return response.thenAccept(objectBytes -> {
-            try {
-                byte[] data = objectBytes.asByteArray();
-                Path filePath = Paths.get(path);
-                Files.write(filePath, data);
-            } catch (IOException ex) {
-                throw new RuntimeException("Failed to write data to file", ex);
-            }
-        }).whenComplete((resp, ex) -> {
-            if (ex != null) {
-                throw new RuntimeException("Failed to get object bytes from S3", ex);
-            }
-        });
+            GetObjectRequest objectRequest = GetObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(keyName)
+                    .build();
+
+            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                    .signatureDuration(Duration.ofMinutes(10))  // The URL will expire in 10 minutes.
+                    .getObjectRequest(objectRequest)
+                    .build();
+
+            PresignedGetObjectRequest presignedRequest = presigner.presignGetObject(presignRequest);
+
+            return presignedRequest.url().toExternalForm();
+        }
     }
 
-    public CompletableFuture<PutObjectResponse> uploadLocalFileAsync(String bucketName, String key, String objectPath) {
-        PutObjectRequest objectRequest = PutObjectRequest.builder()
-            .bucket(bucketName)
-            .key(key)
-            .build();
+    
+    public String createSignedUrl(String keyName, String keyPairId,
+                                  String privateKeyPath, Instant expiration,
+                                  String hashAlgorithm) throws Exception {
+        String distributionDomainName = "d2b2nwmiecq4jm.cloudfront.net";
+        CannedSignerRequest request = CreateCannedPolicyRequest.createRequestForCannedPolicy(
+            distributionDomainName, 
+            keyName, 
+            privateKeyPath, 
+            keyPairId
+        );
 
-        CompletableFuture<PutObjectResponse> response = ServiceClientSource.getS3Client().putObject(objectRequest, AsyncRequestBody.fromFile(Paths.get(objectPath)));
-        return response.whenComplete((resp, ex) -> {
-            if (ex != null) {
-                throw new RuntimeException("Failed to upload file", ex);
-            }
-        });
+        SignedUrl signedUrl = cloudFrontUtilities.getSignedUrlWithCannedPolicy(request);
+        
+        return signedUrl.url();
     }
-
-
 }

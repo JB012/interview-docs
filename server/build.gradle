@@ -24,6 +24,7 @@ dependencies {
     implementation("software.amazon.awssdk:s3")
 	implementation 'software.amazon.awssdk:sso'
 	implementation 'software.amazon.awssdk:ssoid'
+	implementation('software.amazon.awssdk:cloudfront')
 	implementation 'com.auth0:auth0-springboot-api:1.0.0-beta.0'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'

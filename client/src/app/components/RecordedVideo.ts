@@ -44,6 +44,7 @@ export class RecordedVideo implements OnInit {
     videoLoaded = signal(false);
     currentVideo = signal('preview');
     inFullScreen = signal(false);
+    disableSave = signal(false);
 
     videoService = inject(VideoService);
     
@@ -95,6 +96,12 @@ export class RecordedVideo implements OnInit {
 
             await s3Client.send(command);
 
+            // post video to backend
+
+            this.videoService.postVideo({user_id: this.userID, title: `title`}).subscribe();
+
+            // show confirmation to client side that video has been saved, then disable save button
+            this.disableSave.set(true);
         }
         catch (err) {
             console.log(err);
@@ -122,10 +129,15 @@ export class RecordedVideo implements OnInit {
     }
 
     stopRecording() {
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+            this.inFullScreen.set(false);
+        }
+
         this.mediaRecorder.stop();
         this.isRecording = !this.isRecording;
         this.updateCurrentVideo('recorded');
-        console.log('Recorded Blobs: ', this.recordedBlobs);
+        this.disableSave.set(false);
     }
 
     playRecording() {
@@ -138,7 +150,7 @@ export class RecordedVideo implements OnInit {
 
     async updateFullScreen() {
         const updatedFullScreenValue = !this.inFullScreen();
-
+        
         if (updatedFullScreenValue) {
             this.videoContainerElement.requestFullscreen();
         }

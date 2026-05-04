@@ -17,7 +17,6 @@ export class QuestionService {
   }
 
   postQuestion(question: QuestionType): Observable<QuestionType> {
-    console.log(question);
     return this.http.post<QuestionType>(`http://localhost:8080/questions`, question);
   }
 
