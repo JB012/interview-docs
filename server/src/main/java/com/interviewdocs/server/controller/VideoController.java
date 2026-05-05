@@ -1,5 +1,6 @@
 package com.interviewdocs.server.controller;
 
+import com.interviewdocs.server.services.S3Service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +13,16 @@ import com.interviewdocs.server.services.VideoService;
 
 @RestController
 public class VideoController {
+    private final S3Service s3Service;
+
     private final VideoRepository repository;
     
     @Autowired
     private VideoService videoService;
 
-    VideoController(VideoRepository repository) {
+    VideoController(VideoRepository repository, S3Service s3Service) {
         this.repository = repository;
+        this.s3Service = s3Service;
     }
 
     @GetMapping("/videos")
@@ -39,6 +43,12 @@ public class VideoController {
 
     @PostMapping("/videos")
     Video newVideo(@RequestBody Video newVideo) {
+        try {
+            videoService.setSourceToPresignedURL(newVideo);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return repository.save(newVideo);
     }
 
@@ -61,10 +71,27 @@ public class VideoController {
         
         return repository.findById(id)
         .map(video -> {
+            String keyName = video.getUserId() + "/" + video.getTitle();
+            String newKeyName = newVideo.getUserId() + "/" + newVideo.getTitle();
+            s3Service.changeObjectName("interviewdocs-videos", keyName, newKeyName);
+
             video.setTitle(newVideo.getTitle());
+            
+            try {
+                videoService.setSourceToPresignedURL(video);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             return repository.save(video);
         })
         .orElseGet(() -> {
+            try {
+                videoService.setSourceToPresignedURL(newVideo);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             return repository.save(newVideo);
         });
     }

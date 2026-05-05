@@ -8,4 +8,10 @@ export const s3Client = new S3Client({
         secretAccessKey: import.meta.env.NG_APP_AWS_SECRET_ACCESS_KEY
     },
     requestChecksumCalculation: "WHEN_REQUIRED"
-})
+});
+
+export function getUserIdNumber(userId : String) {
+    // Auth0 User ID : {connection}|{userIdNumber}. 
+    // Connection is irrelevant and the vertical bar character isn't recommended for S3 naming convention
+    return userId.split("|")[1];
+}

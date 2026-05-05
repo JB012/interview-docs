@@ -10,7 +10,7 @@ import { VideoControls } from "./VideoControls";
 import { MatButtonModule } from '@angular/material/button';
 import { VideoService } from '../services/VideoService';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
-import { s3Client } from  '../../utils';
+import { getUserIdNumber, s3Client } from  '../../utils';
 import { AuthService } from '@auth0/auth0-angular';
 
 declare var MediaRecorder: any;
@@ -57,7 +57,9 @@ export class RecordedVideo implements OnInit {
         this.retrieveStream();
 
         this.auth.user$.subscribe((user) => {
-            this.userID = user?.sub;
+            if (user?.sub) {  
+                this.userID = getUserIdNumber(user?.sub);
+            }
         })
     }
 

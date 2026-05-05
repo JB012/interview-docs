@@ -1,4 +1,6 @@
 package com.interviewdocs.server.model;
+import java.net.URLEncoder;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.*;
@@ -56,6 +58,10 @@ public class Video {
 
     public String getSource() {
         return source;
+    }
+
+    public String getKeyName() {
+        return userId + "/" + title;
     }
 
     @Override
