@@ -9,23 +9,24 @@ import jakarta.persistence.*;
 @Table (name = "videos")
 public class Video {
     private @Id
-    @GeneratedValue Long id;
-    @JsonProperty("source")
+    @GeneratedValue long id;
+    
+    @JsonProperty("source") 
+    @Column(columnDefinition = "TEXT")
     private String source;
-    @JsonProperty("title")
+    
+    @JsonProperty("title") 
+    @Column(columnDefinition = "TEXT")
     private String title;
+    
     @JsonProperty("user_id")
+    @Column(columnDefinition = "TEXT")
     private String userId;
     
     Video() {}
 
     Video(String title) {
         this.title = title;
-    }
-    
-    Video(String title, String source) {
-        this.title = title;
-        this.source = source;
     }
 
     public void setUserId(String userId) {
@@ -36,11 +37,11 @@ public class Video {
         return userId;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 

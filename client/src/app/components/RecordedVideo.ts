@@ -86,24 +86,22 @@ export class RecordedVideo implements OnInit {
 
     async saveVideo() {
         try {          
-            const videoBuffer = new Blob(this.recordedBlobs, {type: 'video/webm'});
-            const videoFile = new File([videoBuffer], "test.mp4", {type: 'video/webm'});
+            this.videoService.postVideo({user_id: this.userID, title: `title`}).subscribe(async () => {
+                const videoBuffer = new Blob(this.recordedBlobs, {type: 'video/webm'});
+                const videoFile = new File([videoBuffer], "test.mp4", {type: 'video/webm'});
 
-            const command = new PutObjectCommand({
-                Key: `${this.userID}/title`,
-                Bucket: 'interviewdocs-videos',
-                Body: videoFile,
-                ContentType: videoFile.type
+                const command = new PutObjectCommand({
+                    Key: `${this.userID}/title`,
+                    Bucket: 'interviewdocs-videos',
+                    Body: videoFile,
+                    ContentType: videoFile.type
+                });
+
+                await s3Client.send(command);
+                
+                // show confirmation to client side that video has been saved, then disable save button
+                this.disableSave.set(true);
             });
-
-            await s3Client.send(command);
-
-            // post video to backend
-
-            this.videoService.postVideo({user_id: this.userID, title: `title`}).subscribe();
-
-            // show confirmation to client side that video has been saved, then disable save button
-            this.disableSave.set(true);
         }
         catch (err) {
             console.log(err);

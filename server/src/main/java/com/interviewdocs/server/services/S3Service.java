@@ -100,7 +100,7 @@ public class S3Service {
         response.whenComplete((copyRes, ex) -> {
             if (copyRes != null) {
                 System.out.println("The object with the name " + newKeyName + " was copied to " + bucketName);
-            
+                deleteS3Object(bucketName, keyName);
             } else {
                 System.out.println("ex is " + ex.toString());
                 throw new RuntimeException("An S3 exception occurred during copy", ex);

@@ -1,9 +1,15 @@
 package com.interviewdocs.server.controller;
 
 import com.interviewdocs.server.services.S3Service;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.interviewdocs.server.error.VideoNotFoundException;
@@ -17,6 +23,8 @@ public class VideoController {
 
     private final VideoRepository repository;
     
+    private static final String BUCKET_NAME = "interviewdocs-videos";
+
     @Autowired
     private VideoService videoService;
 
@@ -26,79 +34,104 @@ public class VideoController {
     }
 
     @GetMapping("/videos")
-    List<Video> all() {
-        List<Video> videoList = repository.findAll();
+    List<Video> all(Authentication auth) {
+        if (auth.isAuthenticated()) {
+            // Make a service function that checks user ID
+            List<Video> videoList = repository.findAll();
 
-        for (int i = 0; i < videoList.size(); i++) {
-            try {
-                videoService.setSourceToPresignedURL(videoList.get(i));
-            } catch (Exception e) {
-                e.printStackTrace();
+            for (int i = 0; i < videoList.size(); i++) {
+                try {
+                    videoService.setSourceToPresignedURL(videoList.get(i));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-        }
 
-        return videoList;
-     
+            return videoList;
+        }     
+
+        return new ArrayList<>();
     }
 
     @PostMapping("/videos")
-    Video newVideo(@RequestBody Video newVideo) {
-        try {
-            videoService.setSourceToPresignedURL(newVideo);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    ResponseEntity<String> newVideo(@RequestBody Video newVideo, Authentication auth) { 
+        if (auth.isAuthenticated() && newVideo.getUserId().equals(videoService.getUserIdNumber(auth.getName()))) {
+            repository.save(newVideo);
 
-        return repository.save(newVideo);
-    }
-
-    @GetMapping("/videos/{id}")
-    Video one(@PathVariable("id") Long id) {
-        Video video = repository.findById(id)
-        .orElseThrow(() -> new VideoNotFoundException(id));
-
-        try {
-            videoService.setSourceToPresignedURL(video);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return video;
-    }
-
-    @PutMapping("/videos/{id}")
-    Video replaceQuestion(@RequestBody Video newVideo, @PathVariable("id") Long id) {
-        
-        return repository.findById(id)
-        .map(video -> {
-            String keyName = video.getUserId() + "/" + video.getTitle();
-            String newKeyName = newVideo.getUserId() + "/" + newVideo.getTitle();
-            s3Service.changeObjectName("interviewdocs-videos", keyName, newKeyName);
-
-            video.setTitle(newVideo.getTitle());
-            
-            try {
-                videoService.setSourceToPresignedURL(video);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return repository.save(video);
-        })
-        .orElseGet(() -> {
             try {
                 videoService.setSourceToPresignedURL(newVideo);
             } catch (Exception e) {
-                e.printStackTrace();
+                return new ResponseEntity<>(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
-            return repository.save(newVideo);
-        });
+            return ResponseEntity.ok().build();
+        }
+
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    @GetMapping("/videos/{id}")
+    ResponseEntity<Video> one(@PathVariable("id") Long id, Authentication auth) {
+        if (auth.isAuthenticated()) {
+            Video video = repository.findById(id)
+            .orElseThrow(() -> new VideoNotFoundException(id));
+
+            try {
+                videoService.setSourceToPresignedURL(video);
+            } catch (Exception e) {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            return ResponseEntity.ok(video);
+        }
+
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    @PutMapping("/videos/{id}")
+    void replaceQuestion(@RequestBody Video newVideo, @PathVariable("id") Long id, Authentication auth) {
+        if (auth.isAuthenticated()) {
+            newVideo.setUserId(videoService.getUserIdNumber(auth.getName()));
+
+            repository.findById(id)
+            .map(video -> {
+                s3Service.changeObjectName(BUCKET_NAME, video.getKeyName(), newVideo.getKeyName());
+
+                video.setTitle(newVideo.getTitle());
+                
+                repository.save(video);
+
+                try {
+                    videoService.setSourceToPresignedURL(video);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                return video;
+            })
+            .orElseGet(() -> {
+                repository.save(newVideo);
+
+                try {
+                    videoService.setSourceToPresignedURL(newVideo);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                return newVideo;
+            });
+        }
     }
 
     @DeleteMapping("/videos/{id}")
-    void deleteQuestion(@PathVariable("id") Long id) {
-        repository.deleteById(id);
+    void deleteQuestion(@PathVariable("id") Long id, Authentication auth) {
+        if (auth.isAuthenticated()) {
+            Video video = repository.findById(id)
+            .orElseThrow(() -> new VideoNotFoundException(id));
+
+            s3Service.deleteS3Object(BUCKET_NAME, video.getKeyName());
+            repository.deleteById(id);
+        }
     }
     
     
