@@ -15,18 +15,18 @@ export class VideoService {
     return this.http.get<VideoType>(`http://localhost:8080/videos/${id}`);
   }
 
-  postVideo(video: VideoType): Observable<VideoType> {
-    return this.http.post<VideoType>(`http://localhost:8080/videos`, video);
+  postVideo(video: VideoType) {
+    return this.http.post(`http://localhost:8080/videos`, video);
   }
 
-  putVideo(video: VideoType, id: number): Observable<VideoType> {
-    return this.http.put<VideoType>(`http://localhost:8080/videos/${id}`, {
+  putVideo(video: VideoType, id: number) {
+    return this.http.put(`http://localhost:8080/videos/${id}`, {
         video: video
     });
   }
 
-  deleteVideo(id: string): Observable<VideoType> {
-    return this.http.delete<VideoType>(`http://localhost:8080/video/${id}`);
+  deleteVideo(id: string) {
+    return this.http.delete(`http://localhost:8080/video/${id}`);
   }
 
 }

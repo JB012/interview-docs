@@ -1,0 +1,10 @@
+<mat-dialog-content>
+  <p>Video Title</p>
+  <mat-form-field>
+    <input matInput [value]="title()" />
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button matButton (click)="onNoClick()">Cancel</button>
+  <button matButton [mat-dialog-close]="title()" cdkFocusInitial>Save</button>
+</mat-dialog-actions>

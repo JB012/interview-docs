@@ -31,11 +31,6 @@ public class QuestionController {
     @GetMapping("/questions")
     PagedModel<Question> getQuestions(@RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name="size", defaultValue = "7") int size) {
         return new PagedModel<>(questionService.getQuestions(page, size));
-        
-    }
-    
-    public String getMethodName(@RequestParam String param) {
-        return new String();
     }
     
     @PostMapping("/questions")

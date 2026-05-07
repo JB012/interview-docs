@@ -36,8 +36,11 @@ public class VideoController {
     @GetMapping("/videos")
     List<Video> all(Authentication auth) {
         if (auth.isAuthenticated()) {
-            // Make a service function that checks user ID
+            String id = videoService.getUserIdNumber(auth.getName());
+
             List<Video> videoList = repository.findAll();
+            
+            videoList.removeIf(video -> !video.getUserId().equals(id));
 
             for (int i = 0; i < videoList.size(); i++) {
                 try {

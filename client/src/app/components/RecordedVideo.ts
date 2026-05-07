@@ -4,14 +4,18 @@ import {
   OnInit,
   ElementRef,
   signal,
-  inject
+  inject,
+  model
 } from '@angular/core';
 import { VideoControls } from "./VideoControls";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { VideoService } from '../services/VideoService';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getUserIdNumber, s3Client } from  '../../utils';
 import { AuthService } from '@auth0/auth0-angular';
+import { VideoDialog } from './VideoDialog';
 
 declare var MediaRecorder: any;
 @Component({
@@ -47,10 +51,34 @@ export class RecordedVideo implements OnInit {
     disableSave = signal(false);
 
     videoService = inject(VideoService);
-    
+    private _videoSnackBar = inject(MatSnackBar);
+
+    readonly dialog = inject(MatDialog);
+
     userID: string | undefined;
 
+    videoTitle = signal('');
+
     constructor(public auth: AuthService) {
+    }
+
+    openVideoSnackBar() {
+        this._videoSnackBar.open("Video saved", "Close", {
+            duration: 5000
+        });
+    }
+
+    openDialog(): void {
+        const dialogRef = this.dialog.open(VideoDialog, {
+        data: {title: this.videoTitle()},
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+        console.log('The dialog was closed');
+        if (result !== undefined) {
+            this.videoTitle.set("");
+        }
+        });
     }
 
     async ngOnInit() {
@@ -98,9 +126,9 @@ export class RecordedVideo implements OnInit {
                 });
 
                 await s3Client.send(command);
-                
-                // show confirmation to client side that video has been saved, then disable save button
+        
                 this.disableSave.set(true);
+                this.openVideoSnackBar();
             });
         }
         catch (err) {

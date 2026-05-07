@@ -2,7 +2,7 @@
   @if (currentVideo() === "recorded") {
       <div class="flex justify-center gap-8">
         <button matButton="outlined" (click)="updateCurrentVideo('preview'); retrieveStream();">Record New Video</button>
-        <button [disabled]="disableSave()" matButton="filled" (click)="saveVideo()">Save</button>
+        <button [disabled]="disableSave()" matButton="filled" (click)="openDialog()">Save</button>
       </div>
     }
     <div class="flex justify-center">
