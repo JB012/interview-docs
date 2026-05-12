@@ -22,6 +22,10 @@ public class Video {
     @JsonProperty("user_id")
     @Column(columnDefinition = "TEXT")
     private String userId;
+
+    @JsonProperty("question_id")
+    @Column(columnDefinition = "INT")
+    private long questionId;
     
     Video() {}
 
@@ -59,6 +63,14 @@ public class Video {
 
     public String getSource() {
         return source;
+    }
+
+    public void setQuestionId(long questionId) {
+        this.questionId = questionId;
+    }
+
+    public long getQuestionId() {
+        return this.questionId;
     }
 
     public String getKeyName() {

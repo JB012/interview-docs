@@ -2,7 +2,6 @@ import { Component, DOCUMENT, effect, ElementRef, Inject, inject, OnInit, signal
 import { MatButtonModule } from "@angular/material/button";
 import { MatPaginatorModule, PageEvent } from "@angular/material/paginator";
 import { MenuButton } from "../components/MenuButton";
-import { FolderSearch } from "../components/FolderSearch";
 import { AsyncPipe } from '@angular/common';
 import { Question } from "../components/Question";
 import { QuestionType } from "../types/QuestionType";
@@ -10,9 +9,9 @@ import { Observable, shareReplay } from "rxjs";
 import { QuestionService } from "../services/QuestionService";
 
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import { AuthService } from "@auth0/auth0-angular";
 import { PagedQuestionType } from "../types/PagedQuestionType";
 import {Router} from '@angular/router';
+import { AuthService } from "../services/AuthService";
 
 @Component ({
     templateUrl: './home.html',
@@ -20,7 +19,6 @@ import {Router} from '@angular/router';
         MatPaginatorModule,
         MatButtonModule,
         MenuButton,
-        FolderSearch,
         Question, 
         AsyncPipe,
         MatProgressSpinnerModule
@@ -63,7 +61,7 @@ export class Home implements OnInit {
 
     addQuestion() {
         if (this.questionInput.nativeElement.value !== "") {
-            if (this.auth.user$) {
+           /*  if (this.auth.user$) {
                 this.auth.user$.subscribe((user) => {
                     if (user) {
                         this.userId = user.sub;
@@ -81,7 +79,7 @@ export class Home implements OnInit {
             else {
                 // unauthenticated; use local storage
                 console.log('unauthorized');
-            }
+            } */
         }
         else {
             console.log('failed');

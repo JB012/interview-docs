@@ -8,9 +8,14 @@ import jakarta.persistence.*;
 public class Question {
     private @Id
     @GeneratedValue Long id;
+    
     private String question;
+
     @JsonProperty("user_id")
     private String userId;
+    
+    @JsonProperty("user_text")
+    private String userText;
     
     Question() {}
 
@@ -40,6 +45,14 @@ public class Question {
     
     public String getQuestion() {
         return question;
+    }
+
+    public void setUserText(String userText) {
+        this.userText = userText;
+    }
+    
+    public String getUserText() {
+        return this.userText;
     }
 
     @Override

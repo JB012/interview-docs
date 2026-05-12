@@ -2,8 +2,8 @@ import { Component, inject, model, } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
 import { LoginButtonComponent } from "./login-button-component";
 import { LogoutButtonComponent } from "./logout-button-component";
-import { AuthService } from '@auth0/auth0-angular';
 import { AsyncPipe } from "@angular/common";
+import { AuthService } from "../services/AuthService";
 
 @Component ({
     selector: 'app-header',

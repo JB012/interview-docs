@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { AuthService } from '@auth0/auth0-angular';
 import { MatButtonModule } from '@angular/material/button';
+import { AuthService } from '../services/AuthService';
 @Component({
   selector: 'app-login-button',
   standalone: true,
@@ -22,6 +22,6 @@ export class LoginButtonComponent {
   private auth = inject(AuthService);
 
   loginWithRedirect(): void {
-    this.auth.loginWithRedirect({appState: {target: '/home'}});
+    this.auth.login();
   }
 }

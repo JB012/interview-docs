@@ -2,7 +2,6 @@
     <div id="AddQuestion" class="flex pt-40 pb-10 xs:justify-center xxs:justify-between gap-4 items-start">
         <div class="flex wrap flex-col gap-2 xxs:w-52 xs:w-77 sm:w-102">
             <input #questionInput id="add-question" class="xxs:w-50 xs:w-75 sm:w-100 px-2 rounded-full outline outline-black" placeholder="Add question here..." />
-            <folder-search />
         </div>
         <button (click)="addQuestion()" matButton="filled">Add</button>
     </div>
@@ -11,7 +10,7 @@
     </div>
     <ul id="questions-list" style="background-color: rgb(205, 207, 192)" class="xxs:h-80">
         <div class="text-lg p-2">Questions</div>
-        @if (auth.isAuthenticated$ | async) {
+        <!-- @if (auth.isAuthenticated$ | async) {
             @if (questions$ | async; as questions) {
                 @for (question of questions.content; track question) {
                     <question [id]="question.id!" [question]="question.question" />
@@ -24,9 +23,8 @@
             }
         }
         @else {
-            <!--Retrieve questions from localstorage-->
             <div>Add questions</div>
-        }
+        } -->
     </ul>
         <mat-paginator
         (page)="handlePageEvent($event)"

@@ -3,7 +3,6 @@ import { Home } from './routes/Home';
 import { QuestionPage } from './routes/question-page';
 import { NotFound } from './routes/NotFound';
 import { LandingPage } from './routes/LandingPage';
-import { userGuard } from './user-guard';
 
 export const routes: Routes = [
     {
@@ -12,13 +11,11 @@ export const routes: Routes = [
     },
     {
         path: 'home',
-        component: Home,
-        canActivate: [userGuard]
+        component: Home
     },
     {
         path: 'questions/:id', 
-        component: QuestionPage,
-        canActivate: [userGuard]
+        component: QuestionPage
     },
     {
         path: '**', 
