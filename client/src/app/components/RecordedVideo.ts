@@ -84,11 +84,13 @@ export class RecordedVideo implements OnInit {
     async ngOnInit() {
         this.retrieveStream();
 
-        /* this.auth.user$.subscribe((user) => {
+        this.auth.getCurrentUser().subscribe((res) => {
+            const user = res?.user;
+
             if (user?.sub) {  
                 this.userID = getUserIdNumber(user?.sub);
             }
-        }) */
+        })
     }
 
     retrieveStream() {

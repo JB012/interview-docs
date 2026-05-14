@@ -61,25 +61,22 @@ export class Home implements OnInit {
 
     addQuestion() {
         if (this.questionInput.nativeElement.value !== "") {
-           /*  if (this.auth.user$) {
-                this.auth.user$.subscribe((user) => {
-                    if (user) {
-                        this.userId = user.sub;
-                        if (this.userId) {
-                            this.questionService.postQuestion({question: this.questionInput.nativeElement.value, user_id: this.userId}).subscribe((question) => {
-                                this.router.navigate(['questions', question.id]);
-                            });
-                        }
+            this.auth.getCurrentUser().subscribe((res) => {
+                const user =  res?.user;
+
+                if (user) {
+                    this.userId = user.sub;
+                    if (this.userId) {
+                        this.questionService.postQuestion({question: this.questionInput.nativeElement.value, user_id: this.userId}).subscribe((question) => {
+                            this.router.navigate(['questions', question.id]);
+                        });
                     }
-                    else {
-                        console.log('user not authorized');
-                    }
-                });
-            }
-            else {
-                // unauthenticated; use local storage
-                console.log('unauthorized');
-            } */
+                }
+                else {
+                    console.log('user not authorized');
+                }
+            });
+            
         }
         else {
             console.log('failed');

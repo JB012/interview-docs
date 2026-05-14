@@ -10,7 +10,7 @@
     </div>
     <ul id="questions-list" style="background-color: rgb(205, 207, 192)" class="xxs:h-80">
         <div class="text-lg p-2">Questions</div>
-        <!-- @if (auth.isAuthenticated$ | async) {
+        @if (auth.getCurrentUser() | async) {
             @if (questions$ | async; as questions) {
                 @for (question of questions.content; track question) {
                     <question [id]="question.id!" [question]="question.question" />
@@ -24,7 +24,7 @@
         }
         @else {
             <div>Add questions</div>
-        } -->
+        }
     </ul>
         <mat-paginator
         (page)="handlePageEvent($event)"

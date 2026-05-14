@@ -1,8 +1,9 @@
 {
-  "/api/**": {
+  "/auth/**": {
     "target": "http://localhost:8080",
     "secure": false,
-    "changeOrigin": true
+    "changeOrigin": true,
+    "pathRewrite": {"^/oauth2" : ""}
   },
   "/oauth2/**": {
     "target": "http://localhost:8080",
