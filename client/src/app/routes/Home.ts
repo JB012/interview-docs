@@ -63,9 +63,11 @@ export class Home implements OnInit {
         if (this.questionInput.nativeElement.value !== "") {
             this.auth.getCurrentUser().subscribe((res) => {
                 const user =  res?.user;
-
+                console.log(user);
                 if (user) {
-                    this.userId = user.sub;
+                    console.log(user);
+                    this.userId = user.claims.sub;
+                    console.log(this.userId)
                     if (this.userId) {
                         this.questionService.postQuestion({question: this.questionInput.nativeElement.value, user_id: this.userId}).subscribe((question) => {
                             this.router.navigate(['questions', question.id]);

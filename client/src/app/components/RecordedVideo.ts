@@ -87,8 +87,8 @@ export class RecordedVideo implements OnInit {
         this.auth.getCurrentUser().subscribe((res) => {
             const user = res?.user;
 
-            if (user?.sub) {  
-                this.userID = getUserIdNumber(user?.sub);
+            if (user?.claims.sub) {  
+                this.userID = getUserIdNumber(user?.claims.sub);
             }
         })
     }

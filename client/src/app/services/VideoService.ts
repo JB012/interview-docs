@@ -34,7 +34,7 @@ export class VideoService {
   }
 
   deleteVideo(id: string) {
-    return this.http.delete(`http://localhost:8080/video/${id}`, {
+    return this.http.delete(`http://localhost:8080/videos/${id}`, {
       withCredentials: true
     });
   }

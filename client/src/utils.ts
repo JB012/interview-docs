@@ -15,3 +15,14 @@ export function getUserIdNumber(userId : String) {
     // Connection is irrelevant and the vertical bar character isn't recommended for S3 naming convention
     return userId.split("|")[1];
 }
+
+export function debounce(cb: (...args : any[]) => void, delay = 1000) {
+    let timeout : number;
+    
+    return (...args: any[]) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            cb(...args)
+        }, delay);
+    }
+}

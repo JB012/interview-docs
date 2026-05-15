@@ -5,9 +5,11 @@ import { catchError, map, Observable, of, shareReplay, take } from 'rxjs';
 export interface AuthResponse {
   authenticated : boolean,
   user?: {
-    sub: string;
-    email?: string;
-    name?: string;
+    claims: {      
+      sub: string;
+      email?: string;
+      name?: string;
+    }
   };
 }
 
@@ -21,11 +23,11 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   login() {
-    window.location.href = '/oauth2/authorization/auth0';
+    window.location.href = 'http://localhost:8080/oauth2/authorization/auth0';
   }
 
   logout() {
-    window.location.href = '/logout';
+    window.location.href = 'http://localhost:8080/logout';
   }
 
   getCurrentUser() : Observable<AuthResponse | null> {
@@ -33,7 +35,7 @@ export class AuthService {
       return this.user$;
     }
 
-    this.user$ = this.http.get<AuthResponse>('/auth/me', {
+    this.user$ = this.http.get<AuthResponse>('http://localhost:8080/auth/me', {
       withCredentials: true
     }).pipe(
       catchError(() => of(null)),

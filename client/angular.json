@@ -64,9 +64,7 @@
             }
           },
           "defaultConfiguration": "development",
-          "options": {
-            "proxyConfig": "src/proxy.conf.json"
-          }
+          "options": {}
         },
         "test": {
           "builder": "@ngx-env/builder:unit-test",

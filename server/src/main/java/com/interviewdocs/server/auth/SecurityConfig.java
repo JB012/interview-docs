@@ -2,6 +2,7 @@ package com.interviewdocs.server.auth;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -16,13 +17,13 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/questions/**").permitAll()
                 .anyRequest().authenticated())
             .oauth2Client(oauth2 -> {})
             .oauth2Login(oauth2 -> oauth2.defaultSuccessUrl("http://localhost:4200/home", 
             true))
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable()
-            )
+            .csrf(csrf -> csrf.disable())
             .logout(logout -> logout
                 .logoutSuccessUrl("http://localhost:4200")
             );
@@ -31,10 +32,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() { // Define Source
+    public CorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOrigin("http://localhost:4200");
+        config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setAllowCredentials(true);
         source.registerCorsConfiguration("/**", config);
