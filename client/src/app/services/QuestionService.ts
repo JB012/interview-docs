@@ -32,6 +32,11 @@ export class QuestionService {
     });
   }
 
+  putAnswer(answer: string, id: number) : Observable<QuestionType> {
+    return this.http.put<QuestionType>(`http://localhost:8080/questions/${id}/answer`, answer, {
+      withCredentials: true
+    });
+  }
   deleteQuestion(id: string): Observable<QuestionType> {
     return this.http.delete<QuestionType>(`http://localhost:8080/questions/${id}`, {
       withCredentials: true

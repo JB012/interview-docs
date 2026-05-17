@@ -9,13 +9,16 @@ public class Question {
     private @Id
     @GeneratedValue Long id;
     
+    @Column(columnDefinition = "TEXT")
     private String question;
 
     @JsonProperty("user_id")
+    @Column(columnDefinition = "TEXT")
     private String userId;
     
-    @JsonProperty("user_text")
-    private String userText;
+    @JsonProperty("answer")
+    @Column(columnDefinition = "TEXT")
+    private String answer;
     
     Question() {}
 
@@ -47,12 +50,12 @@ public class Question {
         return question;
     }
 
-    public void setUserText(String userText) {
-        this.userText = userText;
+    public void setAnswer(String answer) {
+        this.answer = answer;
     }
     
-    public String getUserText() {
-        return this.userText;
+    public String getAnswer() {
+        return this.answer;
     }
 
     @Override

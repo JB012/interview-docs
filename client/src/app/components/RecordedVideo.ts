@@ -16,6 +16,7 @@ import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getUserIdNumber, s3Client } from  '../../utils';
 import { VideoDialog } from './VideoDialog';
 import { AuthService } from '../services/AuthService';
+import { ActivatedRoute } from '@angular/router';
 
 declare var MediaRecorder: any;
 @Component({
@@ -50,16 +51,21 @@ export class RecordedVideo implements OnInit {
     inFullScreen = signal(false);
     disableSave = signal(false);
 
+    
+    private activatedRoute = inject(ActivatedRoute);
     videoService = inject(VideoService);
     private _videoSnackBar = inject(MatSnackBar);
-
     readonly dialog = inject(MatDialog);
 
     userID: string | undefined;
 
+    questionId! : number;
     videoTitle = signal('');
 
     constructor(public auth: AuthService) {
+         this.activatedRoute.params.subscribe((params) => {
+            this.questionId = parseInt(params['id']);
+         });
     }
 
     openVideoSnackBar() {
@@ -74,9 +80,9 @@ export class RecordedVideo implements OnInit {
         });
 
         dialogRef.afterClosed().subscribe(result => {
-        console.log('The dialog was closed');
         if (result !== undefined) {
-            this.videoTitle.set("");
+            this.videoTitle.set(result);
+            this.saveVideo();
         }
         });
     }
@@ -116,12 +122,12 @@ export class RecordedVideo implements OnInit {
 
     async saveVideo() {
         try {          
-            this.videoService.postVideo({user_id: this.userID, title: `title`}).subscribe(async () => {
+            this.videoService.postVideo({user_id: this.userID, question_id: this.questionId, title: this.videoTitle()}).subscribe(async () => {
                 const videoBuffer = new Blob(this.recordedBlobs, {type: 'video/webm'});
                 const videoFile = new File([videoBuffer], "test.mp4", {type: 'video/webm'});
 
                 const command = new PutObjectCommand({
-                    Key: `${this.userID}/title`,
+                    Key: `${this.userID}/${this.videoTitle()}`,
                     Bucket: 'interviewdocs-videos',
                     Body: videoFile,
                     ContentType: videoFile.type
@@ -132,6 +138,9 @@ export class RecordedVideo implements OnInit {
                 this.disableSave.set(true);
                 this.openVideoSnackBar();
             });
+
+            
+            this.videoTitle.set("");
         }
         catch (err) {
             console.log(err);

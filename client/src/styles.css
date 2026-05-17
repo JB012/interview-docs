@@ -41,6 +41,19 @@ span {
    border-radius: 10px;
 }
 
+#questionInput {
+    display: inline-block;
+}
+
+#questionInput:empty::before {
+    content: 'New question';
+    display: inline-block;
+}
+
+#questionInput:empty:focus::before {
+    content: 'Start typing';
+}
+
 /*
 Source - https://stackoverflow.com/a/4407335
 Posted by Blowsie, modified by community. See post 'Timeline' for change history

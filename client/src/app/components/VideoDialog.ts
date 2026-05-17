@@ -1,4 +1,4 @@
-import { Component, inject, signal } from "@angular/core";
+import { Component, inject, model, signal } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
@@ -30,7 +30,7 @@ import { FormsModule } from "@angular/forms";
 export class VideoDialog {
     readonly dialogRef = inject(MatDialogRef<RecordedVideo>);
     readonly data = inject<{title: string}>(MAT_DIALOG_DATA);
-    readonly title = signal(this.data.title);
+    readonly title = model(this.data.title);
 
   onNoClick(): void {
     this.dialogRef.close();

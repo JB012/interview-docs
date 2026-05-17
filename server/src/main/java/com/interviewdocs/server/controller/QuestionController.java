@@ -1,14 +1,9 @@
 package com.interviewdocs.server.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.web.PagedModel;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import com.auth0.spring.boot.Auth0AuthenticationToken;
 import com.interviewdocs.server.error.QuestionNotFoundException;
 import com.interviewdocs.server.model.Question;
 import com.interviewdocs.server.repository.*;
@@ -52,6 +47,16 @@ public class QuestionController {
         .orElseGet(() -> {
             return repository.save(newQuestion);
         });
+    }
+
+    @PutMapping("/questions/{id}/answer")
+    Question replaceAnswer(@RequestBody String answer, @PathVariable("id") Long id) {
+        return repository.findById(id)
+        .map(question -> {
+            question.setAnswer(answer);
+            return repository.save(question);
+        })
+        .orElseThrow(() -> new QuestionNotFoundException(id));
     }
 
     @DeleteMapping("/questions/{id}")
