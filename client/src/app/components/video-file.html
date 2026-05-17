@@ -1,9 +1,9 @@
-<div class="flex w-full hover:backdrop-brightness-95 rounded-2xl cursor-pointer justify-between p-2 items-center">
+<div [id]="id()" class="flex w-full hover:backdrop-brightness-95 rounded-2xl cursor-pointer justify-between p-2 items-center">
     <div class="flex gap-2">    
         <span class="material-symbols-outlined">&#xeb87;</span>
         <div class="flex flex-col">
             <div>{{this.title()}}</div>
-            <div>Created at 10:00 PM</div>
+            <div>Created at {{getTime()}}</div>
         </div>
     </div>
     <div class="flex relative">

@@ -17,8 +17,10 @@ import { getUserIdNumber, s3Client } from  '../../utils';
 import { VideoDialog } from './VideoDialog';
 import { AuthService } from '../services/AuthService';
 import { ActivatedRoute } from '@angular/router';
+import moment from 'moment-timezone';
 
 declare var MediaRecorder: any;
+
 @Component({
     selector: 'recorded-video',
     templateUrl: './recorded-video.html',
@@ -50,7 +52,6 @@ export class RecordedVideo implements OnInit {
     currentVideo = signal('preview');
     inFullScreen = signal(false);
     disableSave = signal(false);
-
     
     private activatedRoute = inject(ActivatedRoute);
     videoService = inject(VideoService);
@@ -58,6 +59,8 @@ export class RecordedVideo implements OnInit {
     readonly dialog = inject(MatDialog);
 
     userID: string | undefined;
+    
+    timeCreated! : string;
 
     questionId! : number;
     videoTitle = signal('');
@@ -68,8 +71,8 @@ export class RecordedVideo implements OnInit {
          });
     }
 
-    openVideoSnackBar() {
-        this._videoSnackBar.open("Video saved", "Close", {
+    openVideoSnackBar(message : string) {
+        this._videoSnackBar.open(message, "Close", {
             duration: 5000
         });
     }
@@ -121,13 +124,16 @@ export class RecordedVideo implements OnInit {
     }
 
     async saveVideo() {
-        try {          
-            this.videoService.postVideo({user_id: this.userID, question_id: this.questionId, title: this.videoTitle()}).subscribe(async () => {
+        try {
+            this.openVideoSnackBar("Saving..."); 
+            const title = this.videoTitle();
+
+            this.videoService.postVideo({user_id: this.userID, created_at: this.timeCreated, question_id: this.questionId, title: title}).subscribe(async () => {
                 const videoBuffer = new Blob(this.recordedBlobs, {type: 'video/webm'});
                 const videoFile = new File([videoBuffer], "test.mp4", {type: 'video/webm'});
 
                 const command = new PutObjectCommand({
-                    Key: `${this.userID}/${this.videoTitle()}`,
+                    Key: `${this.userID}/${title}`,
                     Bucket: 'interviewdocs-videos',
                     Body: videoFile,
                     ContentType: videoFile.type
@@ -136,7 +142,7 @@ export class RecordedVideo implements OnInit {
                 await s3Client.send(command);
         
                 this.disableSave.set(true);
-                this.openVideoSnackBar();
+                this.openVideoSnackBar("Video saved!");
             });
 
             
@@ -163,6 +169,11 @@ export class RecordedVideo implements OnInit {
 
         this.mediaRecorder.start(); // collect 100ms of data
         this.isRecording = !this.isRecording;
+
+        this.timeCreated = moment().tz(moment.tz.guess(true)).format();
+        
+        console.log(this.timeCreated);
+
         this.onDataAvailableEvent();
         this.onStopRecordingEvent();
     }

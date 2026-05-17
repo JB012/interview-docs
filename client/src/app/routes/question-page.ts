@@ -10,6 +10,8 @@ import { Observable } from "rxjs/internal/Observable";
 import { AsyncPipe } from "@angular/common";
 import { AuthService } from "../services/AuthService";
 import { getUserIdNumber } from "../../utils";
+import { VideoService } from "../services/VideoService";
+import { VideoType } from "../types/VideoType";
 @Component({
     selector: "question-page",
     imports: [
@@ -32,9 +34,11 @@ export class QuestionPage {
     answerInput = signal('');
     saveState = signal('');
     question$!: Observable<QuestionType>;
+    videos$! : Observable<VideoType[]>;
     timeoutID!: number;
 
     questionService = inject(QuestionService);
+    videoService = inject(VideoService);
     user_id!: string;
 
     updateQuestion(event : Event) {
@@ -78,6 +82,8 @@ export class QuestionPage {
             this.question$.subscribe((res) => {
                 this.questionInput.set(res.question);
             });
+
+            this.videos$ = this.videoService.getAllVideos();
 
             auth.getCurrentUser().subscribe((res) => {
                 this.user_id = res!.user!.claims.sub;

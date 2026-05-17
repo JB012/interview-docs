@@ -1,5 +1,5 @@
 package com.interviewdocs.server.model;
-import java.net.URLEncoder;
+import java.time.OffsetDateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -27,6 +27,10 @@ public class Video {
     @Column(columnDefinition = "INT")
     private long questionId;
     
+    @JsonProperty("created_at")
+    @Column(columnDefinition = "offset_date_time")
+    private OffsetDateTime createdAt;
+
     Video() {}
 
     Video(String title) {
@@ -75,6 +79,14 @@ public class Video {
 
     public String getKeyName() {
         return userId + "/" + title;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
     }
 
     @Override

@@ -29,7 +29,11 @@
                         <div class="flex justify-end">
                             <menu-button />
                         </div>
-                        <video-file title="Video title"/>
+                        @if (videos$ | async; as videos) {
+                            @for (video of videos; track video) {
+                                <video-file [created_at]="video.created_at!" [id]="video.id!" [title]="video.title" />
+                            }
+                        }
                     </div>
                 }
                 @else {

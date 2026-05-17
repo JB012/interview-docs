@@ -11,6 +11,8 @@ import { ClickOutside } from "../click-outside";
 
 export class VideoFile {
     title = input.required<string>();
+    id = input.required<number>();
+    created_at = input.required<string>();
     option = signal('text');
     questionMenu = signal(false);
 
@@ -18,6 +20,14 @@ export class VideoFile {
         this.questionMenu.update((value) => !value);
     }
 
+    getTime() {
+        const videoCreatedDate = new Date(this.created_at());
+        
+        return videoCreatedDate.toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
     onClickOutside() {
         if (this.questionMenu()) {
             this.questionMenu.set(false);
