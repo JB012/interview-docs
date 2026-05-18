@@ -13,7 +13,7 @@
         <hr>
         <div class="flex">
             <div (click)="updateOption('text')" [class]="this.option() === 'text' ? 'selected-option backdrop-brightness-95 hover:backdrop-brightness-95' : 'selected-option hover:backdrop-brightness-95'">Text</div>
-            <div (click)="updateOption('video')" [class]="this.option() === 'video' ? 'selected-option backdrop-brightness-95 hover:backdrop-brightness-95' : 'selected-option hover:backdrop-brightness-95'">Video</div>
+            <div (click)="navigateToVideos()" [class]="this.option() === 'video' ? 'selected-option backdrop-brightness-95 hover:backdrop-brightness-95' : 'selected-option hover:backdrop-brightness-95'">Video</div>
         </div>
         @if (this.option() === "text") {
             <div class="flex flex-col w-full h-full gap-2">
@@ -22,32 +22,7 @@
             </div>
         }
         @else {
-            <div class="flex flex-col gap-4 w-full h-full transition-discrete">
-                @if (!clickedNewVideo()) {
-                    <button matButton="filled" (click)="updateClickedNewVideo(true)" class="self-end">New Video</button>
-                    <div id="video-list" class="flex w-full h-full flex-col">
-                        <div class="flex justify-end">
-                            <menu-button />
-                        </div>
-                        @if (videos$ | async; as videos) {
-                            @for (video of videos; track video) {
-                                <video-file [created_at]="video.created_at!" [id]="video.id!" [title]="video.title" />
-                            }
-                        }
-                    </div>
-                }
-                @else {
-                    <div class="flex flex-col gap-4 w-full h-full">
-                        <div class="flex gap-2 cursor-pointer" (click)="updateClickedNewVideo(false)">
-                            <span class="self-start material-symbols-outlined">&#xe5c4;</span>
-                            <div>Back to List</div>
-                        </div>
-                        <recorded-video />
-                    </div>
-                }
-            </div>
-            
+            <router-outlet></router-outlet>
         }
-        
     </div>
 }

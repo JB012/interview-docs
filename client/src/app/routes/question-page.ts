@@ -1,9 +1,9 @@
 import { Component, inject, signal } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router, RouterOutlet } from "@angular/router";
 import { MenuButton } from "../components/MenuButton";
 import { VideoFile } from "../components/VideoFile";
-import { RecordedVideo } from "../components/RecordedVideo";
+import { RecordedVideo } from "./RecordedVideo";
 import { QuestionService } from "../services/QuestionService";
 import { QuestionType } from "../types/QuestionType";
 import { Observable } from "rxjs/internal/Observable";
@@ -16,10 +16,8 @@ import { VideoType } from "../types/VideoType";
     selector: "question-page",
     imports: [
     MatButtonModule,
-    MenuButton,
-    VideoFile,
-    RecordedVideo,
-    AsyncPipe
+    AsyncPipe,
+    RouterOutlet
 ],
     templateUrl: "./question-page.html"
 })
@@ -28,7 +26,7 @@ export class QuestionPage {
     private activatedRoute = inject(ActivatedRoute);
     
     id = signal(0);
-    option = signal('video');
+    option = signal('text');
     clickedNewVideo = signal(true);
     questionInput = signal('');
     answerInput = signal('');
@@ -37,9 +35,22 @@ export class QuestionPage {
     videos$! : Observable<VideoType[]>;
     timeoutID!: number;
 
+    router = inject(Router);
+    route = inject(ActivatedRoute);
     questionService = inject(QuestionService);
     videoService = inject(VideoService);
     user_id!: string;
+    
+
+    navigateToVideos() {
+        const segments = this.route.snapshot.url;
+        const urlPath = segments.map(segment => segment.path).join('/');
+
+        if (!urlPath.includes("/videos")) {
+            this.updateOption('video');
+            this.router.navigate(['videos'], {relativeTo: this.route});
+        }
+    }
 
     updateQuestion(event : Event) {
         const targetId = (event.target as HTMLElement).id;
@@ -75,7 +86,7 @@ export class QuestionPage {
     }
     constructor(public auth : AuthService ) {
         this.activatedRoute.params.subscribe((params) => {
-            this.id.set(parseInt(params['id']));
+            this.id.set(parseInt(params['questionId']));
             
             this.question$ = this.questionService.getQuestion(this.id());
 

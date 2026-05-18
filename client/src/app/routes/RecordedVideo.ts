@@ -7,27 +7,30 @@ import {
   inject,
   model
 } from '@angular/core';
-import { VideoControls } from "./VideoControls";
+import { VideoControls } from "../components/VideoControls";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { VideoService } from '../services/VideoService';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getUserIdNumber, s3Client } from  '../../utils';
-import { VideoDialog } from './VideoDialog';
+import { VideoDialog } from '../components/VideoDialog';
 import { AuthService } from '../services/AuthService';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import moment from 'moment-timezone';
-
+import { Observable } from 'rxjs';
+import { VideoType } from '../types/VideoType';
+import { AsyncPipe } from '@angular/common';
 declare var MediaRecorder: any;
 
 @Component({
     selector: 'recorded-video',
     templateUrl: './recorded-video.html',
     imports: [
-        VideoControls,
-        MatButtonModule
-    ]
+    VideoControls,
+    MatButtonModule,
+    AsyncPipe
+]
 })
 
 export class RecordedVideo implements OnInit {
@@ -64,11 +67,26 @@ export class RecordedVideo implements OnInit {
 
     questionId! : number;
     videoTitle = signal('');
+    video$ : Observable<VideoType> | undefined;
+
+
+    router = inject(Router);
+    route = inject(ActivatedRoute);
 
     constructor(public auth: AuthService) {
          this.activatedRoute.params.subscribe((params) => {
-            this.questionId = parseInt(params['id']);
+            this.questionId = parseInt(params['questionId']);
+
+            if (params['videoId']) {
+                this.video$ = this.videoService.getVideo(parseInt(params['videoId']));
+            }
          });
+
+         
+    }
+
+    navigateToVideoList() {
+        this.router.navigate(['..'], {relativeTo: this.route});
     }
 
     openVideoSnackBar(message : string) {
