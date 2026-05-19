@@ -21,8 +21,9 @@ public class QuestionController {
     }
 
     @GetMapping("/questions")
-    PagedModel<Question> getQuestions(@RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name="size", defaultValue = "7") int size) {
-        return new PagedModel<>(questionService.getQuestions(page, size));
+    PagedModel<Question> getQuestions(@RequestParam(name = "page", defaultValue = "0") int page, 
+    @RequestParam(name="size", defaultValue = "7") int size, @RequestParam(name = "sort", defaultValue = "created_at, desc") String sort) {
+        return new PagedModel<>(questionService.getQuestions(page, size, sort));
     }
     
     @PostMapping("/questions")
@@ -41,22 +42,14 @@ public class QuestionController {
         
         return repository.findById(id)
         .map(question -> {
-            question.setQuestion(newQuestion.getQuestion());
+            System.out.println(newQuestion.toString());
+            question.setEverything(newQuestion);
+            System.out.println(question.toString());
             return repository.save(question);
         })
         .orElseGet(() -> {
             return repository.save(newQuestion);
         });
-    }
-
-    @PutMapping("/questions/{id}/answer")
-    Question replaceAnswer(@RequestBody String answer, @PathVariable("id") Long id) {
-        return repository.findById(id)
-        .map(question -> {
-            question.setAnswer(answer);
-            return repository.save(question);
-        })
-        .orElseThrow(() -> new QuestionNotFoundException(id));
     }
 
     @DeleteMapping("/questions/{id}")

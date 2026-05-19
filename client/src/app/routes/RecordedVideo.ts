@@ -144,7 +144,7 @@ export class RecordedVideo implements OnInit {
     async saveVideo() {
         try {
             this.openVideoSnackBar("Saving..."); 
-            const title = this.videoTitle();
+            const title = this.videoTitle().replace(' ', '_');
 
             this.videoService.postVideo({user_id: this.userID, created_at: this.timeCreated, question_id: this.questionId, title: title}).subscribe(async () => {
                 const videoBuffer = new Blob(this.recordedBlobs, {type: 'video/webm'});

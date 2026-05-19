@@ -12,6 +12,7 @@ import { AuthService } from "../services/AuthService";
 import { getUserIdNumber } from "../../utils";
 import { VideoService } from "../services/VideoService";
 import { VideoType } from "../types/VideoType";
+import moment from "moment-timezone";
 @Component({
     selector: "question-page",
     imports: [
@@ -66,15 +67,17 @@ export class QuestionPage {
         
         clearTimeout(this.timeoutID);
 
+        const editedAt = moment().tz(moment.tz.guess(true)).format();
+
         this.timeoutID = setTimeout(() => {
             if (targetId === "questionInput") {
                 const text = (event.target as HTMLSpanElement).textContent;
-                this.questionService.putQuestion({question: text, user_id: getUserIdNumber(this.user_id)}, this.id())
+                this.questionService.putQuestion({question: text, edited_at: editedAt, user_id: getUserIdNumber(this.user_id)}, this.id())
                 .subscribe();
             } 
             else if (targetId === "answerInput") {
                 const text = (event.target as HTMLTextAreaElement).value;
-                this.questionService.putAnswer(text, this.id()).subscribe();
+                this.questionService.putQuestion({answer: text, edited_at: editedAt, user_id: getUserIdNumber(this.user_id)}, this.id()).subscribe();
             }
             
             this.saveState.set("saved");
@@ -91,7 +94,7 @@ export class QuestionPage {
             this.question$ = this.questionService.getQuestion(this.id());
 
             this.question$.subscribe((res) => {
-                this.questionInput.set(res.question);
+                this.questionInput.set(res.question!);
             });
 
             this.videos$ = this.videoService.getAllVideos();

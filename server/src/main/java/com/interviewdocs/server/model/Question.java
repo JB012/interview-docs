@@ -1,4 +1,6 @@
 package com.interviewdocs.server.model;
+import java.time.OffsetDateTime;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.*;
@@ -19,6 +21,18 @@ public class Question {
     @JsonProperty("answer")
     @Column(columnDefinition = "TEXT")
     private String answer;
+    
+    @JsonProperty("created_at")
+    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    private OffsetDateTime createdAt;
+
+    @JsonProperty("edited_at")
+    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    private OffsetDateTime editedAt;
+
+    @JsonProperty("viewed_at")
+    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    private OffsetDateTime viewedAt;
     
     Question() {}
 
@@ -58,8 +72,36 @@ public class Question {
         return this.answer;
     }
 
+    public OffsetDateTime getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public void setEditedAt(OffsetDateTime editedAt) {
+        this.editedAt = editedAt;
+    }
+
+    public OffsetDateTime getEditedAt() {
+        return this.editedAt;
+    }
+
+    public void setViewedAt(OffsetDateTime viewedAt) {
+        this.viewedAt = viewedAt;
+    }
+
+    public OffsetDateTime getViewedAt() {
+        return this.viewedAt;
+    }
+
+    public void setEverything(Question question) {
+        this.setAnswer(question.getAnswer() == null ? this.answer : question.getAnswer());
+        this.setQuestion(question.getQuestion() == null ? this.question : question.getQuestion());
+        this.setEditedAt(question.getEditedAt() == null ? this.editedAt : question.getEditedAt());
+        this.setViewedAt(question.getViewedAt() == null ? this.viewedAt : question.getViewedAt());
+    }
+
     @Override
     public String toString() {
-        return "Question: " + this.question + " User ID: " + this.userId;
+        return "Question: " + this.question + " User ID: " + this.userId + " ID: " + this.id 
+        + " Created At: " + this.createdAt + " Viewed At: " + this.viewedAt + " Edited At: " + this.editedAt;
     }
 }

@@ -13,7 +13,7 @@
         @if (auth.getCurrentUser() | async) {
             @if (questions$ | async; as questions) {
                 @for (question of questions.content; track question) {
-                    <question [id]="question.id!" [question]="question.question" />
+                    <question [id]="question.id!" [question]="question.question!" />
                 }
             }
             @else {

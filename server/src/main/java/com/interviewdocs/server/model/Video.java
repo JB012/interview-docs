@@ -28,7 +28,7 @@ public class Video {
     private long questionId;
     
     @JsonProperty("created_at")
-    @Column(columnDefinition = "offset_date_time")
+    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private OffsetDateTime createdAt;
 
     Video() {}

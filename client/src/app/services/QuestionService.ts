@@ -9,7 +9,7 @@ export class QuestionService {
   private http = inject(HttpClient);
 
   getQuestions(pageIndex = 0, pageSize = 7): Observable<PagedQuestionType> {
-    return this.http.get<PagedQuestionType>(`http://localhost:8080/questions?page=${pageIndex}&size=${pageSize}`, {
+    return this.http.get<PagedQuestionType>(`http://localhost:8080/questions?page=${pageIndex}&size=${pageSize}&sort=createdAt,desc`, {
       withCredentials: true
     });
   }
@@ -31,12 +31,7 @@ export class QuestionService {
       withCredentials: true
     });
   }
-
-  putAnswer(answer: string, id: number) : Observable<QuestionType> {
-    return this.http.put<QuestionType>(`http://localhost:8080/questions/${id}/answer`, answer, {
-      withCredentials: true
-    });
-  }
+  
   deleteQuestion(id: string): Observable<QuestionType> {
     return this.http.delete<QuestionType>(`http://localhost:8080/questions/${id}`, {
       withCredentials: true
