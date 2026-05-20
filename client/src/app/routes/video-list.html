@@ -3,7 +3,7 @@
         <button matButton="filled" (click)="createNewVideo()" class="self-end">New Video</button>
         <div id="video-list" class="flex w-full h-full flex-col">
             <div class="flex justify-end">
-                <menu-button />
+                <menu-button type="videos" [(sortBy)]="sortValue" [(orderBy)]="orderValue" />
             </div>
             @for (video of videos; track video) {
                 <video-file (click)="navigateToExistingVideo(video.id!)" [created_at]="video.created_at!" [id]="video.id!" [title]="video.title" />

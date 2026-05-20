@@ -12,7 +12,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { PagedQuestionType } from "../types/PagedQuestionType";
 import {Router} from '@angular/router';
 import { AuthService } from "../services/AuthService";
-
+import { sortFields, orderDirection } from "../../utils";
 @Component ({
     templateUrl: './home.html',
     imports: [
@@ -35,11 +35,18 @@ export class Home implements OnInit {
     private questionService = inject(QuestionService);
     questions$ = this.questionService.getQuestions().pipe(shareReplay(1)); 
     
+    sortValue = signal("Last viewed");
+    orderValue = signal("Newest first");
+
     length = 0;
     pageSize = 0;
     pageIndex = 0;
 
-    
+    updateQuestions = (sortValue : string, orderValue: string) => {
+        this.questions$ = this.questionService.getQuestions(this.pageIndex, this.pageSize, 
+            {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]});
+    }
+
     private router = inject(Router);
 
     constructor(public auth: AuthService) {}
@@ -53,21 +60,19 @@ export class Home implements OnInit {
     }
 
     handlePageEvent(e: PageEvent) {
-        const pageSize = e.pageSize;
-        const pageIndex = e.pageIndex;
+        this.pageSize = e.pageSize;
+        this.pageIndex = e.pageIndex;
 
-        this.questions$ = this.questionService.getQuestions(pageIndex, pageSize);
+        this.questions$ = this.questionService.getQuestions(this.pageIndex, this.pageSize, 
+            {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]});
     }
 
     addQuestion() {
         if (this.questionInput.nativeElement.value !== "") {
             this.auth.getCurrentUser().subscribe((res) => {
                 const user =  res?.user;
-                console.log(user);
                 if (user) {
-                    console.log(user);
                     this.userId = user.claims.sub;
-                    console.log(this.userId)
                     if (this.userId) {
                         this.questionService.postQuestion({question: this.questionInput.nativeElement.value, user_id: this.userId}).subscribe((question) => {
                             this.router.navigate(['questions', question.id]);

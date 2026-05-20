@@ -8,8 +8,8 @@ import { PagedQuestionType } from "../types/PagedQuestionType";
 export class QuestionService {
   private http = inject(HttpClient);
 
-  getQuestions(pageIndex = 0, pageSize = 7): Observable<PagedQuestionType> {
-    return this.http.get<PagedQuestionType>(`http://localhost:8080/questions?page=${pageIndex}&size=${pageSize}&sort=createdAt,desc`, {
+  getQuestions(pageIndex = 0, pageSize = 7, sort = {field: "viewedAt", direction: 'desc'}): Observable<PagedQuestionType> {
+    return this.http.get<PagedQuestionType>(`http://localhost:8080/questions?page=${pageIndex}&size=${pageSize}&sort=${sort.field},${sort.direction}`, {
       withCredentials: true
     });
   }

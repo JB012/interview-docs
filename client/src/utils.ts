@@ -1,5 +1,8 @@
 import { S3Client } from "@aws-sdk/client-s3";
-import { fromIni } from "@aws-sdk/credential-providers";
+
+export interface StringArray {
+    [index: string] : string
+}
 
 export const s3Client = new S3Client({
     region: 'us-east-1',
@@ -16,13 +19,17 @@ export function getUserIdNumber(userId : String) {
     return userId.split("|")[1];
 }
 
-export function debounce(cb: (...args : any[]) => void, delay = 1000) {
-    let timeout : number;
-    
-    return (...args: any[]) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-            cb(...args)
-        }, delay);
-    }
-}
+export const sortFields : StringArray = {
+    'Alphabetical': 'question',
+    'Date created': 'createdAt',
+    'Last viewed': 'viewedAt'
+}; 
+
+export const orderDirection : StringArray = {
+    'A-Z': 'asc',
+    'Z-A': 'desc',
+    'Newest first': 'desc',
+    'Oldest first': 'asc'
+};
+
+

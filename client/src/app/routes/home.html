@@ -6,8 +6,8 @@
         <button (click)="addQuestion()" matButton="filled">Add</button>
     </div>
     <div id="menus" class="flex justify-end gap-4">
-        <menu-button class="py-2" />
-    </div>
+        <menu-button type="questions" class="py-2" [updateQuestions]="updateQuestions" [(sortBy)]="sortValue" [(orderBy)]="orderValue" />
+    </div> 
     <ul id="questions-list" style="background-color: rgb(205, 207, 192)" class="xxs:h-80">
         <div class="text-lg p-2">Questions</div>
         @if (auth.getCurrentUser() | async) {

@@ -19,6 +19,9 @@ import { MatButton } from "@angular/material/button";
 })
 
 export class VideoList {
+    sortValue = "Last viewed";
+    orderValue = "Newest first";
+
     videos$! : Observable<VideoType[]>;
     videoService = inject(VideoService);
     private router = inject(Router);

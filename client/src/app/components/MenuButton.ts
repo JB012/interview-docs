@@ -1,5 +1,8 @@
-import { Component, input, signal } from "@angular/core";
+import { Component, input, model, signal } from "@angular/core";
 import { ClickOutside } from "../click-outside";
+export interface StringArray {
+    [index: string] : string
+}
 
 @Component ({
     selector: "menu-button",
@@ -8,9 +11,11 @@ import { ClickOutside } from "../click-outside";
 })
 
 export class MenuButton {
-    sortBy = signal('Alphabetical');
-    orderBy = signal('Z-A');
+    type = input.required<string>();
+    sortBy = model.required<string>();
+    orderBy = model.required<string>();
     menuOpened = signal(false);
+    updateQuestions = input<(sortValue: string, orderValue: string) => void>();
 
     updateSortBy(sortValue : string) {
         if (this.sortBy() === "Alphabetical" && sortValue === "Date created") {
@@ -19,14 +24,26 @@ export class MenuButton {
         else if (this.sortBy() === "Date created" && sortValue === "Alphabetical") {
             this.updateOrderBy("Z-A");
         }
-        
-        this.sortBy.update(() => sortValue);
+
+        if (sortValue !== this.sortBy()) {
+            this.sortBy.set(sortValue);
+
+            if (this.type() === "questions") {
+                this.updateQuestions()?.(this.sortBy(), this.orderBy());
+            }
+        }
         
         this.updateMenuView();
     }
 
     updateOrderBy(orderValue : string) {
-        this.orderBy.set(orderValue);
+        if (orderValue !== this.orderBy()) {
+            this.orderBy.set(orderValue);
+
+            if (this.type() === "questions") {
+                this.updateQuestions()?.(this.sortBy(), this.orderBy());
+            }
+        }
     }
 
     updateMenuView() {
