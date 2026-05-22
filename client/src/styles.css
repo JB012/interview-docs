@@ -46,7 +46,7 @@ span {
 }
 
 #questionInput:empty::before {
-    content: 'New question';
+    content: 'Enter a question';
     display: inline-block;
 }
 

@@ -42,9 +42,7 @@ public class QuestionController {
         
         return repository.findById(id)
         .map(question -> {
-            System.out.println(newQuestion.toString());
             question.setEverything(newQuestion);
-            System.out.println(question.toString());
             return repository.save(question);
         })
         .orElseGet(() -> {

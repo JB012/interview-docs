@@ -42,14 +42,18 @@ export class Home implements OnInit {
     pageSize = 0;
     pageIndex = 0;
 
-    updateQuestions = (sortValue : string, orderValue: string) => {
+    updateQuestions = () => {
         this.questions$ = this.questionService.getQuestions(this.pageIndex, this.pageSize, 
             {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]});
     }
 
     private router = inject(Router);
 
-    constructor(public auth: AuthService) {}
+    constructor(public auth: AuthService) {
+        this.auth.getCurrentUser().subscribe((res) => {
+            this.userId = res!.user!.claims.sub;
+        });
+    }
     
     ngOnInit(): void {
         this.questions$.subscribe((questions) => {
@@ -68,25 +72,9 @@ export class Home implements OnInit {
     }
 
     addQuestion() {
-        if (this.questionInput.nativeElement.value !== "") {
-            this.auth.getCurrentUser().subscribe((res) => {
-                const user =  res?.user;
-                if (user) {
-                    this.userId = user.claims.sub;
-                    if (this.userId) {
-                        this.questionService.postQuestion({question: this.questionInput.nativeElement.value, user_id: this.userId}).subscribe((question) => {
-                            this.router.navigate(['questions', question.id]);
-                        });
-                    }
-                }
-                else {
-                    console.log('user not authorized');
-                }
-            });
-            
-        }
-        else {
-            console.log('failed');
-        }
+       this.questionService.postQuestion({user_id: this.userId})
+        .subscribe((question) => {
+            this.router.navigate(['questions', question.id]);
+        });
     }
 }

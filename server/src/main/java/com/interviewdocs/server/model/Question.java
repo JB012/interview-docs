@@ -12,7 +12,7 @@ public class Question {
     @GeneratedValue Long id;
     
     @Column(columnDefinition = "TEXT")
-    private String question;
+    private String question = "What is your question?";
 
     @JsonProperty("user_id")
     @Column(columnDefinition = "TEXT")
@@ -23,7 +23,7 @@ public class Question {
     private String answer;
     
     @JsonProperty("created_at")
-    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE", insertable = false)
     private OffsetDateTime createdAt;
 
     @JsonProperty("edited_at")

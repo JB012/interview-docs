@@ -1,15 +1,12 @@
 <div class="flex flex-col w-full h-full p-4">
-    <div id="AddQuestion" class="flex pt-40 pb-10 xs:justify-center xxs:justify-between gap-4 items-start">
-        <div class="flex wrap flex-col gap-2 xxs:w-52 xs:w-77 sm:w-102">
-            <input #questionInput id="add-question" class="xxs:w-50 xs:w-75 sm:w-100 px-2 rounded-full outline outline-black" placeholder="Add question here..." />
+    <ul id="questions-list" class=" flex-col w-full xxs:h-80">
+        <div class="flex w-full justify-between items-center">
+            <div class="flex gap-4 items-center">
+                <div class="text-xl p-2">Questions</div>
+                <button (click)="addQuestion()" class="flex bg-primary text-white w-8 h-8 justify-center items-center rounded-full cursor-pointer hover:brightness-110">+</button>
+            </div>
+            <menu-button type="questions" class="py-2" [updateQuestions]="updateQuestions" [(sortBy)]="sortValue" [(orderBy)]="orderValue" /> 
         </div>
-        <button (click)="addQuestion()" matButton="filled">Add</button>
-    </div>
-    <div id="menus" class="flex justify-end gap-4">
-        <menu-button type="questions" class="py-2" [updateQuestions]="updateQuestions" [(sortBy)]="sortValue" [(orderBy)]="orderValue" />
-    </div> 
-    <ul id="questions-list" style="background-color: rgb(205, 207, 192)" class="xxs:h-80">
-        <div class="text-lg p-2">Questions</div>
         @if (auth.getCurrentUser() | async) {
             @if (questions$ | async; as questions) {
                 @for (question of questions.content; track question) {

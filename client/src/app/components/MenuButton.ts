@@ -15,7 +15,7 @@ export class MenuButton {
     sortBy = model.required<string>();
     orderBy = model.required<string>();
     menuOpened = signal(false);
-    updateQuestions = input<(sortValue: string, orderValue: string) => void>();
+    updateQuestions = input<() => void>();
 
     updateSortBy(sortValue : string) {
         if (this.sortBy() === "Alphabetical" && sortValue === "Date created") {
@@ -29,7 +29,7 @@ export class MenuButton {
             this.sortBy.set(sortValue);
 
             if (this.type() === "questions") {
-                this.updateQuestions()?.(this.sortBy(), this.orderBy());
+                this.updateQuestions()?.();
             }
         }
         
@@ -41,7 +41,7 @@ export class MenuButton {
             this.orderBy.set(orderValue);
 
             if (this.type() === "questions") {
-                this.updateQuestions()?.(this.sortBy(), this.orderBy());
+                this.updateQuestions()?.();
             }
         }
     }
