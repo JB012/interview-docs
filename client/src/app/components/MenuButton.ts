@@ -21,8 +21,8 @@ export class MenuButton {
         if (this.sortBy() === "Alphabetical" && sortValue === "Date created") {
             this.updateOrderBy('Newest first');
         }
-        else if (this.sortBy() === "Date created" && sortValue === "Alphabetical") {
-            this.updateOrderBy("Z-A");
+        else if ((this.sortBy() === "Date created" || this.sortBy() === "Last viewed") && sortValue === "Alphabetical") {
+            this.updateOrderBy("A-Z");
         }
 
         if (sortValue !== this.sortBy()) {

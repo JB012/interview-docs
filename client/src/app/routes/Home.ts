@@ -13,14 +13,16 @@ import { PagedQuestionType } from "../types/PagedQuestionType";
 import {Router} from '@angular/router';
 import { AuthService } from "../services/AuthService";
 import { sortFields, orderDirection } from "../../utils";
+import moment from "moment-timezone";
+
 @Component ({
     templateUrl: './home.html',
     imports: [
         MatPaginatorModule,
         MatButtonModule,
         MenuButton,
-        Question, 
         AsyncPipe,
+        Question,
         MatProgressSpinnerModule
     ]
 })
@@ -77,4 +79,14 @@ export class Home implements OnInit {
             this.router.navigate(['questions', question.id]);
         });
     }
+
+    navigateToQuestionPage(id: number) {
+        this.questionService.putQuestion({viewed_at: moment().tz(moment.tz.guess(true)).format(), 
+            user_id: this.userId }, id).subscribe(() => 
+            {
+                this.router.navigate(['questions', id]);
+            }
+        );
+    }
+    
 }

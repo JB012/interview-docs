@@ -41,6 +41,18 @@ body {
   background-color: #6E6E14;
 }
 
+.material-symbols-outlined.xxs {
+  font-size: 8px;
+}
+
+.material-symbols-outlined.xs {
+  font-size: 12px;
+}
+
+.material-symbols-outlined.lg {
+  font-size: 16px;
+}
+
 mat-sidenav {
   @include mat.sidenav-overrides((
     container-width: 200px,
@@ -51,5 +63,11 @@ mat-spinner {
   @include mat.progress-spinner-overrides((
     active-indicator-width: 10px,
     size: 10px
+  ));
+}
+
+mat-menu {
+   @include mat.menu-overrides((
+    container-color: #DCD6CF
   ));
 }

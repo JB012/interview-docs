@@ -12,7 +12,7 @@ public class Question {
     @GeneratedValue Long id;
     
     @Column(columnDefinition = "TEXT")
-    private String question = "What is your question?";
+    private String question;
 
     @JsonProperty("user_id")
     @Column(columnDefinition = "TEXT")
@@ -57,7 +57,12 @@ public class Question {
     }
 
     public void setQuestion(String question) {
-        this.question = question;
+        if (question.equals("")) {
+            this.question = "What is your question?";
+        }
+        else {
+            this.question = question;
+        }
     }
     
     public String getQuestion() {

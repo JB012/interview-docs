@@ -1,34 +1,62 @@
 <div class="flex flex-col w-full h-full p-4">
-    <ul id="questions-list" class=" flex-col w-full xxs:h-80">
-        <div class="flex w-full justify-between items-center">
-            <div class="flex gap-4 items-center">
-                <div class="text-xl p-2">Questions</div>
-                <button (click)="addQuestion()" class="flex bg-primary text-white w-8 h-8 justify-center items-center rounded-full cursor-pointer hover:brightness-110">+</button>
-            </div>
-            <menu-button type="questions" class="py-2" [updateQuestions]="updateQuestions" [(sortBy)]="sortValue" [(orderBy)]="orderValue" /> 
+    <div class="flex w-full justify-between items-center">
+        <div class="flex xxs:gap-0.5 xs:gap-2 items-center">
+            <div class="xxs:text-xs xs:text-sm lg:text-lg">Questions</div>
+            <button (click)="addQuestion()" class="flex bg-primary text-white lg:w-6 lg:h-6 xs:w-4 xs:h-4 xs:text-xs xxs:w-2 xxs:h-2 xxs:text-[4px] w-8 h-8 justify-center items-center rounded-full cursor-pointer hover:brightness-110">+</button>
         </div>
-        @if (auth.getCurrentUser() | async) {
-            @if (questions$ | async; as questions) {
-                @for (question of questions.content; track question) {
-                    <question [id]="question.id!" [question]="question.question!" />
-                }
-            }
-            @else {
-                <div class="flex w-full h-full justify-center items-center">
-                    <mat-spinner diameter="24"></mat-spinner>
-                </div>
-            }
+        <menu-button type="questions" class="py-2" [updateQuestions]="updateQuestions" [(sortBy)]="sortValue" [(orderBy)]="orderValue" /> 
+    </div>
+        @if (questions$ | async; as questions) {
+            <table>
+                <thead class="xxs:text-[8px] xs:text-[12px] lg:text-[16px]">
+                    <tr>
+                        <th class="w-5 font-normal text-left flex gap-2">
+                            <div>Question</div>
+                            <div class="font-bold">
+                                @if (sortValue() === "Alphabetical") {
+                                    @if (orderValue() === "A-Z") {
+                                        <div>&uarr;</div>
+                                    }
+                                    @else {
+                                        <div>&darr;</div>
+                                    }
+                                }
+                            </div>
+                        </th>
+                        <th class="font-normal text-left">Last modified</th>
+                        <th class="font-normal text-left">
+                            <div>Last created</div>
+                            <div class="font-bold">
+                                @if (sortValue() === "Date created") {
+                                    @if (orderValue() === "Newest first") {
+                                        <div>&uarr;</div>
+                                    }
+                                    @else {
+                                        <div>&darr;</div>
+                                    }
+                                }
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (question of questions.content; track question) {
+                            <tr (click)="navigateToQuestionPage(question.id!)" class="xxs:text-[6px] xs:text-[12px] 2xl:text-xl cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [question]="question"></tr>
+                    }
+                </tbody>
+            </table>
         }
-        @else {
-            <div>Add questions</div>
+         @else {
+            <div class="flex w-full h-full justify-center items-center">
+                <mat-spinner diameter="24"></mat-spinner>
+            </div>
         }
-    </ul>
-        <mat-paginator
-        (page)="handlePageEvent($event)"
-        [hidePageSize]="true"
-        [length]="length"
-        [pageSize]="pageSize"
-        [pageIndex]="pageIndex"
-        ></mat-paginator>
+    <mat-paginator
+    (page)="handlePageEvent($event)"
+    [hidePageSize]="true"
+    [length]="length"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    ></mat-paginator>
     
 </div>
