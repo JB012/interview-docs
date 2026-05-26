@@ -2,9 +2,9 @@
     <div class="flex w-full justify-between items-center">
         <div class="flex xxs:gap-0.5 xs:gap-2 items-center">
             <div class="xxs:text-xs xs:text-sm lg:text-lg">Questions</div>
-            <button (click)="addQuestion()" class="flex bg-primary text-white lg:w-6 lg:h-6 xs:w-4 xs:h-4 xs:text-xs xxs:w-2 xxs:h-2 xxs:text-[4px] w-8 h-8 justify-center items-center rounded-full cursor-pointer hover:brightness-110">+</button>
+            <button class="flex bg-primary text-white lg:w-6 lg:h-6 xs:w-4 xs:h-4 xs:text-xs xxs:w-2 xxs:h-2 xxs:text-[4px] w-8 h-8 justify-center items-center rounded-full cursor-pointer hover:brightness-110">+</button>
         </div>
-        <menu-button type="questions" class="py-2" [updateQuestions]="updateQuestions" [(sortBy)]="sortValue" [(orderBy)]="orderValue" /> 
+        <menu-button type="folders" class="py-2" [(sortBy)]="sortValue" [(orderBy)]="orderValue" /> 
     </div>
         @if (questions$ | async; as questions) {
             <table>
@@ -40,9 +40,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @for (question of questions.content; track question) {
-                            <tr (click)="navigateToQuestionPage(question.id!)" class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [question]="question"></tr>
-                    }
+                   
                 </tbody>
             </table>
         }

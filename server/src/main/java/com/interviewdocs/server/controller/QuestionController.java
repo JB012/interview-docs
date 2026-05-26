@@ -2,6 +2,9 @@ package com.interviewdocs.server.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PagedModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.interviewdocs.server.error.QuestionNotFoundException;
@@ -21,38 +24,57 @@ public class QuestionController {
     }
 
     @GetMapping("/questions")
-    PagedModel<Question> getQuestions(@RequestParam(name = "page", defaultValue = "0") int page, 
-    @RequestParam(name="size", defaultValue = "7") int size, @RequestParam(name = "sort", defaultValue = "created_at, desc") String sort) {
-        return new PagedModel<>(questionService.getQuestions(page, size, sort));
+    PagedModel<Question> getQuestions(Authentication auth, @RequestParam(name = "page", defaultValue = "0") int page, 
+    @RequestParam(name="size", defaultValue = "10") int size, @RequestParam(name = "sort", defaultValue = "viewed_at, desc") String sort) {
+        if (auth.isAuthenticated()) {
+            return new PagedModel<>(questionService.getQuestions(page, size, sort, auth.getName()));
+        }
+
+        return null;
     }
     
     @PostMapping("/questions")
-    Question newQuestion(@RequestBody Question newQuestion) {
-        return repository.save(newQuestion);
+    ResponseEntity<String> newQuestion(@RequestBody Question newQuestion, Authentication auth) {
+        if (auth.isAuthenticated() && newQuestion.getUser_id().equals(auth.getName())) {
+            repository.save(newQuestion);
+
+            return ResponseEntity.ok().build();
+        }
+        
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @GetMapping("/questions/{id}")
-    Question one(@PathVariable("id") Long id) {
-        return repository.findById(id)
-        .orElseThrow(() -> new QuestionNotFoundException(id));
+    ResponseEntity<Question> one(@PathVariable("id") Long id, Authentication auth) {
+        if (auth.isAuthenticated()) {
+            Question question = repository.findById(id)
+            .orElseThrow(() -> new QuestionNotFoundException(id));
+        
+            return ResponseEntity.ok(question);
+        }   
+
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     @PutMapping("/questions/{id}")
-    Question replaceQuestion(@RequestBody Question newQuestion, @PathVariable("id") Long id) {
-        
-        return repository.findById(id)
-        .map(question -> {
-            question.setEverything(newQuestion);
-            return repository.save(question);
-        })
-        .orElseGet(() -> {
-            return repository.save(newQuestion);
-        });
+    void replaceQuestion(Authentication auth, @RequestBody Question newQuestion, @PathVariable("id") Long id) {
+        if (auth.isAuthenticated() && newQuestion.getUser_id().equals(auth.getName())) {    
+            repository.findById(id)
+            .map(question -> {
+                question.setEverything(newQuestion);
+                return repository.save(question);
+            })
+            .orElseGet(() -> {
+                return repository.save(newQuestion);
+            });
+        }
     }
 
     @DeleteMapping("/questions/{id}")
-    void deleteQuestion(@PathVariable("id") Long id) {
-        repository.deleteById(id);
+    void deleteQuestion(Authentication auth, @PathVariable("id") Long id) {
+        if (auth.isAuthenticated()) {
+            repository.deleteById(id);
+        }
     }
     
     

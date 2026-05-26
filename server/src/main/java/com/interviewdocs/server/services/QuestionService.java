@@ -1,7 +1,10 @@
 package com.interviewdocs.server.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +19,7 @@ public class QuestionService {
     @Autowired
     private QuestionRepository questionRepository;
 
-    public Page<Question> getQuestions(int page, int size, String sort) {
+    public Page<Question> getQuestions(int page, int size, String sort, String userId) {
         String[] sortOptions = sort.split(",");
         
         String field = sortOptions[0];
@@ -31,6 +34,11 @@ public class QuestionService {
             pageable = PageRequest.of(page, size, Sort.by(field).ascending());
         }
         
-        return questionRepository.findAll(pageable);
+        List<Question> questions = questionRepository.findAll();
+        questions.removeIf(question -> !question.getUser_id().equals(userId));
+
+        int toIndex = (page + 1) * size > questions.size() ? questions.size() : (page + 1) * size;
+        
+        return new PageImpl<>(questions.subList(page * size, toIndex), pageable, questions.size());
     }
 }

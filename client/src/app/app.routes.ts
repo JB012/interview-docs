@@ -7,6 +7,7 @@ import { userGuard } from './user-guard';
 import { RecordedVideo } from './routes/RecordedVideo';
 import { VideoPage } from './routes/VideoPage';
 import { VideoList } from './routes/VideoList';
+import { FolderPage } from './routes/FolderPage';
 
 export const routes: Routes = [
     {
@@ -16,6 +17,11 @@ export const routes: Routes = [
     {
         path: 'home',
         component: Home,
+        canActivate: [userGuard]
+    },
+    {
+        path: 'folders',
+        component: FolderPage,
         canActivate: [userGuard]
     },
     {

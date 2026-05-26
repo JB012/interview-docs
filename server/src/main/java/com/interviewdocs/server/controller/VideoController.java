@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -34,26 +35,15 @@ public class VideoController {
     }
 
     @GetMapping("/videos")
-    List<Video> all(Authentication auth) {
+    PagedModel<Video> all(Authentication auth, @RequestParam(name = "page", defaultValue = "0") int page, 
+    @RequestParam(name="size", defaultValue = "10") int size, @RequestParam(name = "sort", defaultValue = "viewed_at, desc") String sort) {
         if (auth.isAuthenticated()) {
             String id = videoService.getUserIdNumber(auth.getName());
 
-            List<Video> videoList = repository.findAll();
-            
-            videoList.removeIf(video -> !video.getUserId().equals(id));
-
-            for (int i = 0; i < videoList.size(); i++) {
-                try {
-                    videoService.setSourceToPresignedURL(videoList.get(i));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            return videoList;
+            return new PagedModel<>(videoService.getVideos(page, size, sort, id));
         }     
-
-        return new ArrayList<>();
+        
+        return null;
     }
 
     @PostMapping("/videos")
@@ -93,7 +83,7 @@ public class VideoController {
 
     @PutMapping("/videos/{id}")
     void replaceQuestion(@RequestBody Video newVideo, @PathVariable("id") Long id, Authentication auth) {
-        if (auth.isAuthenticated()) {
+        if (auth.isAuthenticated() && newVideo.getUserId().equals(videoService.getUserIdNumber(auth.getName()))) {
             newVideo.setUserId(videoService.getUserIdNumber(auth.getName()));
 
             repository.findById(id)

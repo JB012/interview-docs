@@ -23,7 +23,6 @@ public class SecurityConfig {
             .oauth2Login(oauth2 -> oauth2.defaultSuccessUrl("http://localhost:4200/home", 
             true))
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())
             .logout(logout -> logout
                 .logoutSuccessUrl("http://localhost:4200")
             );
