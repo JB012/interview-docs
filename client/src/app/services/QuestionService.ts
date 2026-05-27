@@ -1,8 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { QuestionType } from "../types/QuestionType";
-import { PagedQuestionType } from "../types/PagedQuestionType";
+import { QuestionType, PagedQuestionType } from "../types/QuestionType";
 
 @Injectable({providedIn: 'root'})
 export class QuestionService {
@@ -37,5 +36,4 @@ export class QuestionService {
       withCredentials: true
     });
   }
-
 }

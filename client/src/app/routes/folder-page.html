@@ -1,48 +1,13 @@
 <div class="flex flex-col w-full h-full p-4">
     <div class="flex w-full justify-between items-center">
         <div class="flex xxs:gap-0.5 xs:gap-2 items-center">
-            <div class="xxs:text-xs xs:text-sm lg:text-lg">Questions</div>
+            <div class="xxs:text-xs xs:text-sm lg:text-lg">Folders</div>
             <button class="flex bg-primary text-white lg:w-6 lg:h-6 xs:w-4 xs:h-4 xs:text-xs xxs:w-2 xxs:h-2 xxs:text-[4px] w-8 h-8 justify-center items-center rounded-full cursor-pointer hover:brightness-110">+</button>
         </div>
-        <menu-button type="folders" class="py-2" [(sortBy)]="sortValue" [(orderBy)]="orderValue" /> 
+        <menu-button type="folders" class="py-2" [updateFolders]="updateFolders" [(sortBy)]="sortValue" [(orderBy)]="orderValue" /> 
     </div>
-        @if (questions$ | async; as questions) {
-            <table>
-                <thead class="xxs:text-[8px] xs:text-[12px] lg:text-[16px]">
-                    <tr>
-                        <th class="w-5 font-normal text-left flex gap-2">
-                            <div>Question</div>
-                            <div class="font-bold">
-                                @if (sortValue() === "Alphabetical") {
-                                    @if (orderValue() === "A-Z") {
-                                        <div>&uarr;</div>
-                                    }
-                                    @else {
-                                        <div>&darr;</div>
-                                    }
-                                }
-                            </div>
-                        </th>
-                        <th class="font-normal text-left">Last modified</th>
-                        <th class="font-normal text-left">
-                            <div>Last created</div>
-                            <div class="font-bold">
-                                @if (sortValue() === "Date created") {
-                                    @if (orderValue() === "Newest first") {
-                                        <div>&uarr;</div>
-                                    }
-                                    @else {
-                                        <div>&darr;</div>
-                                    }
-                                }
-                            </div>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                   
-                </tbody>
-            </table>
+        @if (folders$ | async; as folders) {
+            <table [folders]="folders.content" [sortValue]="sortValue()" [orderValue]="orderValue()" ></table>
         }
          @else {
             <div class="flex w-full h-full justify-center items-center">

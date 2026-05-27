@@ -1,30 +1,28 @@
-import { Component, DOCUMENT, effect, ElementRef, Inject, inject, OnInit, signal, ViewChild } from "@angular/core";
+import { Component, ElementRef, inject, OnInit, signal, ViewChild } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
 import { MatPaginatorModule, PageEvent } from "@angular/material/paginator";
 import { MenuButton } from "../components/MenuButton";
 import { AsyncPipe } from '@angular/common';
-import { Question } from "../components/Question";
 import { QuestionType } from "../types/QuestionType";
 import { Observable, shareReplay } from "rxjs";
 import { QuestionService } from "../services/QuestionService";
-
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import { PagedQuestionType } from "../types/PagedQuestionType";
 import {Router} from '@angular/router';
 import { AuthService } from "../services/AuthService";
 import { sortFields, orderDirection } from "../../utils";
 import moment from "moment-timezone";
+import { Table } from "../components/Table";
 
 @Component ({
     templateUrl: './home.html',
     imports: [
-        MatPaginatorModule,
-        MatButtonModule,
-        MenuButton,
-        AsyncPipe,
-        Question,
-        MatProgressSpinnerModule
-    ]
+    MatPaginatorModule,
+    MatButtonModule,
+    MenuButton,
+    AsyncPipe,
+    MatProgressSpinnerModule,
+    Table
+]
 })
 
 export class Home implements OnInit {  

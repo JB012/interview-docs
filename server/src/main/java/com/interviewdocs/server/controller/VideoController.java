@@ -125,7 +125,5 @@ public class VideoController {
             s3Service.deleteS3Object(BUCKET_NAME, video.getKeyName());
             repository.deleteById(id);
         }
-    }
-    
-    
+    } 
 }

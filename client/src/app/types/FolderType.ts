@@ -1,16 +1,14 @@
-export interface QuestionType {
+export interface FolderType {
     id?: number,
-    folder_id?: number,
     user_id?: string,
     created_at?: string,
     edited_at?: string,
-    viewed_at?: string
-    question?: string,
-    answer?: string,
+    viewed_at?: string,
+    name?: string
 }
 
-export interface PagedQuestionType {
-    content: QuestionType[]
+export interface PagedFolderType {
+    content: FolderType[]
     page: {
         size: number
         number: number

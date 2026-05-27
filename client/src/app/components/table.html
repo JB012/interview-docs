@@ -1,0 +1,51 @@
+<thead class="xxs:text-[8px] xs:text-[12px] lg:text-[16px]">
+    <tr>
+        <th class="w-5 font-normal text-left flex gap-2">
+            <div>{{questions() ? "Questions" : folders() ? "Folders" : "Videos"}}</div>
+            <div class="font-bold">
+                @if (sortValue() === "Alphabetical") {
+                    @if (orderValue() === "A-Z") {
+                        <div>&uarr;</div>
+                    }
+                    @else {
+                        <div>&darr;</div>
+                    }
+                }
+            </div>
+        </th>
+        <th class="font-normal text-left">Last modified</th>
+        <th class="font-normal text-left">
+            <div>Last created</div>
+            <div class="font-bold">
+                @if (sortValue() === "Date created") {
+                    @if (orderValue() === "Newest first") {
+                        <div>&uarr;</div>
+                    }
+                    @else {
+                        <div>&darr;</div>
+                    }
+                }
+            </div>
+        </th>
+    </tr>
+</thead>
+<tbody>
+    @if (questions()) {
+        
+        @for (question of questions(); track question) {
+            @if (question) {
+                <tr (click)="navigateToQuestionPage(question.id!)" class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [question]="question"></tr>
+            }
+        }
+    }
+    @else if (folders()) {
+        @for (folder of folders(); track folder) {
+            <tr (click)="navigateToFolderPage(folder.id!)" class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [folder]="folder"></tr>
+        }
+    }
+    @else if (videos()) {
+        @for (video of videos(); track video) {
+            <tr (click)="navigateToVideoPage(video.id!)" class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [video]="video"></tr>
+        }
+    }
+</tbody>

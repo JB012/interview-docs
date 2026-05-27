@@ -11,7 +11,7 @@ import { AsyncPipe } from "@angular/common";
 import { AuthService } from "../services/AuthService";
 import { getUserIdNumber } from "../../utils";
 import { VideoService } from "../services/VideoService";
-import { VideoType } from "../types/VideoType";
+import { PagedVideoType } from "../types/VideoType";
 import moment from "moment-timezone";
 @Component({
     selector: "question-page",
@@ -33,7 +33,7 @@ export class QuestionPage {
     answerInput = signal('');
     saveState = signal('');
     question$!: Observable<QuestionType>;
-    videos$! : Observable<VideoType[]>;
+    videos$! : Observable<PagedVideoType>;
     timeoutID!: number;
 
     router = inject(Router);

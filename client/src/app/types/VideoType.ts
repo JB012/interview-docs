@@ -1,8 +1,20 @@
 export interface VideoType {
     id?: number,
     created_at?: string,
+    edited_at?: string,
+    viewed_at?: string,
     question_id?: number,
     user_id?: string
     source?: string,
-    title: string,
+    title?: string,
+}
+
+export interface PagedVideoType {
+    content: VideoType[]
+    page: {
+        size: number
+        number: number
+        totalElements: number
+        totalPages: number
+    }  
 }

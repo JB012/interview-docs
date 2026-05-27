@@ -1,17 +1,68 @@
-import { Component } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MenuButton } from "../components/MenuButton";
 import { MatPaginator, PageEvent } from "@angular/material/paginator";
+import { shareReplay } from "rxjs";
+import { AuthService } from "../services/AuthService";
+import { FolderService } from "../services/FolderService";
+import { orderDirection, sortFields } from "../../utils";
+import { AsyncPipe } from "@angular/common";
+import moment from "moment-timezone";
+import { Router } from "@angular/router";
+import { Table } from "../components/Table";
 
 @Component({
-    templateUrl: 'folder-page.html',
-    imports: [MatProgressSpinner, MenuButton, MatPaginator],
+    templateUrl: './folder-page.html',
+    imports: [
+    MatProgressSpinner,
+    MenuButton,
+    MatPaginator,
+    AsyncPipe,
+    Table
+],
 
 })
 
 export class FolderPage {
-handlePageEvent($event: PageEvent) {
-throw new Error('Method not implemented.');
-}
+    userId! : string;
 
+    private router = inject(Router);
+    
+    private folderService = inject(FolderService);
+    folders$ = this.folderService.getFolders().pipe(shareReplay(1)); 
+    
+    sortValue = signal("Last viewed");
+    orderValue = signal("Newest first");
+
+    length = 0;
+    pageSize = 0;
+    pageIndex = 0;
+
+    constructor(public auth : AuthService) {
+        this.auth.getCurrentUser().subscribe((res) => {
+            this.userId = res!.user!.claims.sub;
+        });
+    }
+
+    handlePageEvent(e: PageEvent) {
+        this.pageSize = e.pageSize;
+        this.pageIndex = e.pageIndex;
+
+        this.folders$ = this.folderService.getFolders(this.pageIndex, this.pageSize, 
+            {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]});
+    }
+
+    addFolder() {
+       this.folderService.postFolder({user_id: this.userId,
+        viewed_at: moment().tz(moment.tz.guess(true)).format()
+       })
+        .subscribe((folder) => {
+            this.router.navigate(['folders', folder.id]);
+        });
+    }
+
+    updateFolders = () => {
+        this.folders$ = this.folderService.getFolders(this.pageIndex, this.pageSize, 
+            {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]});
+    }
 }

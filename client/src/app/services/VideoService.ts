@@ -1,14 +1,14 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { VideoType } from "../types/VideoType";
+import { VideoType, PagedVideoType } from "../types/VideoType";
 
 @Injectable({providedIn: 'root'})
 export class VideoService {
   private http = inject(HttpClient);
 
-  getAllVideos(): Observable<VideoType[]> {
-    return this.http.get<VideoType[]>(`http://localhost:8080/videos`, {
+  getAllVideos(pageIndex = 0, pageSize = 10, sort = {field: "viewedAt", direction: 'desc'}): Observable<PagedVideoType> {
+    return this.http.get<PagedVideoType>(`http://localhost:8080/videos?page=${pageIndex}&size=${pageSize}&sort=${sort.field},${sort.direction}`, {
       withCredentials: true
     });
   }
@@ -38,5 +38,4 @@ export class VideoService {
       withCredentials: true
     });
   }
-
 }

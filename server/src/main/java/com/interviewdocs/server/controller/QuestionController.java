@@ -75,7 +75,5 @@ public class QuestionController {
         if (auth.isAuthenticated()) {
             repository.deleteById(id);
         }
-    }
-    
-    
+    } 
 }

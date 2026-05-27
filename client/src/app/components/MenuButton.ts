@@ -16,6 +16,8 @@ export class MenuButton {
     orderBy = model.required<string>();
     menuOpened = signal(false);
     updateQuestions = input<() => void>();
+    updateFolders = input<() => void>();
+    updateVideos = input<() => void>();
 
     updateSortBy(sortValue : string) {
         if (this.sortBy() === "Alphabetical" && sortValue === "Date created") {
@@ -29,7 +31,13 @@ export class MenuButton {
             this.sortBy.set(sortValue);
 
             if (this.type() === "questions") {
-                this.updateQuestions()?.();
+                this.updateQuestions()!();
+            }
+            else if (this.type() === "folders") {
+                this.updateFolders()!();
+            }
+            else {
+                this.updateVideos()!();
             }
         }
         
