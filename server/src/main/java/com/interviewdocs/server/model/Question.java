@@ -11,6 +11,9 @@ public class Question {
     private @Id
     @GeneratedValue Long id;
     
+    @JsonProperty("folder_id")
+    private Long folderId;
+
     @Column(columnDefinition = "TEXT")
     private String question;
 
@@ -54,6 +57,14 @@ public class Question {
 
     public Long getId() {
         return id;
+    }
+
+    public void setFolderId(Long folderId) {
+        this.folderId = folderId;
+    }
+
+    public Long getFolderId() {
+        return folderId;
     }
 
     public void setQuestion(String question) {

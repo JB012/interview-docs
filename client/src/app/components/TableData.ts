@@ -8,27 +8,31 @@ import { QuestionType } from "../types/QuestionType";
 import { FolderType } from "../types/FolderType";
 import { FolderService } from "../services/FolderService";
 import { VideoType } from "../types/VideoType";
+import { VideoService } from "../services/VideoService";
+import { getUserIdNumber } from "../../utils";
 
 @Component({
     selector: '[question], [folder], [video]',
     template:  `
-        <td class="p-4 xxs:w-25 xs:w-50 sm:w-100 md:w-125 lg:w-150 xl:w-175 2xl:w-200"> 
+        <td (click)="onClick()" class="p-4 xxs:w-25 xs:w-50 sm:w-100 md:w-125 lg:w-150 xl:w-175 2xl:w-200"> 
             <div class="xxs:w-25 xs:w-50 sm:w-100 md:w-125 lg:w-150 xl:w-175 2xl:w-200 truncate">
                 {{ title() }}
             </div>
         </td>
-        <td>
-           {{ editedAt() }}
+        <td (click)="onClick()">
+        {{ editedAt() }}
         </td>
-        <td>
+        <td (click)="onClick()">
             {{ viewedAt() }}
         </td>
         <td>
-            <span [matMenuTriggerFor]="menu" class="material-symbols-outlined xxs xs:material-symbols-outlined xs lg:material-symbols-outlined lg">&#xe5d4;</span>
-            <mat-menu #menu="matMenu">
-            <button mat-menu-item>Open in a new tab</button>
-            <button mat-menu-item>Delete</button>
-            </mat-menu>
+            <div class="px-2">
+                <span [matMenuTriggerFor]="menu" class="material-symbols-outlined xxs xs:material-symbols-outlined xs lg:material-symbols-outlined lg">&#xe5d4;</span>
+                <mat-menu #menu="matMenu">
+                <button mat-menu-item>Open in a new tab</button>
+                <button mat-menu-item>Delete</button>
+                </mat-menu>
+            </div>
         </td>
         `,
     imports: [MatMenu, MatMenuModule]
@@ -58,6 +62,7 @@ export class TableData {
 
     questionService = inject(QuestionService);
     folderService = inject(FolderService);
+    videoService = inject(VideoService);
 
     userId : string | undefined;
     optionMenu = signal(false);
@@ -76,6 +81,46 @@ export class TableData {
     clickOutside() {
         if (this.optionMenu()) {
             this.optionMenu.set(false);
+        }
+    }
+
+    navigateToFolderPage(id: number) {
+        this.folderService.putFolder({viewed_at: moment().tz(moment.tz.guess(true)).format(), 
+            user_id: this.userId }, id).subscribe(() => 
+            {
+                this.router.navigate(['questions', id]);
+            }
+        );
+    }
+
+    navigateToQuestionPage(id: number) {
+        this.questionService.putQuestion({viewed_at: moment().tz(moment.tz.guess(true)).format(), 
+            user_id: this.userId }, id).subscribe(() => 
+            {
+                this.router.navigate(['questions', id]);
+            }
+        );
+    }
+    
+    navigateToVideoPage(id: number) {
+        this.videoService.putVideo({viewed_at: moment().tz(moment.tz.guess(true)).format(), 
+        user_id: getUserIdNumber(this.userId!)}, id).subscribe(() => 
+            {
+                this.router.navigate([id], {relativeTo: this.route}); 
+            }
+        );   
+    }
+
+    
+    onClick() {
+        if (this.question()) {
+            this.navigateToQuestionPage(this.question()!.id!);
+        }
+        else if (this.folder()) {
+            this.navigateToFolderPage(this.folder()!.id!);
+        }
+        else if (this.video()) {
+            this.navigateToVideoPage(this.video()!.id!);
         }
     }
 }

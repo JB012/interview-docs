@@ -87,6 +87,7 @@ export class QuestionPage {
             }, 3000);
         }, 2000);
     }
+    
     constructor(public auth : AuthService ) {
         this.activatedRoute.params.subscribe((params) => {
             this.id.set(parseInt(params['questionId']));

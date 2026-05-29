@@ -27,7 +27,7 @@ public class QuestionController {
     PagedModel<Question> getQuestions(Authentication auth, @RequestParam(name = "page", defaultValue = "0") int page, 
     @RequestParam(name="size", defaultValue = "10") int size, @RequestParam(name = "sort", defaultValue = "viewed_at, desc") String sort) {
         if (auth.isAuthenticated()) {
-            return new PagedModel<>(questionService.getQuestions(page, size, sort, auth.getName()));
+            return new PagedModel<>(questionService.getQuestions(page, size, sort, auth.getName(), null));
         }
 
         return null;

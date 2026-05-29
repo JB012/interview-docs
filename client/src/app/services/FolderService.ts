@@ -2,6 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { FolderType, PagedFolderType } from "../types/FolderType";
+import { PagedQuestionType } from "../types/QuestionType";
 
 @Injectable({providedIn: 'root'})
 export class FolderService {
@@ -9,6 +10,12 @@ export class FolderService {
 
   getFolders(pageIndex = 0, pageSize = 10, sort = {field: "viewedAt", direction: 'desc'}): Observable<PagedFolderType> {
     return this.http.get<PagedFolderType>(`http://localhost:8080/folders?page=${pageIndex}&size=${pageSize}&sort=${sort.field},${sort.direction}`, {
+      withCredentials: true
+    });
+  }
+
+  getQuestionsFromFolder(id : number, pageIndex = 0, pageSize = 10, sort = {field: "viewedAt", direction: 'desc'}): Observable<PagedQuestionType> {
+    return this.http.get<PagedQuestionType>(`http://localhost:8080/folders/${id}/questions?page=${pageIndex}&size=${pageSize}&sort=${sort.field},${sort.direction}`, {
       withCredentials: true
     });
   }

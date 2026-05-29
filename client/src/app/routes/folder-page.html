@@ -1,25 +1,35 @@
-<div class="flex flex-col w-full h-full p-4">
-    <div class="flex w-full justify-between items-center">
-        <div class="flex xxs:gap-0.5 xs:gap-2 items-center">
-            <div class="xxs:text-xs xs:text-sm lg:text-lg">Folders</div>
-            <button class="flex bg-primary text-white lg:w-6 lg:h-6 xs:w-4 xs:h-4 xs:text-xs xxs:w-2 xxs:h-2 xxs:text-[4px] w-8 h-8 justify-center items-center rounded-full cursor-pointer hover:brightness-110">+</button>
-        </div>
-        <menu-button type="folders" class="py-2" [updateFolders]="updateFolders" [(sortBy)]="sortValue" [(orderBy)]="orderValue" /> 
-    </div>
-        @if (folders$ | async; as folders) {
-            <table [folders]="folders.content" [sortValue]="sortValue()" [orderValue]="orderValue()" ></table>
-        }
-         @else {
-            <div class="flex w-full h-full justify-center items-center">
-                <mat-spinner diameter="24"></mat-spinner>
+@if (folder$ | async; as folder) {
+    <div class="flex flex-col w-full h-full p-4">
+        <div class="flex w-full justify-between items-center">
+            <div class="flex xxs:gap-0.5 xs:gap-2 items-center">
+                <div class="xxs:text-xs xs:text-sm lg:text-lg">{{folder.name}}</div>
+                <button class="flex bg-primary text-white lg:w-6 lg:h-6 xs:w-4 xs:h-4 xs:text-xs xxs:w-2 xxs:h-2 xxs:text-[4px] w-8 h-8 justify-center items-center rounded-full cursor-pointer hover:brightness-110">+</button>
             </div>
+            <menu-button type="folders" class="py-2" [updateQuestions]="updateQuestions" [(sortBy)]="sortValue" [(orderBy)]="orderValue" /> 
+        </div>
+            @if (questions$ | async; as questions) {
+                @if (questions.content && questions.content.length > 0) {
+                    <table [questions]="questions.content" [sortValue]="sortValue()" [orderValue]="orderValue()" ></table>
+                }
+                @else {
+                    <div class="flex pt-8 w-full h-full justify-center"> 
+                        <div>No questions added</div>
+                    </div>
+                }
+            }
+            @else {
+                <div class="flex w-full h-full justify-center items-center">
+                    <mat-spinner diameter="24"></mat-spinner>
+                </div>
+            }
+        @if (length > 0) {
+            <mat-paginator
+            (page)="handlePageEvent($event)"
+            [hidePageSize]="true"
+            [length]="length"
+            [pageSize]="pageSize"
+            [pageIndex]="pageIndex"
+            ></mat-paginator>
         }
-    <mat-paginator
-    (page)="handlePageEvent($event)"
-    [hidePageSize]="true"
-    [length]="length"
-    [pageSize]="pageSize"
-    [pageIndex]="pageIndex"
-    ></mat-paginator>
-    
-</div>
+    </div>
+}

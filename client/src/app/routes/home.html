@@ -7,8 +7,13 @@
         <menu-button type="questions" class="py-2" [updateQuestions]="updateQuestions" [(sortBy)]="sortValue" [(orderBy)]="orderValue" /> 
     </div>
         @if (questions$ | async; as questions) {
-            @if (questions.content) {
+            @if (questions.content && questions.content.length > 0) {
                 <table [questions]="questions.content" [sortValue]="sortValue()" [orderValue]="orderValue()"></table>
+            }
+            @else {
+                <div class="flex pt-8 w-full h-full justify-center">
+                    <div>No question added</div>
+                </div>
             }
         }
          @else {
@@ -16,12 +21,13 @@
                 <mat-spinner diameter="24"></mat-spinner>
             </div>
         }
-    <mat-paginator
-    (page)="handlePageEvent($event)"
-    [hidePageSize]="true"
-    [length]="length"
-    [pageSize]="pageSize"
-    [pageIndex]="pageIndex"
-    ></mat-paginator>
-    
+    @if (length > 0) {
+        <mat-paginator
+        (page)="handlePageEvent($event)"
+        [hidePageSize]="true"
+        [length]="length"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        ></mat-paginator>
+    } 
 </div>

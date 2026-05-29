@@ -2,6 +2,9 @@ package com.interviewdocs.server.controller;
 
 import com.interviewdocs.server.services.FolderService;
 
+import com.interviewdocs.server.services.QuestionService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.interviewdocs.server.error.FolderNotFoundException;
 import com.interviewdocs.server.model.Folder;
+import com.interviewdocs.server.model.Question;
 import com.interviewdocs.server.repository.FolderRepository;
 
 @RestController
@@ -26,6 +30,9 @@ public class FolderController {
 
     @Autowired
     private FolderService folderService;
+
+    @Autowired
+    private QuestionService questionService;
 
     FolderController(FolderRepository repository) {
         this.repository = repository;
@@ -41,6 +48,7 @@ public class FolderController {
         return null;
     }
       
+    
     @PostMapping("/folders")
     ResponseEntity<String> newFolder(@RequestBody Folder newFolder, Authentication auth) {
         if (auth.isAuthenticated() && newFolder.getUserId().equals(auth.getName())) {
@@ -62,6 +70,20 @@ public class FolderController {
         }   
 
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    @GetMapping("/folders/{id}/questions")
+    PagedModel<Question> getQuestionsFromFolder(Authentication auth, @PathVariable("id") Long id,
+    @RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name="size", defaultValue = "10") int size, 
+    @RequestParam(name = "sort", defaultValue = "viewed_at, desc") String sort) {
+        if (auth.isAuthenticated()) {
+            Folder folder = repository.findById(id)
+            .orElseThrow(() -> new FolderNotFoundException(id));
+
+            return new PagedModel<>(questionService.getQuestions(page, size, sort, auth.getName(), folder.getId()));
+        }
+        
+        return null;
     }
 
     @PutMapping("/folders/{id}")

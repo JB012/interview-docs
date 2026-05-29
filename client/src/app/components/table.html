@@ -34,18 +34,18 @@
         
         @for (question of questions(); track question) {
             @if (question) {
-                <tr (click)="navigateToQuestionPage(question.id!)" class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [question]="question"></tr>
+                <tr class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [question]="question"></tr>
             }
         }
     }
     @else if (folders()) {
         @for (folder of folders(); track folder) {
-            <tr (click)="navigateToFolderPage(folder.id!)" class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [folder]="folder"></tr>
+            <tr class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [folder]="folder"></tr>
         }
     }
     @else if (videos()) {
         @for (video of videos(); track video) {
-            <tr (click)="navigateToVideoPage(video.id!)" class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [video]="video"></tr>
+            <tr class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [video]="video"></tr>
         }
     }
 </tbody>

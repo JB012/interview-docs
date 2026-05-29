@@ -7,6 +7,7 @@ import { userGuard } from './user-guard';
 import { RecordedVideo } from './routes/RecordedVideo';
 import { VideoPage } from './routes/VideoPage';
 import { VideoList } from './routes/VideoList';
+import { FolderList } from './routes/FolderList';
 import { FolderPage } from './routes/FolderPage';
 
 export const routes: Routes = [
@@ -21,8 +22,15 @@ export const routes: Routes = [
     },
     {
         path: 'folders',
-        component: FolderPage,
-        canActivate: [userGuard]
+        component: FolderList,
+        canActivate: [userGuard],
+        children: [
+            {
+                path: ':/id',
+                component: FolderPage,
+                canActivate: [userGuard]
+            }
+        ]
     },
     {
         path: 'questions/:questionId', 

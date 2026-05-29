@@ -28,8 +28,9 @@ export class VideoList {
     sortValue = signal("Last viewed");
     orderValue = signal("Newest first");
 
-    videos$! : Observable<PagedVideoType>;
     videoService = inject(VideoService);
+    videos$ = this.videoService.getAllVideos();
+    
     private router = inject(Router);
     private route = inject(ActivatedRoute);
 

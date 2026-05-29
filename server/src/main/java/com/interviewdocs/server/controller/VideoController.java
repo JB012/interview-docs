@@ -82,15 +82,20 @@ public class VideoController {
     }
 
     @PutMapping("/videos/{id}")
-    void replaceQuestion(@RequestBody Video newVideo, @PathVariable("id") Long id, Authentication auth) {
-        if (auth.isAuthenticated() && newVideo.getUserId().equals(videoService.getUserIdNumber(auth.getName()))) {
-            newVideo.setUserId(videoService.getUserIdNumber(auth.getName()));
+    void replaceVideo(@RequestBody Video newVideo, @PathVariable("id") Long id, Authentication auth) {
+        if (auth.isAuthenticated()) {
+            //newVideo.setUserId(videoService.getUserIdNumber(auth.getName()));
 
             repository.findById(id)
             .map(video -> {
-                s3Service.changeObjectName(BUCKET_NAME, video.getKeyName(), newVideo.getKeyName());
-
-                video.setTitle(newVideo.getTitle());
+                if (newVideo.getTitle() != null && !newVideo.getTitle().equals(video.getTitle())) { 
+                    s3Service.changeObjectName(BUCKET_NAME, video.getKeyName(), newVideo.getKeyName());
+                    
+                    video.setTitle(newVideo.getTitle());
+                }
+                else {
+                    video.setTime(newVideo);
+                }
                 
                 repository.save(video);
 

@@ -31,6 +31,14 @@ public class Video {
     @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private OffsetDateTime createdAt;
 
+     @JsonProperty("edited_at")
+    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    private OffsetDateTime editedAt;
+
+    @JsonProperty("viewed_at")
+    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    private OffsetDateTime viewedAt;
+
     Video() {}
 
     Video(String title) {
@@ -87,6 +95,27 @@ public class Video {
 
     public OffsetDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public void setEditedAt(OffsetDateTime editedAt) {
+            this.editedAt = editedAt;
+        }
+
+    public OffsetDateTime getEditedAt() {
+        return this.editedAt;
+    }
+
+    public void setViewedAt(OffsetDateTime viewedAt) {
+        this.viewedAt = viewedAt;
+    }
+
+    public OffsetDateTime getViewedAt() {
+        return this.viewedAt;
+    }
+
+    public void setTime(Video video) {
+        this.setEditedAt(video.getEditedAt() == null ? this.editedAt : video.getEditedAt());
+        this.setViewedAt(video.getViewedAt() == null ? this.viewedAt : video.getViewedAt());
     }
 
     @Override

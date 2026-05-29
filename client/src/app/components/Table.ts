@@ -9,6 +9,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { FolderService } from "../services/FolderService";
 import { VideoService } from "../services/VideoService";
 import { QuestionService } from "../services/QuestionService";
+import { getUserIdNumber } from "../../utils";
 
 @Component({
     selector: '[questions], [folders], [videos]',
@@ -40,32 +41,5 @@ export class Table {
         this.auth.getCurrentUser().subscribe((res) => {
             this.userId = res!.user!.claims.sub;
         });
-    }
-
-    navigateToFolderPage(id: number) {
-        this.folderService.putFolder({viewed_at: moment().tz(moment.tz.guess(true)).format(), 
-            user_id: this.userId }, id).subscribe(() => 
-            {
-                this.router.navigate(['questions', id]);
-            }
-        );
-    }
-
-    navigateToQuestionPage(id: number) {
-        this.questionService.putQuestion({viewed_at: moment().tz(moment.tz.guess(true)).format(), 
-            user_id: this.userId }, id).subscribe(() => 
-            {
-                this.router.navigate(['questions', id]);
-            }
-        );
-    }
-    
-    navigateToVideoPage(id: number) {
-        this.videoService.putVideo({viewed_at: moment().tz(moment.tz.guess(true)).format(), 
-        user_id: this.userId }, id).subscribe(() => 
-            {
-                this.router.navigate([id], {relativeTo: this.route}); 
-            }
-        );   
     }
 }

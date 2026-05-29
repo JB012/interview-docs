@@ -5,16 +5,25 @@
             <div class="flex justify-end">
                 <menu-button type="videos" [updateVideos]="updateVideos" [(sortBy)]="sortValue" [(orderBy)]="orderValue" />
             </div>
-            <table [videos]="videos.content" [sortValue]="sortValue()" [orderValue]="orderValue()" ></table>
+            @if (videos.content && videos.content.length > 0) {
+                <table [videos]="videos.content" [sortValue]="sortValue()" [orderValue]="orderValue()" ></table>
+            }
+            @else {
+                <div class="flex pt-8 w-full h-full justify-center">
+                    <div>No video added</div>
+                </div>
+            }
         </div> 
     </div>
-    <mat-paginator
-    (page)="handlePageEvent($event)"
-    [hidePageSize]="true"
-    [length]="length"
-    [pageSize]="pageSize"
-    [pageIndex]="pageIndex"
-    ></mat-paginator>
+    @if (length > 0) {
+        <mat-paginator
+        (page)="handlePageEvent($event)"
+        [hidePageSize]="true"
+        [length]="length"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        ></mat-paginator>
+    }
 }
  @else {
     <div class="flex w-full h-full justify-center items-center">
