@@ -19,7 +19,7 @@ public class QuestionService {
     @Autowired
     private QuestionRepository questionRepository;
 
-    public Page<Question> getQuestions(int page, int size, String sort, String userId, Long folderId) {
+    public Page<Question> getQuestions(int page, int size, String sort, String userId) {
         String[] sortOptions = sort.split(",");
         
         String field = sortOptions[0];
@@ -35,11 +35,7 @@ public class QuestionService {
         }
         
         List<Question> questions = questionRepository.findAll();
-        questions.removeIf(question -> !question.getUser_id().equals(userId));
-
-        if (folderId != null) {
-            questions.removeIf(question -> !question.getFolderId().equals(folderId));
-        }
+        questions.removeIf(question -> !question.getUserId().equals(userId));
 
         int toIndex = (page + 1) * size > questions.size() ? questions.size() : (page + 1) * size;
         

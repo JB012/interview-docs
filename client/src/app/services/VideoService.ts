@@ -19,8 +19,8 @@ export class VideoService {
     });
   }
 
-  postVideo(video: VideoType) {
-    return this.http.post(`http://localhost:8080/videos`, video, {
+  postVideo(video: VideoType) : Observable<VideoType> {
+    return this.http.post<VideoType>(`http://localhost:8080/videos`, video, {
       withCredentials: true
     });
   }

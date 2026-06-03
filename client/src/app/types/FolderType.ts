@@ -1,10 +1,10 @@
 export interface FolderType {
-    id?: number,
+    folder_id?: number,
     user_id?: string,
     created_at?: string,
     edited_at?: string,
     viewed_at?: string,
-    name?: string
+    title?: string
 }
 
 export interface PagedFolderType {

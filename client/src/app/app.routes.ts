@@ -22,13 +22,16 @@ export const routes: Routes = [
     },
     {
         path: 'folders',
-        component: FolderList,
         canActivate: [userGuard],
         children: [
             {
-                path: ':/id',
+                path: '',
+                component: FolderList
+            },
+            {
+                
+                path: ':id',
                 component: FolderPage,
-                canActivate: [userGuard]
             }
         ]
     },

@@ -1,8 +1,8 @@
-import { Component, inject, signal } from "@angular/core";
+import { Component, inject, Signal, signal } from "@angular/core";
 import { AuthService } from "../services/AuthService";
-import { Observable } from "rxjs";
-import { PagedQuestionType } from "../types/QuestionType";
-import { ActivatedRoute } from "@angular/router";
+import { BehaviorSubject, forkJoin, map, Observable, shareReplay, switchMap } from "rxjs";
+import { PagedQuestionType, QuestionType } from "../types/QuestionType";
+import { ActivatedRoute, Router } from "@angular/router";
 import { FolderService } from "../services/FolderService";
 import { orderDirection, sortFields } from "../../utils";
 import { MenuButton } from "../components/MenuButton";
@@ -11,6 +11,11 @@ import { FolderType } from "../types/FolderType";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatPaginator, PageEvent } from "@angular/material/paginator";
 import { Table } from "../components/Table";
+import { MatMenu, MatMenuModule } from "@angular/material/menu";
+import { QuestionService } from "../services/QuestionService";
+import { MatDialog } from "@angular/material/dialog";
+import { QuestionListDialog } from "../components/QuestionListDialog";
+import {toSignal} from '@angular/core/rxjs-interop';
 
 @Component({
     templateUrl: './folder-page.html',
@@ -19,7 +24,9 @@ import { Table } from "../components/Table";
     AsyncPipe,
     MatProgressSpinner,
     MatPaginator,
-    Table
+    Table,
+    MatMenu,
+    MatMenuModule
 ]
 })
 
@@ -27,35 +34,98 @@ export class FolderPage {
     id = signal(0);
     sortValue = signal("Last viewed");
     orderValue = signal("Newest first");
+
     private activatedRoute = inject(ActivatedRoute);
     private folderService = inject(FolderService);
+    private questionService = inject(QuestionService);
+    private router = inject(Router);
+    readonly dialog = inject(MatDialog);
 
-    questions$: Observable<PagedQuestionType> | undefined; 
+    loading = signal(false);
+
+    questionsObservable$!: Observable<PagedQuestionType>;
+    
+    private questionsRefresh = new BehaviorSubject<void>(undefined);
+
+    private initialValue : PagedQuestionType = {content: [], page: 
+        {size: 0, totalElements: 0, number: 0, totalPages: 0}};
+
+    questionsInFolder : Signal<PagedQuestionType> | undefined;
+    allQuestions : QuestionType[] | undefined;
+
     folder$: Observable<FolderType> | undefined;
-    length = 0;
-    pageSize = 0;
+
+    pageSize = 10;
     pageIndex = 0;
+    userId: string | undefined;
+
+    ngOnInit() {
+        this.questionsObservable$.subscribe((questions) => {
+            this.pageSize = questions.page.size;
+            this.pageIndex = questions.page.number;
+        })
+    }
 
     constructor(public auth : AuthService ) {
         this.activatedRoute.params.subscribe((params) => {
             this.id.set(parseInt(params['id']));
             
-            this.questions$ = this.folderService.getQuestionsFromFolder(parseInt(params['id']));
+            this.questionsObservable$ = this.folderService.getQuestionsInFolder(parseInt(params['id']));
             this.folder$ = this.folderService.getFolder(parseInt(params['id']));
+
+            this.questionsInFolder = toSignal(
+                this.questionsRefresh.pipe(
+                    switchMap(() => this.questionsObservable$)
+                ), {initialValue: this.initialValue});
         });
+
+       this.questionService.getAllQuestions().pipe(shareReplay(1)).subscribe(questions => {
+            this.allQuestions = questions.map(question => ({...question, checked: false}));
+        })
     } 
     
     handlePageEvent(e: PageEvent) {
         this.pageSize = e.pageSize;
         this.pageIndex = e.pageIndex;
 
-        this.questions$ = this.folderService.getQuestionsFromFolder(this.id(), this.pageIndex, this.pageSize, 
-            {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]});
+        this.updateQuestions();
     }
 
     updateQuestions = () => {
-        this.questions$ = this.folderService.getQuestionsFromFolder(this.id(), this.pageIndex, this.pageSize, 
+        this.questionsObservable$ = this.folderService.getQuestionsInFolder(this.id(), this.pageIndex, this.pageSize, 
             {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]});
+
+        this.questionsRefresh.next();
     }
-    
+
+    createNewQuestion() {
+        this.questionService.postQuestion({user_id: this.userId, folder_id: this.id()})
+            .subscribe((question) => {
+                this.router.navigate(['questions', question.id]);
+        });
+    }
+
+    openDialog(): void {
+        const dialogRef = this.dialog.open(QuestionListDialog, {
+            data: {allQuestions: this.allQuestions ?? []},
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result !== undefined) {
+                this.loading.set(true);
+                
+                const questions : QuestionType[] = result;
+
+                const tasks = questions.map(question => this.folderService.postQuestionInFolder(this.id(), question.id!));
+
+                forkJoin(tasks).subscribe({
+                    next: () => {
+                        this.updateQuestions();
+                        this.loading.set(false);
+                    },
+                    error: (err) => console.error('One of the requests failed', err)
+                });
+            }
+        });
+    }
 }

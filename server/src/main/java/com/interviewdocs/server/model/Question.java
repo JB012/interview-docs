@@ -1,18 +1,21 @@
 package com.interviewdocs.server.model;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.*;
 
 @Entity
 @Table (name = "questions")
+@JsonIgnoreProperties({"folders"})
 public class Question {
     private @Id
     @GeneratedValue Long id;
-    
-    @JsonProperty("folder_id")
-    private Long folderId;
 
     @Column(columnDefinition = "TEXT")
     private String question;
@@ -37,17 +40,24 @@ public class Question {
     @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private OffsetDateTime viewedAt;
     
+    @ManyToMany
+    @JoinTable(name = "question_folder",
+            joinColumns = @JoinColumn(name = "id"),
+            inverseJoinColumns = @JoinColumn(name = "folder_id")
+    )
+    private Set<Folder> questionFolders = new HashSet<>();
+    
     Question() {}
 
     Question(String question) {
         this.question = question;
     }
 
-    public void setUser_id(String userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public String getUser_id() {
+    public String getUserId() {
         return userId;
     }
 
@@ -57,14 +67,6 @@ public class Question {
 
     public Long getId() {
         return id;
-    }
-
-    public void setFolderId(Long folderId) {
-        this.folderId = folderId;
-    }
-
-    public Long getFolderId() {
-        return folderId;
     }
 
     public void setQuestion(String question) {
@@ -115,7 +117,29 @@ public class Question {
         this.setViewedAt(question.getViewedAt() == null ? this.viewedAt : question.getViewedAt());
     }
 
+    public void addToFolder(Folder folder) {
+        questionFolders.add(folder);
+        folder.getQuestions().add(this);
+    }
+
+    public void removeFromFolder(Folder folder) {
+        questionFolders.remove(folder);
+        folder.getQuestions().remove(this);
+    }
+
+    public Set<Folder> getFolders() {
+        return this.questionFolders;
+    }
+
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Question question = (Question) o;
+        return question.getId() == getId();
+    }
+
+    @Override 
     public String toString() {
         return "Question: " + this.question + " User ID: " + this.userId + " ID: " + this.id 
         + " Created At: " + this.createdAt + " Viewed At: " + this.viewedAt + " Edited At: " + this.editedAt;

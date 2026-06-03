@@ -1,9 +1,9 @@
 package com.interviewdocs.server.controller;
 
 import com.interviewdocs.server.services.FolderService;
-
 import com.interviewdocs.server.services.QuestionService;
-import java.util.List;
+
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PagedModel;
@@ -20,22 +20,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.interviewdocs.server.error.FolderNotFoundException;
+import com.interviewdocs.server.error.QuestionNotFoundException;
 import com.interviewdocs.server.model.Folder;
 import com.interviewdocs.server.model.Question;
 import com.interviewdocs.server.repository.FolderRepository;
+import com.interviewdocs.server.repository.QuestionRepository;
 
 @RestController
 public class FolderController {
-    private final FolderRepository repository;
+    private final FolderRepository folderRepository;
+    private final QuestionRepository questionRepository;
 
     @Autowired
     private FolderService folderService;
 
-    @Autowired
-    private QuestionService questionService;
-
-    FolderController(FolderRepository repository) {
-        this.repository = repository;
+    FolderController(FolderRepository folderRepository, QuestionRepository questionRepository) {
+        this.folderRepository = folderRepository;
+        this.questionRepository = questionRepository;
     }
     
     @GetMapping("/folders")
@@ -50,11 +51,9 @@ public class FolderController {
       
     
     @PostMapping("/folders")
-    ResponseEntity<String> newFolder(@RequestBody Folder newFolder, Authentication auth) {
+    ResponseEntity<Folder> newFolder(@RequestBody Folder newFolder, Authentication auth) {
         if (auth.isAuthenticated() && newFolder.getUserId().equals(auth.getName())) {
-            repository.save(newFolder);
-
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(folderRepository.save(newFolder));
         }
         
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -63,7 +62,7 @@ public class FolderController {
     @GetMapping("/folders/{id}")
     ResponseEntity<Folder> one(@PathVariable("id") Long id, Authentication auth) {
         if (auth.isAuthenticated()) {
-            Folder folder = repository.findById(id)
+            Folder folder = folderRepository.findById(id)
             .orElseThrow(() -> new FolderNotFoundException(id));
         
             return ResponseEntity.ok(folder);
@@ -72,30 +71,23 @@ public class FolderController {
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
-    @GetMapping("/folders/{id}/questions")
-    PagedModel<Question> getQuestionsFromFolder(Authentication auth, @PathVariable("id") Long id,
-    @RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name="size", defaultValue = "10") int size, 
-    @RequestParam(name = "sort", defaultValue = "viewed_at, desc") String sort) {
-        if (auth.isAuthenticated()) {
-            Folder folder = repository.findById(id)
-            .orElseThrow(() -> new FolderNotFoundException(id));
-
-            return new PagedModel<>(questionService.getQuestions(page, size, sort, auth.getName(), folder.getId()));
-        }
-        
-        return null;
-    }
-
     @PutMapping("/folders/{id}")
     void replaceFolder(Authentication auth, @RequestBody Folder newFolder, @PathVariable("id") Long id) {
         if (auth.isAuthenticated() && newFolder.getUserId().equals(auth.getName())) {    
-            repository.findById(id)
+            folderRepository.findById(id)
             .map(folder -> {
-                folder.setName(newFolder.getName());
-                return repository.save(folder);
+                if (newFolder.getTitle() != null && !newFolder.getTitle().equals(newFolder.getTitle())) {
+                    folder.setTitle(newFolder.getTitle());
+                    folder.setEditedAt(newFolder.getEditedAt());
+                }
+                else {
+                    folder.setTime(newFolder);
+                }
+
+                return folderRepository.save(folder);
             })
             .orElseGet(() -> {
-                return repository.save(newFolder);
+                return folderRepository.save(newFolder);
             });
         }
     }
@@ -103,7 +95,46 @@ public class FolderController {
     @DeleteMapping("/folders/{id}")
     void deleteQuestion(Authentication auth, @PathVariable("id") Long id) {
         if (auth.isAuthenticated()) {
-            repository.deleteById(id);
+            folderRepository.deleteById(id);
         }
     } 
+    
+    @GetMapping("/folders/{id}/questions")
+    PagedModel<Question> getQuestionsFromFolder(Authentication auth, @PathVariable("id") Long id, @RequestParam(name = "page", defaultValue = "0") int page, 
+    @RequestParam(name="size", defaultValue = "10") int size, @RequestParam(name = "sort", defaultValue = "viewed_at, desc") String sort) {
+        if (auth.isAuthenticated()) {
+          
+            return new PagedModel<>(folderService.getQuestionsInFolder(page, size, sort, auth.getName(), id));
+        }
+
+        return null;
+    }
+
+    @PostMapping("/folders/{id}/questions/add")
+    public void postQuestionToFolder(@PathVariable("id") Long folderId, @RequestBody Long questionId, Authentication auth) {
+        if (auth.isAuthenticated()) {
+            Folder folder = folderRepository.findById(folderId)
+            .orElseThrow(() -> new FolderNotFoundException(folderId));
+
+            Question question = questionRepository.findById(questionId)
+            .orElseThrow(() -> new QuestionNotFoundException(questionId));
+
+            folder.removeQuestion(question);
+            folderRepository.save(folder);
+        }
+    }
+    
+    @DeleteMapping("/folders/{folderId}/questions/{questionId}/delete")
+    public void deleteQuestionInFolder(Authentication auth, @PathVariable("folderId") Long folderId, @PathVariable("questionId") Long questionId) {
+        if (auth.isAuthenticated()) {
+            Folder folder = folderRepository.findById(folderId)
+            .orElseThrow(() -> new FolderNotFoundException(folderId));
+
+            Question question = questionRepository.findById(questionId)
+            .orElseThrow(() -> new QuestionNotFoundException(questionId));
+            
+            folder.removeQuestion(question);
+            folderRepository.save(folder);
+        }
+    }
 }

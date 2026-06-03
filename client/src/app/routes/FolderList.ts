@@ -38,9 +38,15 @@ export class FolderList {
     orderValue = signal("Newest first");
     folderTitle = signal('');
 
-    length = 0;
     pageSize = 0;
     pageIndex = 0;
+
+    ngOnInit() {
+        this.folders$.subscribe((folders) => {
+            this.pageSize = folders.page.size;
+            this.pageIndex = folders.page.number;
+        });
+    }
 
     constructor(public auth : AuthService) {
         this.auth.getCurrentUser().subscribe((res) => {
@@ -56,15 +62,6 @@ export class FolderList {
             {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]});
     }
 
-    addFolder() {
-       this.folderService.postFolder({user_id: this.userId,
-        viewed_at: moment().tz(moment.tz.guess(true)).format()
-       })
-        .subscribe((folder) => {
-            this.router.navigate(['folders', folder.id]);
-        });
-    }
-
     updateFolders = () => {
         this.folders$ = this.folderService.getFolders(this.pageIndex, this.pageSize, 
             {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]});
@@ -77,6 +74,7 @@ export class FolderList {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result !== undefined) {
+                console.log(result);
                 this.folderTitle.set(result);
                 this.saveFolder();
             }
@@ -85,8 +83,10 @@ export class FolderList {
 
     saveFolder() {
         const title = this.folderTitle();
-        this.folderService.postFolder({name: title, user_id: this.userId}).subscribe((folder) => {
-            this.router.navigate(['folders', folder.id]);
+        const time = moment().tz(moment.tz.guess(true)).format();
+        this.folderService.postFolder({title: title, user_id: this.userId, viewed_at: time, edited_at: time}).subscribe((folder) => {
+            console.log(folder);
+            this.router.navigate(['folders', folder.folder_id]);
         });
     }
 }

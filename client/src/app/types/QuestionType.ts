@@ -7,6 +7,7 @@ export interface QuestionType {
     viewed_at?: string
     question?: string,
     answer?: string,
+    checked?: boolean
 }
 
 export interface PagedQuestionType {

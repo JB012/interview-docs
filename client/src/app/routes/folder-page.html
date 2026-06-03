@@ -1,35 +1,42 @@
-@if (folder$ | async; as folder) {
-    <div class="flex flex-col w-full h-full p-4">
-        <div class="flex w-full justify-between items-center">
-            <div class="flex xxs:gap-0.5 xs:gap-2 items-center">
-                <div class="xxs:text-xs xs:text-sm lg:text-lg">{{folder.name}}</div>
-                <button class="flex bg-primary text-white lg:w-6 lg:h-6 xs:w-4 xs:h-4 xs:text-xs xxs:w-2 xxs:h-2 xxs:text-[4px] w-8 h-8 justify-center items-center rounded-full cursor-pointer hover:brightness-110">+</button>
+@if (folder$ | async; as folder) { 
+    @if (questionsInFolder; as questions) {
+        <div class="flex flex-col w-full h-full p-4">
+            <div class="flex w-full justify-between items-center">
+                <div class="flex xxs:gap-0.5 xs:gap-2 items-center">
+                    <div class="xxs:text-xs xs:text-sm lg:text-lg">{{folder.title}}</div> 
+                    <button [matMenuTriggerFor]="menu" class="flex bg-primary text-white lg:w-6 lg:h-6 xs:w-4 xs:h-4 xs:text-xs xxs:w-2 xxs:h-2 xxs:text-[4px] w-8 h-8 justify-center items-center rounded-full cursor-pointer hover:brightness-110">+</button>
+                    <mat-menu #menu="matMenu">
+                    <button (click)="openDialog()" mat-menu-item>Add an existing question</button>
+                    <button (click)="createNewQuestion()" mat-menu-item>Add a new question</button>
+                    </mat-menu>
+                </div>
+                <menu-button type="folders" class="py-2" [updateQuestions]="updateQuestions" [(sortBy)]="sortValue" [(orderBy)]="orderValue" /> 
             </div>
-            <menu-button type="folders" class="py-2" [updateQuestions]="updateQuestions" [(sortBy)]="sortValue" [(orderBy)]="orderValue" /> 
-        </div>
-            @if (questions$ | async; as questions) {
-                @if (questions.content && questions.content.length > 0) {
-                    <table [questions]="questions.content" [sortValue]="sortValue()" [orderValue]="orderValue()" ></table>
+                @if (questions().content && questions().page.totalElements > 0) {
+                    <table [questions]="questions().content" [sortValue]="sortValue()" [orderValue]="orderValue()" ></table>
+                    <mat-paginator
+                    (page)="handlePageEvent($event)"
+                    [hidePageSize]="true"
+                    [length]="questions().page.totalElements"
+                    [pageSize]="pageSize"
+                    [pageIndex]="pageIndex"
+                    ></mat-paginator>
                 }
                 @else {
                     <div class="flex pt-8 w-full h-full justify-center"> 
-                        <div>No questions added</div>
+                        @if (!loading()) {
+                            <div>No questions added</div>
+                        }
+                        @else {
+                            <mat-spinner diameter="24"></mat-spinner>
+                        }
                     </div>
                 }
-            }
-            @else {
-                <div class="flex w-full h-full justify-center items-center">
-                    <mat-spinner diameter="24"></mat-spinner>
-                </div>
-            }
-        @if (length > 0) {
-            <mat-paginator
-            (page)="handlePageEvent($event)"
-            [hidePageSize]="true"
-            [length]="length"
-            [pageSize]="pageSize"
-            [pageIndex]="pageIndex"
-            ></mat-paginator>
-        }
+        </div>
+    }
+}
+@else {
+    <div class="flex w-full h-full justify-center items-center">
+        <mat-spinner diameter="24"></mat-spinner>
     </div>
 }

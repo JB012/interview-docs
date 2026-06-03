@@ -44,7 +44,7 @@ export class TableData {
     video = input<VideoType>();
 
     title = computed(() => {
-        return [this.question()?.question, this.folder()?.name, this.video()?.title].find(v => v != undefined);
+        return [this.question()?.question, this.folder()?.title, this.video()?.title].find(v => v != undefined);
     });
 
     editedAt = computed(() => {
@@ -88,7 +88,7 @@ export class TableData {
         this.folderService.putFolder({viewed_at: moment().tz(moment.tz.guess(true)).format(), 
             user_id: this.userId }, id).subscribe(() => 
             {
-                this.router.navigate(['questions', id]);
+                this.router.navigate(['folders', id]);
             }
         );
     }
@@ -117,7 +117,7 @@ export class TableData {
             this.navigateToQuestionPage(this.question()!.id!);
         }
         else if (this.folder()) {
-            this.navigateToFolderPage(this.folder()!.id!);
+            this.navigateToFolderPage(this.folder()!.folder_id!);
         }
         else if (this.video()) {
             this.navigateToVideoPage(this.video()!.id!);

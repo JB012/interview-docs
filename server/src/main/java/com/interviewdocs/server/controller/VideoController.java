@@ -47,17 +47,17 @@ public class VideoController {
     }
 
     @PostMapping("/videos")
-    ResponseEntity<String> newVideo(@RequestBody Video newVideo, Authentication auth) { 
+    ResponseEntity<Video> newVideo(@RequestBody Video newVideo, Authentication auth) { 
         if (auth.isAuthenticated() && newVideo.getUserId().equals(videoService.getUserIdNumber(auth.getName()))) {
             repository.save(newVideo);
 
             try {
                 videoService.setSourceToPresignedURL(newVideo);
             } catch (Exception e) {
-                return new ResponseEntity<>(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(newVideo);
         }
 
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -92,6 +92,7 @@ public class VideoController {
                     s3Service.changeObjectName(BUCKET_NAME, video.getKeyName(), newVideo.getKeyName());
                     
                     video.setTitle(newVideo.getTitle());
+                    video.setEditedAt(newVideo.getEditedAt());
                 }
                 else {
                     video.setTime(newVideo);

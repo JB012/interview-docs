@@ -1,27 +1,36 @@
 package com.interviewdocs.server.model;
 
 import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
 @Table (name = "folders")
+@JsonIgnoreProperties({"questions"})
 public class Folder {
     @Id @JsonProperty("folder_id")
-    @GeneratedValue Long id;
+    @GeneratedValue Long folderId;
 
     @JsonProperty("user_id")
     @Column(columnDefinition = "TEXT")
     private String userId;
     
+    @JsonProperty("title")
     @Column(columnDefinition = "TEXT")
-    private String name;
+    private String title;
 
     @JsonProperty("created_at")
     @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE", insertable = false)
@@ -35,10 +44,13 @@ public class Folder {
     @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private OffsetDateTime viewedAt;
     
+    @ManyToMany(mappedBy = "questionFolders")
+    private Set<Question> questions = new HashSet<>();
+
     Folder() {}
 
-    Folder(String name) {
-        this.name = name;
+    Folder(String title) {
+        this.title = title;
     }
 
     public void setUserId(String userId) {
@@ -50,19 +62,19 @@ public class Folder {
     }
 
     public void setId(long id) {
-        this.id = id;
+        this.folderId = id;
     }
 
     public long getId() {
-        return id;
+        return folderId;
     }
     
-    public String getName() {
-        return this.name;
+    public String getTitle() {
+        return this.title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public OffsetDateTime getCreatedAt() {
@@ -81,7 +93,34 @@ public class Folder {
         this.viewedAt = viewedAt;
     }
 
+    public void setTime(Folder folder) {
+        this.setEditedAt(folder.getEditedAt() == null ? this.editedAt : folder.getEditedAt());
+        this.setViewedAt(folder.getViewedAt() == null ? this.viewedAt : folder.getViewedAt());
+    }
+
     public OffsetDateTime getViewedAt() {
         return this.viewedAt;
+    }
+
+    public Set<Question> getQuestions() {
+        return this.questions;
+    }
+
+    public void addQuestion(Question question) {
+        questions.add(question);
+        question.getFolders().add(this);
+    }
+
+    public void removeQuestion(Question question) {
+        questions.remove(question);
+        question.getFolders().add(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Folder folder = (Folder) o;
+        return folder.getId() == getId();
     }
 }

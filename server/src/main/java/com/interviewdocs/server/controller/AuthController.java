@@ -13,17 +13,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequestMapping("/auth")
 public class AuthController {
     @GetMapping("/me")
-     public Map<String, Object> me(Authentication auth) {
-
+    public Map<String, Object> me(Authentication auth) {
         if (auth == null || !auth.isAuthenticated()) {
             return Map.of(
-                "authenticated", false
+            "authenticated", false
             );
         }
 
         return Map.of(
-            "authenticated", true,
-            "user", auth.getPrincipal()
+        "authenticated", true,
+        "user", auth.getPrincipal()
         );
     }
     

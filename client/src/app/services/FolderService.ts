@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { FolderType, PagedFolderType } from "../types/FolderType";
-import { PagedQuestionType } from "../types/QuestionType";
+import { PagedQuestionType, QuestionType } from "../types/QuestionType";
 
 @Injectable({providedIn: 'root'})
 export class FolderService {
@@ -13,11 +13,23 @@ export class FolderService {
       withCredentials: true
     });
   }
-
-  getQuestionsFromFolder(id : number, pageIndex = 0, pageSize = 10, sort = {field: "viewedAt", direction: 'desc'}): Observable<PagedQuestionType> {
+   
+  getQuestionsInFolder(id : number, pageIndex = 0, pageSize = 10, sort = {field: "viewedAt", direction: 'desc'}): Observable<PagedQuestionType> {
     return this.http.get<PagedQuestionType>(`http://localhost:8080/folders/${id}/questions?page=${pageIndex}&size=${pageSize}&sort=${sort.field},${sort.direction}`, {
       withCredentials: true
     });
+  }
+
+  postQuestionInFolder(folderId: number, questionId: number) {
+    return this.http.post(`http://localhost:8080/folders/${folderId}/questions/add`, questionId, {
+      withCredentials: true
+    });
+  }
+
+  deleteQuestionInFolder(folderId: number, questionId: number) {
+    return this.http.delete(`http://localhost:8080/folders/${folderId}/questions/${questionId}/delete`, {
+      withCredentials: true
+    })
   }
 
   getFolder(id: number): Observable<FolderType> {
@@ -32,14 +44,14 @@ export class FolderService {
     });
   }
 
-  putFolder(folder: FolderType, id: number): Observable<FolderType> {
-    return this.http.put<FolderType>(`http://localhost:8080/folders/${id}`, folder, {
+  putFolder(folder: FolderType, id: number) {
+    return this.http.put(`http://localhost:8080/folders/${id}`, folder, {
       withCredentials: true
     });
   }
   
-  deleteFolder(id: string): Observable<FolderType> {
-    return this.http.delete<FolderType>(`http://localhost:8080/folders/${id}`, {
+  deleteFolder(id: string) {
+    return this.http.delete(`http://localhost:8080/folders/${id}`, {
       withCredentials: true
     });
   }

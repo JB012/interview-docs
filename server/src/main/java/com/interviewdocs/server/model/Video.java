@@ -31,7 +31,7 @@ public class Video {
     @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private OffsetDateTime createdAt;
 
-     @JsonProperty("edited_at")
+    @JsonProperty("edited_at")
     @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private OffsetDateTime editedAt;
 

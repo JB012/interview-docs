@@ -1,5 +1,7 @@
 package com.interviewdocs.server.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
@@ -23,22 +25,33 @@ public class QuestionController {
         this.repository = repository;
     }
 
+    @GetMapping("/questions/all")
+    ResponseEntity<List<Question>> getAllQuestions(Authentication auth) {
+        if (auth.isAuthenticated()) {
+            List<Question> questions = repository.findAll();
+
+            questions.removeIf(question -> !question.getUserId().equals(auth.getName()));
+
+            return ResponseEntity.ok(questions);
+        }
+        
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+    
     @GetMapping("/questions")
     PagedModel<Question> getQuestions(Authentication auth, @RequestParam(name = "page", defaultValue = "0") int page, 
     @RequestParam(name="size", defaultValue = "10") int size, @RequestParam(name = "sort", defaultValue = "viewed_at, desc") String sort) {
         if (auth.isAuthenticated()) {
-            return new PagedModel<>(questionService.getQuestions(page, size, sort, auth.getName(), null));
+            return new PagedModel<>(questionService.getQuestions(page, size, sort, auth.getName()));
         }
 
         return null;
     }
     
     @PostMapping("/questions")
-    ResponseEntity<String> newQuestion(@RequestBody Question newQuestion, Authentication auth) {
-        if (auth.isAuthenticated() && newQuestion.getUser_id().equals(auth.getName())) {
-            repository.save(newQuestion);
-
-            return ResponseEntity.ok().build();
+    ResponseEntity<Question> newQuestion(@RequestBody Question newQuestion, Authentication auth) {
+        if (auth.isAuthenticated() && newQuestion.getUserId().equals(auth.getName())) {
+            return ResponseEntity.ok(repository.save(newQuestion));
         }
         
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -58,7 +71,7 @@ public class QuestionController {
 
     @PutMapping("/questions/{id}")
     void replaceQuestion(Authentication auth, @RequestBody Question newQuestion, @PathVariable("id") Long id) {
-        if (auth.isAuthenticated() && newQuestion.getUser_id().equals(auth.getName())) {    
+        if (auth.isAuthenticated() && newQuestion.getUserId().equals(auth.getName())) {    
             repository.findById(id)
             .map(question -> {
                 question.setEverything(newQuestion);

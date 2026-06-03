@@ -7,6 +7,12 @@ import { QuestionType, PagedQuestionType } from "../types/QuestionType";
 export class QuestionService {
   private http = inject(HttpClient);
 
+  getAllQuestions() : Observable<QuestionType[]> {
+    return this.http.get<QuestionType[]>('http://localhost:8080/questions/all', {
+      withCredentials: true
+    });
+  }
+
   getQuestions(pageIndex = 0, pageSize = 10, sort = {field: "viewedAt", direction: 'desc'}): Observable<PagedQuestionType> {
     return this.http.get<PagedQuestionType>(`http://localhost:8080/questions?page=${pageIndex}&size=${pageSize}&sort=${sort.field},${sort.direction}`, {
       withCredentials: true
@@ -25,14 +31,14 @@ export class QuestionService {
     });
   }
 
-  putQuestion(question: QuestionType, id: number): Observable<QuestionType> {
-    return this.http.put<QuestionType>(`http://localhost:8080/questions/${id}`, question, {
+  putQuestion(question: QuestionType, id: number) {
+    return this.http.put(`http://localhost:8080/questions/${id}`, question, {
       withCredentials: true
     });
   }
   
-  deleteQuestion(id: string): Observable<QuestionType> {
-    return this.http.delete<QuestionType>(`http://localhost:8080/questions/${id}`, {
+  deleteQuestion(id: string) {
+    return this.http.delete(`http://localhost:8080/questions/${id}`, {
       withCredentials: true
     });
   }
