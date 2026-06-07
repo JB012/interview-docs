@@ -33,7 +33,7 @@ export class VideoService {
     });
   }
 
-  deleteVideo(id: string) {
+  deleteVideo(id: number) {
     return this.http.delete(`http://localhost:8080/videos/${id}`, {
       withCredentials: true
     });

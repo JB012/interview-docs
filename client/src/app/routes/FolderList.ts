@@ -85,7 +85,6 @@ export class FolderList {
         const title = this.folderTitle();
         const time = moment().tz(moment.tz.guess(true)).format();
         this.folderService.postFolder({title: title, user_id: this.userId, viewed_at: time, edited_at: time}).subscribe((folder) => {
-            console.log(folder);
             this.router.navigate(['folders', folder.folder_id]);
         });
     }

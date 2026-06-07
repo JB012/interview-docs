@@ -50,7 +50,7 @@ export class FolderService {
     });
   }
   
-  deleteFolder(id: string) {
+  deleteFolder(id: number) {
     return this.http.delete(`http://localhost:8080/folders/${id}`, {
       withCredentials: true
     });

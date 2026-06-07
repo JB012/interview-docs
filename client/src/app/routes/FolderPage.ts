@@ -16,6 +16,7 @@ import { QuestionService } from "../services/QuestionService";
 import { MatDialog } from "@angular/material/dialog";
 import { QuestionListDialog } from "../components/QuestionListDialog";
 import {toSignal} from '@angular/core/rxjs-interop';
+import moment from "moment-timezone";
 
 @Component({
     templateUrl: './folder-page.html',
@@ -42,15 +43,10 @@ export class FolderPage {
     readonly dialog = inject(MatDialog);
 
     loading = signal(false);
-
-    questionsObservable$!: Observable<PagedQuestionType>;
     
     private questionsRefresh = new BehaviorSubject<void>(undefined);
 
-    private initialValue : PagedQuestionType = {content: [], page: 
-        {size: 0, totalElements: 0, number: 0, totalPages: 0}};
-
-    questionsInFolder : Signal<PagedQuestionType> | undefined;
+    questionsInFolder$!: Observable<PagedQuestionType>;
     allQuestions : QuestionType[] | undefined;
 
     folder$: Observable<FolderType> | undefined;
@@ -60,7 +56,7 @@ export class FolderPage {
     userId: string | undefined;
 
     ngOnInit() {
-        this.questionsObservable$.subscribe((questions) => {
+        this.questionsInFolder$.subscribe((questions) => {
             this.pageSize = questions.page.size;
             this.pageIndex = questions.page.number;
         })
@@ -70,17 +66,16 @@ export class FolderPage {
         this.activatedRoute.params.subscribe((params) => {
             this.id.set(parseInt(params['id']));
             
-            this.questionsObservable$ = this.folderService.getQuestionsInFolder(parseInt(params['id']));
+            this.questionsInFolder$ = this.folderService.getQuestionsInFolder(parseInt(params['id']));
             this.folder$ = this.folderService.getFolder(parseInt(params['id']));
-
-            this.questionsInFolder = toSignal(
-                this.questionsRefresh.pipe(
-                    switchMap(() => this.questionsObservable$)
-                ), {initialValue: this.initialValue});
         });
 
        this.questionService.getAllQuestions().pipe(shareReplay(1)).subscribe(questions => {
             this.allQuestions = questions.map(question => ({...question, checked: false}));
+        });
+
+        auth.getCurrentUser().subscribe((res) => {
+            this.userId = res?.user?.claims.sub;
         })
     } 
     
@@ -92,17 +87,29 @@ export class FolderPage {
     }
 
     updateQuestions = () => {
-        this.questionsObservable$ = this.folderService.getQuestionsInFolder(this.id(), this.pageIndex, this.pageSize, 
+        this.questionsInFolder$ = this.folderService.getQuestionsInFolder(this.id(), this.pageIndex, this.pageSize, 
             {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]});
 
         this.questionsRefresh.next();
     }
 
     createNewQuestion() {
-        this.questionService.postQuestion({user_id: this.userId, folder_id: this.id()})
+        const currentTime = moment().tz(moment.tz.guess(true)).format();
+        this.questionService.postQuestion({user_id: this.userId, question: "What is your question?", viewed_at: currentTime, edited_at: currentTime})
             .subscribe((question) => {
-                this.router.navigate(['questions', question.id]);
+                this.folderService.postQuestionInFolder(this.id(), question.id!).subscribe(() => {
+                    this.router.navigate(['questions', question.id]);
+                });
         });
+    }
+
+    navigateToQuestionPage(id: number) {
+        this.questionService.putQuestion({viewed_at: moment().tz(moment.tz.guess(true)).format(), 
+            user_id: this.userId }, id).subscribe(() => 
+            {
+                this.router.navigate(['questions', id]);
+            }
+        );
     }
 
     openDialog(): void {

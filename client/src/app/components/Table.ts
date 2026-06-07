@@ -25,15 +25,9 @@ export class Table {
     folders = input<FolderType[]>();
     videos = input<VideoType[]>();
 
-    private router = inject(Router);
-    private route = inject(ActivatedRoute);
-
-    private folderService = inject(FolderService);
-    private questionService = inject(QuestionService);
-    private videoService = inject(VideoService);
-
     sortValue = input.required<string>();
     orderValue = input.required<string>();
+    
     
     userId? : string;
 

@@ -72,7 +72,8 @@ export class Home implements OnInit {
     }
 
     addQuestion() {
-       this.questionService.postQuestion({user_id: this.userId})
+        const currentTime = moment().tz(moment.tz.guess(true)).format();
+        this.questionService.postQuestion({user_id: this.userId, question: 'What is your question?', viewed_at: currentTime, edited_at: currentTime})
         .subscribe((question) => {
             this.router.navigate(['questions', question.id]);
         });

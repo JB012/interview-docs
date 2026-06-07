@@ -33,12 +33,7 @@ public class QuestionService {
         else {
             pageable = PageRequest.of(page, size, Sort.by(field).ascending());
         }
-        
-        List<Question> questions = questionRepository.findAll();
-        questions.removeIf(question -> !question.getUserId().equals(userId));
 
-        int toIndex = (page + 1) * size > questions.size() ? questions.size() : (page + 1) * size;
-        
-        return new PageImpl<>(questions.subList(page * size, toIndex), pageable, questions.size());
+        return questionRepository.findAllByUserId(userId, pageable);
     }
 }

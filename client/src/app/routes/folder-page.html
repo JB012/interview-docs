@@ -1,5 +1,5 @@
 @if (folder$ | async; as folder) { 
-    @if (questionsInFolder; as questions) {
+    @if (questionsInFolder$ | async; as questions) {
         <div class="flex flex-col w-full h-full p-4">
             <div class="flex w-full justify-between items-center">
                 <div class="flex xxs:gap-0.5 xs:gap-2 items-center">
@@ -10,14 +10,14 @@
                     <button (click)="createNewQuestion()" mat-menu-item>Add a new question</button>
                     </mat-menu>
                 </div>
-                <menu-button type="folders" class="py-2" [updateQuestions]="updateQuestions" [(sortBy)]="sortValue" [(orderBy)]="orderValue" /> 
+                <menu-button type="questions" class="py-2" [updateQuestions]="updateQuestions" [(sortBy)]="sortValue" [(orderBy)]="orderValue" /> 
             </div>
-                @if (questions().content && questions().page.totalElements > 0) {
-                    <table [questions]="questions().content" [sortValue]="sortValue()" [orderValue]="orderValue()" ></table>
+                @if (questions.content && questions.page.totalElements > 0) {
+                    <table [questions]="questions.content" [sortValue]="sortValue()" [orderValue]="orderValue()" ></table>
                     <mat-paginator
                     (page)="handlePageEvent($event)"
                     [hidePageSize]="true"
-                    [length]="questions().page.totalElements"
+                    [length]="questions.page.totalElements"
                     [pageSize]="pageSize"
                     [pageIndex]="pageIndex"
                     ></mat-paginator>

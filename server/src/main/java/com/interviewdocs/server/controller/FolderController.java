@@ -41,7 +41,7 @@ public class FolderController {
     
     @GetMapping("/folders")
     PagedModel<Folder> getFolders(Authentication auth, @RequestParam(name = "page", defaultValue = "0") int page, 
-    @RequestParam(name="size", defaultValue = "10") int size, @RequestParam(name = "sort", defaultValue = "viewed_at, desc") String sort) {
+    @RequestParam(name="size", defaultValue = "10") int size, @RequestParam(name = "sort", defaultValue = "viewed_at,desc") String sort) {
         if (auth.isAuthenticated()) {
             return new PagedModel<>(folderService.getFolders(page, size, sort, auth.getName()));
         }
@@ -119,7 +119,7 @@ public class FolderController {
             Question question = questionRepository.findById(questionId)
             .orElseThrow(() -> new QuestionNotFoundException(questionId));
 
-            folder.removeQuestion(question);
+            folder.addQuestion(question);
             folderRepository.save(folder);
         }
     }

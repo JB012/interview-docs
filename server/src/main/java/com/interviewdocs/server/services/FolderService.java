@@ -15,14 +15,17 @@ import com.interviewdocs.server.error.FolderNotFoundException;
 import com.interviewdocs.server.model.Folder;
 import com.interviewdocs.server.model.Question;
 import com.interviewdocs.server.repository.FolderRepository;
+import com.interviewdocs.server.repository.QuestionRepository;
 
 import jakarta.transaction.Transactional;
 
 @Service
-@Transactional
 public class FolderService {
     @Autowired
     private FolderRepository folderRepository;
+
+    @Autowired
+    private QuestionRepository questionRepository;
 
     public Page<Folder> getFolders(int page, int size, String sort, String userId) {
         String[] sortOptions = sort.split(",");
@@ -38,16 +41,11 @@ public class FolderService {
         else {
             pageable = PageRequest.of(page, size, Sort.by(field).ascending());
         }
-        
-        List<Folder> folders = folderRepository.findAll();
-        folders.removeIf(folder -> !folder.getUserId().equals(userId));
 
-        int toIndex = (page + 1) * size > folders.size() ? folders.size() : (page + 1) * size;
-        
-        return new PageImpl<>(folders.subList(page * size, toIndex), pageable, folders.size());
+        return folderRepository.findAllByUserId(userId, pageable);
     }
 
-     public Page<Question> getQuestionsInFolder(int page, int size, String sort, String userId, Long folderId) {
+    public Page<Question> getQuestionsInFolder(int page, int size, String sort, String userId, Long folderId) {
         String[] sortOptions = sort.split(",");
         
         String field = sortOptions[0];
@@ -65,12 +63,8 @@ public class FolderService {
         Folder folder = folderRepository.findById(folderId)
         .orElseThrow(() -> new FolderNotFoundException(folderId));
 
-
         Set<Question> questions = folder.getQuestions();
-        questions.removeIf(question -> !question.getUserId().equals(userId));
 
-        int toIndex = (page + 1) * size > questions.size() ? questions.size() : (page + 1) * size;
-        
-        return new PageImpl<>(questions.stream().toList().subList(page * size, toIndex), pageable, questions.size());
+        return questionRepository.findAllByUserId(userId, questions, pageable);
     }
 }

@@ -44,7 +44,7 @@ public class Folder {
     @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private OffsetDateTime viewedAt;
     
-    @ManyToMany(mappedBy = "questionFolders")
+    @ManyToMany(mappedBy = "folders")
     private Set<Question> questions = new HashSet<>();
 
     Folder() {}

@@ -2,7 +2,7 @@
     <tr>
         <th class="w-5 font-normal text-left flex gap-2">
             <div>{{questions() ? "Questions" : folders() ? "Folders" : "Videos"}}</div>
-            <div class="font-bold">
+            <div class="flex gap-2 font-bold">
                 @if (sortValue() === "Alphabetical") {
                     @if (orderValue() === "A-Z") {
                         <div>&uarr;</div>
@@ -14,16 +14,19 @@
             </div>
         </th>
         <th class="font-normal text-left">Last modified</th>
-        <th class="font-normal text-left">
-            <div>Last created</div>
+        <th class="flex gap-2 font-normal text-left">
+            @if (sortValue() === "Date created") {
+                <div>Last created</div>
+            }
+            @else if (sortValue() === "Last viewed"){
+                <div>Last viewed</div>
+            }
             <div class="font-bold">
-                @if (sortValue() === "Date created") {
-                    @if (orderValue() === "Newest first") {
-                        <div>&uarr;</div>
-                    }
-                    @else {
-                        <div>&darr;</div>
-                    }
+                @if (orderValue() === "Newest first") {
+                    <div>&uarr;</div>
+                }
+                @else {
+                    <div>&darr;</div>
                 }
             </div>
         </th>
@@ -31,21 +34,20 @@
 </thead>
 <tbody>
     @if (questions()) {
-        
         @for (question of questions(); track question) {
             @if (question) {
-                <tr class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [question]="question"></tr>
+                <tr class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [sortValue]="sortValue()" [question]="question"></tr>
             }
         }
     }
     @else if (folders()) {
         @for (folder of folders(); track folder) {
-            <tr class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [folder]="folder"></tr>
+            <tr class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [sortValue]="sortValue()" [folder]="folder"></tr>
         }
     }
     @else if (videos()) {
         @for (video of videos(); track video) {
-            <tr class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [video]="video"></tr>
+            <tr class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [sortValue]="sortValue()" [video]="video"></tr>
         }
     }
 </tbody>

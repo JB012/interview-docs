@@ -37,7 +37,7 @@ export class QuestionService {
     });
   }
   
-  deleteQuestion(id: string) {
+  deleteQuestion(id: number) {
     return this.http.delete(`http://localhost:8080/questions/${id}`, {
       withCredentials: true
     });

@@ -45,7 +45,7 @@ public class Question {
             joinColumns = @JoinColumn(name = "id"),
             inverseJoinColumns = @JoinColumn(name = "folder_id")
     )
-    private Set<Folder> questionFolders = new HashSet<>();
+    private Set<Folder> folders = new HashSet<>();
     
     Question() {}
 
@@ -118,17 +118,17 @@ public class Question {
     }
 
     public void addToFolder(Folder folder) {
-        questionFolders.add(folder);
+        folders.add(folder);
         folder.getQuestions().add(this);
     }
 
     public void removeFromFolder(Folder folder) {
-        questionFolders.remove(folder);
+        folders.remove(folder);
         folder.getQuestions().remove(this);
     }
 
     public Set<Folder> getFolders() {
-        return this.questionFolders;
+        return this.folders;
     }
 
     @Override
