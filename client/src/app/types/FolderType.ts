@@ -5,6 +5,7 @@ export interface FolderType {
     edited_at?: string,
     viewed_at?: string,
     title?: string
+    checked?: boolean
 }
 
 export interface PagedFolderType {

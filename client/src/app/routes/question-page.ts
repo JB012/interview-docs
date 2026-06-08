@@ -1,18 +1,20 @@
 import { Component, inject, signal } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
 import { ActivatedRoute, Router, RouterOutlet } from "@angular/router";
-import { MenuButton } from "../components/MenuButton";
-import { VideoFile } from "../components/VideoFile";
-import { RecordedVideo } from "./RecordedVideo";
 import { QuestionService } from "../services/QuestionService";
 import { QuestionType } from "../types/QuestionType";
 import { Observable } from "rxjs/internal/Observable";
 import { AsyncPipe } from "@angular/common";
 import { AuthService } from "../services/AuthService";
 import { getUserIdNumber } from "../../utils";
-import { VideoService } from "../services/VideoService";
 import { PagedVideoType } from "../types/VideoType";
 import moment from "moment-timezone";
+import { FolderSelectedDialog } from "../components/FolderSelectedDialog";
+import { MatDialog } from "@angular/material/dialog";
+import { FolderService } from "../services/FolderService";
+import { FolderType } from "../types/FolderType";
+import { forkJoin } from "rxjs";
+import { MatSnackBar } from "@angular/material/snack-bar";
 @Component({
     selector: "question-page",
     imports: [
@@ -32,16 +34,24 @@ export class QuestionPage {
     questionInput = signal('');
     answerInput = signal('');
     saveState = signal('');
+
     question$!: Observable<QuestionType>;
-    videos$! : Observable<PagedVideoType>;
+
+    allFolders : FolderType[] = [];
+    selectedFolders : FolderType[] = [];
+
     timeoutID!: number;
 
     router = inject(Router);
     route = inject(ActivatedRoute);
+
     questionService = inject(QuestionService);
-    videoService = inject(VideoService);
+    folderService = inject(FolderService);
+
     user_id!: string;
     
+    private _snackBar = inject(MatSnackBar);
+    readonly dialog = inject(MatDialog);
 
     navigateToVideos() {
         const segments = this.route.snapshot.url;
@@ -98,19 +108,65 @@ export class QuestionPage {
                 this.questionInput.set(res.question!);
             });
 
-            this.videos$ = this.videoService.getAllVideos();
+            this.folderService.getFolders().subscribe((folders) => {
+                this.allFolders = folders.content;
+            });
+
+            this.questionService.getFolders(this.id()).subscribe((selectedFolders) => {
+                this.selectedFolders = selectedFolders;
+
+                this.folderService.getFolders().subscribe((allFolders) => {
+                    this.allFolders = allFolders.content.map(folder => {
+                        if (selectedFolders.some(f => f.folder_id === folder.folder_id)) {
+                            return {...folder, checked: true};
+                        }
+                        return {...folder, checked: false};
+                    })
+                })
+            })
 
             auth.getCurrentUser().subscribe((res) => {
                 this.user_id = res!.user!.claims.sub;
-            })
+            });
         });
     }
     
     updateClickedNewVideo(newValue : boolean) {
-        this.clickedNewVideo.update((value) => newValue);
+        this.clickedNewVideo.set(newValue);
     } 
 
     updateOption(newValue : string) {
         this.option.set(newValue);
+    }
+
+    openSnackBar() {
+    this._snackBar.open("Changes saved", "Close", {
+        duration: 5000
+    });
+}
+
+    openDialog(): void {
+        const dialogRef = this.dialog.open(FolderSelectedDialog, {
+            data: {allFolders: this.allFolders},
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result !== undefined) {
+                
+                const checkedFolders : FolderType[] = result;
+
+                const addQuestionToFolderTasks = checkedFolders.map(folder => this.folderService.postQuestionInFolder(folder.folder_id!, this.id()));
+                const removeQuestionFromFolderTasks = this.selectedFolders
+                .filter(folder => checkedFolders.some(f => f.folder_id !== folder.folder_id))
+                .map(removedFolder => this.folderService.deleteQuestionInFolder(removedFolder.folder_id!, this.id()));
+                
+                forkJoin([...addQuestionToFolderTasks, ...removeQuestionFromFolderTasks]).subscribe({
+                    next: () => {
+                        this.openSnackBar();
+                    },
+                    error: (err) => console.error('One of the requests failed', err)
+                });
+            }
+        });
     }
 }

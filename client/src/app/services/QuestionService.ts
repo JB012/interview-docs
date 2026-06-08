@@ -2,6 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { QuestionType, PagedQuestionType } from "../types/QuestionType";
+import { FolderType } from "../types/FolderType";
 
 @Injectable({providedIn: 'root'})
 export class QuestionService {
@@ -42,4 +43,10 @@ export class QuestionService {
       withCredentials: true
     });
   }
+
+  getFolders(id: number) : Observable<FolderType[]> {
+    return this.http.get<FolderType[]>(`http://localhost:8080/questions/${id}/folders`, {
+      withCredentials: true
+    });
+  } 
 }

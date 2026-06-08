@@ -12,16 +12,16 @@ import { QuestionType } from "../types/QuestionType";
 @Component({
     templateUrl: './question-list-dialog.html',
     imports: [
-    MatFormFieldModule,
-    MatInputModule,
-    FormsModule,
-    MatButtonModule,
-    MatDialogContent,
-    MatDialogActions,
-    MatDialogClose,
-    MatCheckboxModule,
-    MatPaginatorModule
-],
+        MatFormFieldModule,
+        MatInputModule,
+        FormsModule,
+        MatButtonModule,
+        MatDialogContent,
+        MatDialogActions,
+        MatDialogClose,
+        MatCheckboxModule,
+        MatPaginatorModule
+    ],
 })
 
 export class QuestionListDialog {

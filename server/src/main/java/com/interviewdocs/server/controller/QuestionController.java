@@ -1,6 +1,7 @@
 package com.interviewdocs.server.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PagedModel;
@@ -10,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.interviewdocs.server.error.QuestionNotFoundException;
+import com.interviewdocs.server.model.Folder;
 import com.interviewdocs.server.model.Question;
 import com.interviewdocs.server.repository.*;
 import com.interviewdocs.server.services.QuestionService;
@@ -64,6 +66,18 @@ public class QuestionController {
             .orElseThrow(() -> new QuestionNotFoundException(id));
         
             return ResponseEntity.ok(question);
+        }   
+
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
+
+    @GetMapping("/questions/{id}/folders")
+    ResponseEntity<Set<Folder>> getFolders(@PathVariable("id") Long id, Authentication auth) {
+        if (auth.isAuthenticated()) {
+            Question question = repository.findById(id)
+            .orElseThrow(() -> new QuestionNotFoundException(id));
+        
+            return ResponseEntity.ok(question.getFolders());
         }   
 
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

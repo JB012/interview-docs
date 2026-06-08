@@ -113,7 +113,7 @@ public class Folder {
 
     public void removeQuestion(Question question) {
         questions.remove(question);
-        question.getFolders().add(this);
+        question.getFolders().remove(this);
     }
 
     @Override
