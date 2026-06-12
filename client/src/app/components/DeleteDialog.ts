@@ -21,7 +21,7 @@ import { MatInputModule } from "@angular/material/input";
 
 export class DeleteDialog {
     readonly dialogRef = inject(MatDialogRef<TableData>);
-
+    
     onNoClick(): void {
         this.dialogRef.close();
     }

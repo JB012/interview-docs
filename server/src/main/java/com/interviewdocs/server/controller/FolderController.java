@@ -3,6 +3,7 @@ package com.interviewdocs.server.controller;
 import com.interviewdocs.server.services.FolderService;
 import com.interviewdocs.server.services.QuestionService;
 
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,15 @@ public class FolderController {
         this.questionRepository = questionRepository;
     }
     
+    @GetMapping("/folders/all")
+    List<Folder> getAllFolders(Authentication auth) {
+        if (auth.isAuthenticated()) {
+            return folderRepository.findAllByUserId(auth.getName());
+        }
+
+        return null;
+    }
+    
     @GetMapping("/folders")
     PagedModel<Folder> getFolders(Authentication auth, @RequestParam(name = "page", defaultValue = "0") int page, 
     @RequestParam(name="size", defaultValue = "10") int size, @RequestParam(name = "sort", defaultValue = "viewed_at,desc") String sort) {
@@ -48,7 +58,6 @@ public class FolderController {
 
         return null;
     }
-      
     
     @PostMapping("/folders")
     ResponseEntity<Folder> newFolder(@RequestBody Folder newFolder, Authentication auth) {
@@ -59,7 +68,7 @@ public class FolderController {
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
-    @GetMapping("/folders/{id}")
+    @GetMapping("/folders/{id:[0-9]+}")
     ResponseEntity<Folder> one(@PathVariable("id") Long id, Authentication auth) {
         if (auth.isAuthenticated()) {
             Folder folder = folderRepository.findById(id)
@@ -109,6 +118,19 @@ public class FolderController {
 
         return null;
     }
+
+    @GetMapping("/folders/{id}/questions/all")
+    public Set<Question> getAllQuestionsFromFolder(Authentication auth, @PathVariable("id") Long id) {
+        if (auth.isAuthenticated()) {
+            Folder folder = folderRepository.findById(id)
+                .orElseThrow(() -> new FolderNotFoundException(id));
+            
+            return folder.getQuestions();
+        }
+
+        return null;
+    }
+    
 
     @PostMapping("/folders/{id}/questions/add")
     public void postQuestionToFolder(@PathVariable("id") Long folderId, @RequestBody Long questionId, Authentication auth) {

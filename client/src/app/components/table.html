@@ -36,18 +36,18 @@
     @if (questions()) {
         @for (question of questions(); track question) {
             @if (question) {
-                <tr class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [sortValue]="sortValue()" [question]="question"></tr>
+                <tr class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [updateQuestions]="updateQuestions" [sortValue]="sortValue()" [folderId]="folderId()" [question]="question"></tr>
             }
         }
     }
     @else if (folders()) {
         @for (folder of folders(); track folder) {
-            <tr class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [sortValue]="sortValue()" [folder]="folder"></tr>
+            <tr class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [updateFolders]="updateFolders" [sortValue]="sortValue()" [folder]="folder"></tr>
         }
     }
     @else if (videos()) {
         @for (video of videos(); track video) {
-            <tr class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [sortValue]="sortValue()" [video]="video"></tr>
+            <tr class="xxs:text-[6px] xs:text-[12px] 2xl:text-sm cursor-pointer hover:rounded-full hover:backdrop-brightness-90" [updateVideos]="updateVideos" [sortValue]="sortValue()" [video]="video"></tr>
         }
     }
 </tbody>

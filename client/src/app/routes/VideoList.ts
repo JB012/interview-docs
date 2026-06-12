@@ -2,7 +2,7 @@ import { Component, inject, signal } from "@angular/core";
 import { MenuButton } from "../components/MenuButton";
 import { AsyncPipe } from "@angular/common";
 import { VideoService } from "../services/VideoService";
-import { Observable } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { PagedVideoType } from "../types/VideoType";
 import { ActivatedRoute, Router } from "@angular/router";
 import { MatButton } from "@angular/material/button";
@@ -34,6 +34,8 @@ export class VideoList {
     private router = inject(Router);
     private route = inject(ActivatedRoute);
 
+    private videoRefresh = new BehaviorSubject<void>(undefined);
+    
     userId?: string;
     
     length = 0;
@@ -71,6 +73,8 @@ export class VideoList {
     updateVideos = () => {
         this.videos$ = this.videoService.getAllVideos(this.pageIndex, this.pageSize, 
             {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]});
+        
+        this.videoRefresh.next();
     }
 }
 

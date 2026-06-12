@@ -13,9 +13,21 @@ export class FolderService {
       withCredentials: true
     });
   }
+
+  getAllFolders() : Observable<FolderType[]> {
+    return this.http.get<FolderType[]>(`http://localhost:8080/folders/all`, {
+      withCredentials: true
+    });
+  }
    
   getQuestionsInFolder(id : number, pageIndex = 0, pageSize = 10, sort = {field: "viewedAt", direction: 'desc'}): Observable<PagedQuestionType> {
     return this.http.get<PagedQuestionType>(`http://localhost:8080/folders/${id}/questions?page=${pageIndex}&size=${pageSize}&sort=${sort.field},${sort.direction}`, {
+      withCredentials: true
+    });
+  }
+
+  getAllQuestionsInFolder(id: number) : Observable<QuestionType[]> {
+    return this.http.get<QuestionType[]>(`http://localhost:8080/folders/${id}/questions/all`, {
       withCredentials: true
     });
   }

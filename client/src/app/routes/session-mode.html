@@ -1,0 +1,65 @@
+<div class="flex flex-col w-full h-full p-2">
+    <div class="text-xl md:text-2xl font-semibold py-4">Session Mode</div>
+    <form class="flex flex-col w-full h-full gap-4 md:text-xl">
+        <div class="flex gap-2">
+            <input [checked]="folderRadioValue === 'no_folder'" type="radio" id="no_folder" value="no_folder" name="folder_select" [(ngModel)]="folderRadioValue"/>
+            <label for="no_folder">No folder</label>
+            <input [checked]="folderRadioValue === 'folder'" type="radio" id="folder" value="folder" name="folder_select" [(ngModel)]="folderRadioValue"/>
+            <label for="folder">Folder</label>
+        </div>
+        @if (folderRadioValue === "folder") {
+            <label for="folder-select">Folder</label>
+            <select class="w-50" name="folder" id="folder-select" (change)="onFolderChange()" [(ngModel)]="selectedFolderId">
+                <option selected value="">Choose a folder</option>
+                @if (folders$ | async; as folders) {
+                    @for (folder of folders; track folder) {
+                        <option [value]="folder.folder_id">{{folder.title}}</option>
+                    }
+                    @empty {
+                        <option value="">No folders created</option>
+                    }
+                }
+            </select>
+        }
+        <label for="number_of_questions">Number of questions</label>
+        <select name="total" id="number_of_questions" class="w-10">
+            @if (selectedFolderId === 0 && folderRadioValue === "folder") {
+                <option value="0">0</option>
+            }
+            @else if (questionsInFolder) {
+                @for (question of questionsInFolder; track $index; let idx = $index) {
+                    @if (idx >= 1) { 
+                        <option [value]="idx">{{idx}}</option>
+                    }
+                }
+                @empty {
+                    <option value="0">0</option>
+                }
+            }
+            @else if (totalQuestions$ | async; as totalQuestions) {
+                @for (question of totalQuestions; track $index; let idx = $index) {
+                    @if (idx >= 1) { 
+                        <option [value]="idx">{{idx}}</option>
+                    }
+                }
+                @empty {
+                    <option value="0">0</option>
+                }
+            }
+        </select>
+        <label for="answer_select">Type of answer</label>
+        <select name="answers" id="answer_select" class="w-50">
+            <option value="video" selected>Video</option>
+            <option value="text">Text</option>
+            <option value="both">Both video and text</option>
+        </select>
+        <label for="time_select">Time per question</label>
+        <select name="time" id="time_select" class="w-20">
+            <option value="30">30 sec</option>
+            <option value="60" selected>1 min</option>
+            <option value="300">5 min</option>
+            <option value="600">10 min</option>
+        </select>
+        <button class="py-10" matButton="filled">Start</button>
+    </form>
+</div>

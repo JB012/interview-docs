@@ -30,11 +30,7 @@ public class QuestionController {
     @GetMapping("/questions/all")
     ResponseEntity<List<Question>> getAllQuestions(Authentication auth) {
         if (auth.isAuthenticated()) {
-            List<Question> questions = repository.findAll();
-
-            questions.removeIf(question -> !question.getUserId().equals(auth.getName()));
-
-            return ResponseEntity.ok(questions);
+            return ResponseEntity.ok(repository.findAllByUserId(auth.getName()));
         }
         
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -59,7 +55,7 @@ public class QuestionController {
         return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
-    @GetMapping("/questions/{id}")
+    @GetMapping("/questions/{id:[0-9]+}")
     ResponseEntity<Question> one(@PathVariable("id") Long id, Authentication auth) {
         if (auth.isAuthenticated()) {
             Question question = repository.findById(id)

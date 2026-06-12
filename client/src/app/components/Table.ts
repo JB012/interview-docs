@@ -27,7 +27,12 @@ export class Table {
 
     sortValue = input.required<string>();
     orderValue = input.required<string>();
+
+    updateQuestions = input<() => void>();
+    updateFolders = input<() => void>();
+    updateVideos = input<() => void>();
     
+    folderId = input<number>();
     
     userId? : string;
 

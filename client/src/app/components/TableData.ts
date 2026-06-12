@@ -13,6 +13,7 @@ import { getUserIdNumber } from "../../utils";
 import { MatDialog } from "@angular/material/dialog";
 import { FolderDialog } from "./FolderDialog";
 import { DeleteDialog } from "./DeleteDialog";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
     selector: '[question], [folder], [video]',
@@ -46,6 +47,7 @@ export class TableData {
     folder = input<FolderType>();
     video = input<VideoType>();
     sortValue = input("");
+    folderId = input<number>();
 
     type = computed(() => {
         if (this.question()) return "question";
@@ -89,7 +91,12 @@ export class TableData {
     optionMenu = signal(false);
     timeZone = moment.tz.guess(true);
 
+    private _snackBar = inject(MatSnackBar);
     readonly dialog = inject(MatDialog);
+    
+    updateQuestions = input<() => void>();
+    updateFolders = input<() => void>();
+    updateVideos = input<() => void>();
 
     constructor(auth: AuthService) {
         auth.getCurrentUser().subscribe((res) => {
@@ -177,23 +184,36 @@ export class TableData {
         }
     }
 
-    
+    openSnackBar() {
+        this._snackBar.open("Item deleted", "Close", {
+            duration: 5000
+        });
+    }
+
     openDialog(type: string, id: number): void {
         const dialogRef = this.dialog.open(DeleteDialog);
 
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
+        dialogRef.afterClosed().subscribe((res) => {
+            if (res) {
                 if (type === "video") {
                     this.videoService.deleteVideo(id).subscribe();
+                    this.updateVideos();
                 }
                 else if (type === "folder") {
                     this.folderService.deleteFolder(id).subscribe();
+                    this.updateFolders();
                 }
                 else {
-                    this.questionService.deleteQuestion(id).subscribe();
+                    if (this.folderId()) {
+                        this.folderService.deleteQuestionInFolder(this.folderId()!, id).subscribe();
+                    }
+                    else {   
+                        this.questionService.deleteQuestion(id).subscribe();
+                    }
+                    this.updateQuestions();
                 }
 
-                //snackbar
+                this.openSnackBar();
             }
         });
     }

@@ -9,6 +9,7 @@ import { VideoPage } from './routes/VideoPage';
 import { VideoList } from './routes/VideoList';
 import { FolderList } from './routes/FolderList';
 import { FolderPage } from './routes/FolderPage';
+import { SessionMode } from './routes/SessionMode';
 
 export const routes: Routes = [
     {
@@ -19,6 +20,11 @@ export const routes: Routes = [
         path: 'home',
         component: Home,
         canActivate: [userGuard]
+    },
+    {
+        path: 'session-mode',
+        component: SessionMode,
+        canActivate: [userGuard],
     },
     {
         path: 'folders',

@@ -6,7 +6,7 @@
                 <menu-button type="videos" [updateVideos]="updateVideos" [(sortBy)]="sortValue" [(orderBy)]="orderValue" />
             </div>
             @if (videos.content && videos.content.length > 0) {
-                <table [videos]="videos.content" [sortValue]="sortValue()" [orderValue]="orderValue()" ></table>
+                <table [updateVideos]="updateVideos" [videos]="videos.content" [sortValue]="sortValue()" [orderValue]="orderValue()" ></table>
             }
             @else {
                 <div class="flex pt-8 w-full h-full justify-center">

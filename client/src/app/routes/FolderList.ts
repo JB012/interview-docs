@@ -2,7 +2,7 @@ import { Component, inject, signal } from "@angular/core";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MenuButton } from "../components/MenuButton";
 import { MatPaginator, PageEvent } from "@angular/material/paginator";
-import { shareReplay } from "rxjs";
+import { BehaviorSubject, shareReplay } from "rxjs";
 import { AuthService } from "../services/AuthService";
 import { FolderService } from "../services/FolderService";
 import { orderDirection, sortFields } from "../../utils";
@@ -32,6 +32,8 @@ export class FolderList {
     private folderService = inject(FolderService);
     readonly dialog = inject(MatDialog);
 
+    
+    private folderRefresh = new BehaviorSubject<void>(undefined);
     folders$ = this.folderService.getFolders().pipe(shareReplay(1)); 
     
     sortValue = signal("Last viewed");
@@ -65,6 +67,8 @@ export class FolderList {
     updateFolders = () => {
         this.folders$ = this.folderService.getFolders(this.pageIndex, this.pageSize, 
             {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]});
+
+        this.folderRefresh.next();
     }
 
     openDialog(): void {

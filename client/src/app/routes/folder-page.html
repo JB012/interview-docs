@@ -13,7 +13,7 @@
                 <menu-button type="questions" class="py-2" [updateQuestions]="updateQuestions" [(sortBy)]="sortValue" [(orderBy)]="orderValue" /> 
             </div>
                 @if (questions.content && questions.page.totalElements > 0) {
-                    <table [questions]="questions.content" [sortValue]="sortValue()" [orderValue]="orderValue()" ></table>
+                    <table [updateQuestions]="updateQuestions" [folderId]="folder.folder_id" [questions]="questions.content" [sortValue]="sortValue()" [orderValue]="orderValue()" ></table>
                     <mat-paginator
                     (page)="handlePageEvent($event)"
                     [hidePageSize]="true"

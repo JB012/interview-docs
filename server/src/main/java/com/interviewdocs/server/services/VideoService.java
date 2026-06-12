@@ -55,8 +55,7 @@ public class VideoService {
             pageable = PageRequest.of(page, size, Sort.by(field).ascending());
         }
         
-        List<Video> videos = videoRepository.findAll();
-        videos.removeIf(video -> !video.getUserId().equals(userId));
+        List<Video> videos = videoRepository.findAllByUserId(userId);
 
         for (int i = 0; i < videos.size(); i++) {
             try {
