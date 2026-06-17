@@ -16,8 +16,11 @@ import com.interviewdocs.server.repository.QuestionRepository;
 @Service
 public class QuestionService {
     
-    @Autowired
     private QuestionRepository questionRepository;
+
+    QuestionService(QuestionRepository questionRepository) {
+        this.questionRepository = questionRepository;
+    }
 
     public Page<Question> getQuestions(int page, int size, String sort, String userId) {
         String[] sortOptions = sort.split(",");

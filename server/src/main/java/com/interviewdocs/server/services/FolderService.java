@@ -27,6 +27,7 @@ public class FolderService {
     @Autowired
     private QuestionRepository questionRepository;
 
+    @Transactional
     public Page<Folder> getFolders(int page, int size, String sort, String userId) {
         String[] sortOptions = sort.split(",");
         
@@ -45,6 +46,7 @@ public class FolderService {
         return folderRepository.findAllByUserId(userId, pageable);
     }
 
+    @Transactional
     public Page<Question> getQuestionsInFolder(int page, int size, String sort, String userId, Long folderId) {
         String[] sortOptions = sort.split(",");
         

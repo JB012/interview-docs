@@ -29,15 +29,16 @@ import com.interviewdocs.server.repository.QuestionRepository;
 
 @RestController
 public class FolderController {
+    private final FolderService folderService;
     private final FolderRepository folderRepository;
     private final QuestionRepository questionRepository;
 
     @Autowired
-    private FolderService folderService;
-
-    FolderController(FolderRepository folderRepository, QuestionRepository questionRepository) {
+    FolderController(FolderRepository folderRepository, QuestionRepository questionRepository, 
+        FolderService folderService) {
         this.folderRepository = folderRepository;
         this.questionRepository = questionRepository;
+        this.folderService = folderService;
     }
     
     @GetMapping("/folders/all")
