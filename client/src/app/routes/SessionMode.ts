@@ -1,7 +1,7 @@
 import { Component, computed, ElementRef, inject, signal, ViewChild } from "@angular/core";
 import { MatAnchor } from "@angular/material/button";
 import { FolderService } from "../services/FolderService";
-import { AsyncPipe } from "@angular/common";
+import { AsyncPipe, NgClass } from "@angular/common";
 import { FolderType } from "../types/FolderType";
 import { QuestionService } from "../services/QuestionService";
 import { QuestionType } from "../types/QuestionType";
@@ -12,10 +12,10 @@ import moment from "moment-timezone";
 @Component({
     templateUrl: './session-mode.html',
     imports: [
-        MatAnchor,
-        AsyncPipe,
-        FormsModule
-    ]
+    MatAnchor,
+    AsyncPipe,
+    FormsModule,
+]
 })
 
 export class SessionMode {
@@ -27,17 +27,17 @@ export class SessionMode {
     questionsInFolder : QuestionType[] | undefined;
     randomIndexes : number[] = [];
     selectedFolderId = 0;
-    selectedNumberOfQuestions = 0;
+    selectedNumberOfQuestions = 1;
     selectedTime = signal(60);
-    selectedAnswer = signal("");
+    selectedAnswer = "video";
     modeView = signal(false);
     finishedQuestion = signal(false);
-    preparationTime = signal(20);
+    preparationTime = signal(5);
     timeState = signal("preparation");
     intervalId = 0;
-    @ViewChild("textarea") answerInput! : ElementRef<HTMLTextAreaElement>;
+    answerInput = "";
     @ViewChild('recordedVideo') recordedVideoElement!: ElementRef<HTMLVideoElement>;
-    @ViewChild('video')previewVideoElement!: ElementRef<HTMLVideoElement>;
+    @ViewChild('video') previewVideoElement!: ElementRef<HTMLVideoElement>;
 
     mediaRecorder: any;
     recordedBlobs: Blob[] = [];
@@ -52,10 +52,6 @@ export class SessionMode {
         return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     });
 
-    constructor() {
-        this.onPreparationTime();
-    }
-    
     computeRandomIndexes() {
         for (let i = 0; i < this.selectedNumberOfQuestions; i++) {
             let index = Math.floor(Math.random() * this.selectedNumberOfQuestions);
@@ -81,6 +77,10 @@ export class SessionMode {
             if (this.selectedTime() === 0) {
                 clearInterval(this.intervalId);
                 this.onFinishAnswering();
+
+                if (this.selectedAnswer === "video") {
+                    this.stopRecording();
+                }
             }
         }, 1000);
     }
@@ -93,30 +93,47 @@ export class SessionMode {
                 clearInterval(this.intervalId);
                 this.timeState.set("response");
                 this.onResponseTime();
+
+                if (this.selectedAnswer === "video") {
+                    this.startRecording();
+                }
             }
         }, 1000);
     }
 
     onStartMode() {
         this.modeView.set(true);
+        this.onPreparationTime();
+        if (this.selectedAnswer === "video") {
+            this.retrieveStream();
+        }
     }
 
     onFinishAnswering() {
         if (this.timeState() === "response") {
-            // and user has input
-            this.finishedQuestion.set(true);
-            
-            if (this.selectedAnswer() === "video") {
+            if (this.selectedAnswer === "text" && this.answerInput) {
+                this.finishedQuestion.set(true);
+            }
+            else if (this.selectedAnswer === "video") {
                 this.stopRecording();
+                this.finishedQuestion.set(true);
             }
         }
+    }
+
+    saveAnswer() {
+        // save as text: append text to question answer
+        // save as video: add video to question video list
+    }
+    nextQuestion() {
+        // mark question as selected. next index for question. reset variables
     }
 
     onFinishMode() {
         this.modeView.set(false);
     }
 
-     retrieveStream() {
+    retrieveStream() {
         navigator.mediaDevices
         .getUserMedia({
             video: {
