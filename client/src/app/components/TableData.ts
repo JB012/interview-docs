@@ -196,21 +196,26 @@ export class TableData {
         dialogRef.afterClosed().subscribe((res) => {
             if (res) {
                 if (type === "video") {
-                    this.videoService.deleteVideo(id).subscribe();
-                    this.updateVideos();
+                    this.videoService.deleteVideo(id).subscribe(() => {
+                        this.updateVideos()?.();
+                    });
                 }
                 else if (type === "folder") {
-                    this.folderService.deleteFolder(id).subscribe();
-                    this.updateFolders();
+                    this.folderService.deleteFolder(id).subscribe(() => {
+                        this.updateFolders()?.();
+                    });
                 }
                 else {
                     if (this.folderId()) {
-                        this.folderService.deleteQuestionInFolder(this.folderId()!, id).subscribe();
+                        this.folderService.deleteQuestionInFolder(this.folderId()!, id).subscribe(() => {
+                            this.updateQuestions()?.();
+                        });
                     }
                     else {   
-                        this.questionService.deleteQuestion(id).subscribe();
+                        this.questionService.deleteQuestion(id).subscribe(() => {
+                            this.updateQuestions()?.();
+                        });
                     }
-                    this.updateQuestions();
                 }
 
                 this.openSnackBar();

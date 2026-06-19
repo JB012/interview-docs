@@ -8,7 +8,7 @@
             <menu-button type="questions" class="py-2" [updateQuestions]="updateQuestions" [(sortBy)]="sortValue" [(orderBy)]="orderValue" /> 
         </div>
         @if (questions.content && questions.content.length > 0) {
-            <table [questions]="questions.content" [sortValue]="sortValue()" [orderValue]="orderValue()"></table>
+            <table [updateQuestions]="updateQuestions" [questions]="questions.content" [sortValue]="sortValue()" [orderValue]="orderValue()"></table>
         }
         @else {
             <div class="flex pt-8 w-full h-full justify-center">

@@ -3,8 +3,8 @@ import { MatButtonModule } from "@angular/material/button";
 import { MatPaginatorModule, PageEvent } from "@angular/material/paginator";
 import { MenuButton } from "../components/MenuButton";
 import { AsyncPipe } from '@angular/common';
-import { QuestionType } from "../types/QuestionType";
-import { Observable, shareReplay } from "rxjs";
+import { PagedQuestionType, QuestionType } from "../types/QuestionType";
+import { Observable, shareReplay, Subject } from "rxjs";
 import { QuestionService } from "../services/QuestionService";
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {Router} from '@angular/router';
@@ -33,8 +33,9 @@ export class Home implements OnInit {
     pageEvent: PageEvent | undefined;
     
     private questionService = inject(QuestionService);
-    questions$ = this.questionService.getQuestions().pipe(shareReplay(1)); 
-    
+    private questionSource = new Subject<PagedQuestionType>();
+    questions$ = this.questionSource.asObservable();
+
     sortValue = signal("Last viewed");
     orderValue = signal("Newest first");
 
@@ -43,8 +44,11 @@ export class Home implements OnInit {
     pageIndex = 0;
 
     updateQuestions = () => {
-        this.questions$ = this.questionService.getQuestions(this.pageIndex, this.pageSize, 
-            {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]});
+        this.questionService.getQuestions(this.pageIndex, this.pageSize, 
+            {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]})
+        .subscribe((questions) => {
+            this.questionSource.next(questions);
+        })
     }
 
     private router = inject(Router);
@@ -56,10 +60,12 @@ export class Home implements OnInit {
     }
     
     ngOnInit(): void {
-        this.questions$.subscribe((questions) => {
+        this.questionService.getQuestions().subscribe((questions) => {
             this.length = questions.page.totalElements;
             this.pageSize = questions.page.size;
             this.pageIndex = questions.page.number;
+
+            this.questionSource.next(questions);
         });
     }
 
@@ -67,8 +73,7 @@ export class Home implements OnInit {
         this.pageSize = e.pageSize;
         this.pageIndex = e.pageIndex;
 
-        this.questions$ = this.questionService.getQuestions(this.pageIndex, this.pageSize, 
-            {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]});
+        this.updateQuestions();
     }
 
     addQuestion() {

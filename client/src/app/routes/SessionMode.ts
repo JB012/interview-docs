@@ -6,8 +6,15 @@ import { FolderType } from "../types/FolderType";
 import { QuestionService } from "../services/QuestionService";
 import { QuestionType } from "../types/QuestionType";
 import { FormsModule } from "@angular/forms";
-import { shareReplay } from "rxjs";
+import { Observable, shareReplay } from "rxjs";
 import moment from "moment-timezone";
+import { VideoDialog } from "../components/VideoDialog";
+import { VideoService } from "../services/VideoService";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { getUserIdNumber, s3Client } from "../../utils";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { AuthService } from "../services/AuthService";
+import { MatDialog } from "@angular/material/dialog";
 
 @Component({
     templateUrl: './session-mode.html',
@@ -22,9 +29,13 @@ export class SessionMode {
     folderRadioValue = "no_folder";
     folderService = inject(FolderService);
     questionService = inject(QuestionService);
+    videoService = inject(VideoService);
+    private _videoSnackBar = inject(MatSnackBar);
+    readonly dialog = inject(MatDialog);
     folders$ = this.folderService.getAllFolders().pipe(shareReplay(1));
     totalQuestions$ = this.questionService.getAllQuestions().pipe(shareReplay(1));
     questionsInFolder : QuestionType[] | undefined;
+    currentQuestion! : QuestionType;
     randomIndexes : number[] = [];
     selectedFolderId = 0;
     selectedNumberOfQuestions = 1;
@@ -32,9 +43,12 @@ export class SessionMode {
     selectedAnswer = "video";
     modeView = signal(false);
     finishedQuestion = signal(false);
-    preparationTime = signal(5);
+    disableSave = signal(false);
+    preparationTime = signal(10);
     timeState = signal("preparation");
+    videoTitle = signal("");
     intervalId = 0;
+    index = 0;
     answerInput = "";
     @ViewChild('recordedVideo') recordedVideoElement!: ElementRef<HTMLVideoElement>;
     @ViewChild('video') previewVideoElement!: ElementRef<HTMLVideoElement>;
@@ -51,7 +65,7 @@ export class SessionMode {
         const seconds = this.selectedTime() % 60;
         return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     });
-
+    
     computeRandomIndexes() {
         for (let i = 0; i < this.selectedNumberOfQuestions; i++) {
             let index = Math.floor(Math.random() * this.selectedNumberOfQuestions);
@@ -59,7 +73,7 @@ export class SessionMode {
                 index = Math.floor(Math.random() * this.selectedNumberOfQuestions);
             }
 
-            this.randomIndexes.includes(index);
+            this.randomIndexes.push(index);
         }
     }
 
@@ -101,9 +115,20 @@ export class SessionMode {
         }, 1000);
     }
 
+    assignQuestion(id: number) {
+        this.totalQuestions$.subscribe((questions) => {
+            this.currentQuestion = questions[id];
+        });
+    }
+
     onStartMode() {
         this.modeView.set(true);
         this.onPreparationTime();
+        this.computeRandomIndexes();
+        if (this.randomIndexes.length > 0) {
+            this.assignQuestion(this.randomIndexes[this.index++]);
+        }
+
         if (this.selectedAnswer === "video") {
             this.retrieveStream();
         }
@@ -122,11 +147,82 @@ export class SessionMode {
     }
 
     saveAnswer() {
-        // save as text: append text to question answer
-        // save as video: add video to question video list
+        this.openSnackBar("Saving...");
+        if (this.selectedAnswer === "text") {
+            this.questionService.postQuestion({user_id: this.currentQuestion.user_id, id: this.currentQuestion.id,
+                answer: this.currentQuestion.answer + "\n" + this.answerInput
+            }).subscribe();
+        }
+        else {
+            this.openDialog(this.currentQuestion.user_id!, this.currentQuestion.id!);
+        }
+
+        this.disableSave.set(true);
+        this.openSnackBar("Answer saved");
     }
+
+    openDialog(userId: string, questionId: number): void {
+        const dialogRef = this.dialog.open(VideoDialog, {
+        data: {title: this.videoTitle()},
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+        if (result !== undefined) {
+            this.videoTitle.set(result);
+            this.saveVideo(userId, questionId);
+        }
+        });
+    }
+    
+    openSnackBar(message : string) {
+        this._videoSnackBar.open(message, "Close", {
+            duration: 5000
+        });
+    }
+    
+    async saveVideo(userId: string, questionId: number) {
+        try {
+            const title = this.videoTitle().replaceAll(' ', '_');
+
+            this.videoService.postVideo({user_id: userId, created_at: this.timeCreated, question_id: questionId, title: title}).subscribe(async () => {
+                const videoBuffer = new Blob(this.recordedBlobs, {type: 'video/webm'});
+                const videoFile = new File([videoBuffer], "test.mp4", {type: 'video/webm'});
+
+                const command = new PutObjectCommand({
+                    Key: `${userId}/${title}`,
+                    Bucket: 'interviewdocs-videos',
+                    Body: videoFile,
+                    ContentType: videoFile.type
+                });
+
+                await s3Client.send(command);
+        
+                this.disableSave.set(true);
+            });
+
+            
+            this.videoTitle.set("");
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
     nextQuestion() {
-        // mark question as selected. next index for question. reset variables
+        this.assignQuestion(this.randomIndexes[this.index++]);
+        this.preparationTime.set(10);
+        this.selectedTime.set(60);
+        this.timeState.set("preparation");
+        this.finishedQuestion.set(false);
+        this.disableSave.set(false);
+        this.onPreparationTime();
+
+        if (this.selectedAnswer === "video") {
+            this.retrieveStream();
+        }
+        else {
+            this.answerInput = "";
+        }
     }
 
     onFinishMode() {

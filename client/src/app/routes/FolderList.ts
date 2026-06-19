@@ -2,7 +2,7 @@ import { Component, inject, signal } from "@angular/core";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MenuButton } from "../components/MenuButton";
 import { MatPaginator, PageEvent } from "@angular/material/paginator";
-import { BehaviorSubject, shareReplay } from "rxjs";
+import { BehaviorSubject, shareReplay, Subject } from "rxjs";
 import { AuthService } from "../services/AuthService";
 import { FolderService } from "../services/FolderService";
 import { orderDirection, sortFields } from "../../utils";
@@ -12,6 +12,7 @@ import { Router } from "@angular/router";
 import { Table } from "../components/Table";
 import { FolderDialog } from "../components/FolderDialog";
 import { MatDialog } from "@angular/material/dialog";
+import { PagedFolderType } from "../types/FolderType";
 
 @Component({
     templateUrl: './folder-list.html',
@@ -32,9 +33,8 @@ export class FolderList {
     private folderService = inject(FolderService);
     readonly dialog = inject(MatDialog);
 
-    
-    private folderRefresh = new BehaviorSubject<void>(undefined);
-    folders$ = this.folderService.getFolders().pipe(shareReplay(1)); 
+    private folderSource = new Subject<PagedFolderType>();
+    folders$ = this.folderSource.asObservable();
     
     sortValue = signal("Last viewed");
     orderValue = signal("Newest first");
@@ -44,9 +44,11 @@ export class FolderList {
     pageIndex = 0;
 
     ngOnInit() {
-        this.folders$.subscribe((folders) => {
+        this.folderService.getFolders().subscribe((folders) => {
             this.pageSize = folders.page.size;
             this.pageIndex = folders.page.number;
+
+            this.folderSource.next(folders);
         });
     }
 
@@ -60,15 +62,15 @@ export class FolderList {
         this.pageSize = e.pageSize;
         this.pageIndex = e.pageIndex;
 
-        this.folders$ = this.folderService.getFolders(this.pageIndex, this.pageSize, 
-            {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]});
+        this.updateFolders();
     }
 
     updateFolders = () => {
-        this.folders$ = this.folderService.getFolders(this.pageIndex, this.pageSize, 
-            {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]});
-
-        this.folderRefresh.next();
+        this.folderService.getFolders(this.pageIndex, this.pageSize, 
+            {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]})
+            .subscribe((folders) => {
+                this.folderSource.next(folders);
+            })
     }
 
     openDialog(): void {

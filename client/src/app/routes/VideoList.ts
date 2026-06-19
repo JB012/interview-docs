@@ -2,7 +2,7 @@ import { Component, inject, signal } from "@angular/core";
 import { MenuButton } from "../components/MenuButton";
 import { AsyncPipe } from "@angular/common";
 import { VideoService } from "../services/VideoService";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, Subject } from "rxjs";
 import { PagedVideoType } from "../types/VideoType";
 import { ActivatedRoute, Router } from "@angular/router";
 import { MatButton } from "@angular/material/button";
@@ -29,12 +29,11 @@ export class VideoList {
     orderValue = signal("Newest first");
 
     videoService = inject(VideoService);
-    videos$ = this.videoService.getAllVideos();
+    videoSource = new Subject<PagedVideoType>();
+    videos$ = this.videoSource.asObservable();
     
     private router = inject(Router);
     private route = inject(ActivatedRoute);
-
-    private videoRefresh = new BehaviorSubject<void>(undefined);
     
     userId?: string;
     
@@ -54,7 +53,16 @@ export class VideoList {
             this.router.navigate(['new'], {relativeTo: this.route});
         }
     }
+    
+    ngOnInit(): void {
+        this.videoService.getAllVideos().subscribe((videos) => {
+            this.length = videos.page.totalElements;
+            this.pageSize = videos.page.size;
+            this.pageIndex = videos.page.number;
 
+            this.videoSource.next(videos);
+        });
+    }
     constructor(public auth : AuthService) {
         this.auth.getCurrentUser().subscribe((res) => {
             this.userId = res!.user!.claims.sub;
@@ -65,16 +73,16 @@ export class VideoList {
         this.pageSize = e.pageSize;
         this.pageIndex = e.pageIndex;
 
-        this.videos$ = this.videoService.getAllVideos(this.pageIndex, this.pageSize, 
-            {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]});
+        this.updateVideos();
     }
 
     
     updateVideos = () => {
-        this.videos$ = this.videoService.getAllVideos(this.pageIndex, this.pageSize, 
-            {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]});
-        
-        this.videoRefresh.next();
+        this.videoService.getAllVideos(this.pageIndex, this.pageSize, 
+            {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]})
+            .subscribe((videos) => {
+                this.videoSource.next(videos);
+            })
     }
 }
 

@@ -66,55 +66,63 @@
 }
 @else {
     <div class="flex xl:text-2xl lg:text-xl md:text-lg xxs:text-xs flex-col w-full h-full">
-        <div class="flex md:flex-row xxs:flex-col p-4 gap-4 w-full h-full">
-            <div class="flex w-full flex-col gap-4">    
-                <div class="flex w-1/4 justify-between items-center">
-                    <div class="flex whitespace-nowrap w-full xl:text-3xl lg:text-2xl md:text-xl xxs:text-lg">Question 0 of 0</div>
-                    <div class="absolute right-4">
-                        @if (timeState() === "preparation") {
-                            <div class="text-end">{{`0:${preparationTime().toString().padStart(2, '0')}`}}</div>
-                        }
-                        @else {
-                            @if (finishedQuestion()) {
-                                <button>Next</button>
+        @if (currentQuestion) {
+            <div class="flex md:flex-row xxs:flex-col p-4 gap-4 w-full h-full">
+                <div class="flex w-full flex-col gap-4">    
+                    <div class="flex w-1/4 justify-between items-center">
+                        <div class="flex whitespace-nowrap w-full xl:text-3xl lg:text-2xl md:text-xl xxs:text-lg">
+                            Question {{index}} of {{selectedNumberOfQuestions}}
+                        </div>
+                        <div class="absolute right-4">
+                            @if (timeState() === "preparation") {
+                                <div class="text-end">{{`0:${preparationTime().toString().padStart(2, '0')}`}}</div>
                             }
                             @else {
-                                <div class="flex gap-2 items-center">     
-                                    <div class="w-3 h-3 bg-red-500 rounded-full"></div>
-                                    {{formattedTime()}}
-                                </div>
-                            }
-                        }
-                    </div>
-                </div>
-                <div class="flex flex-wrap">
-                    Please describe how your skills, education, and experience will help you succeed
-                    in this position.
-                </div>
-            </div>
-            <div class="flex grow pt-12 xxs:text-xs flex-col gap-4 w-full h-full">
-                    @if (selectedAnswer === "text") {
-                        <textarea [disabled]="timeState() === 'preparation' || finishedQuestion() ? true : false" [(ngModel)]="answerInput" class="w-full h-full p-2" placeholder="Enter response here..."></textarea>
-                    }
-                    @else if (selectedAnswer === "video") {
-                        <div class="flex items-center justify-center">
-                            @if (!finishedQuestion()) {
-                                <video class="w-fit" #video autoplay muted></video>
-                            }
-                            @else {
-                                <video class="w-fit" controls #recordedVideo></video>
+                                @if (finishedQuestion()) {
+                                    @if (index !== selectedNumberOfQuestions) {
+                                        <button matButton="filled" (click)="nextQuestion()">Next</button>
+                                    }
+                                    @else {
+                                        <button (click)="onFinishMode()" matButton="filled">Finish</button>
+                                    }
+                                }
+                                @else {
+                                    <div class="flex gap-2 items-center">     
+                                        <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                                        {{formattedTime()}}
+                                    </div>
+                                }
                             }
                         </div>
-                    }    
-                    <div class="flex w-full justify-center">
-                        @if (!finishedQuestion() && timeState() === "response") {
-                            <button [disabled]="selectedAnswer === 'text' && !answerInput" matButton="filled" (click)="onFinishAnswering()">Finish</button>
-                        }
-                        @else if (finishedQuestion()) {
-                            <button matButton="filled">Save</button>
-                        }
                     </div>
+                    <div class="flex flex-wrap">
+                        {{currentQuestion.question}}
+                    </div>
+                </div>
+                <div class="flex grow pt-12 xxs:text-xs flex-col gap-4 w-full h-full">
+                        @if (selectedAnswer === "text") {
+                            <textarea [disabled]="timeState() === 'preparation' || finishedQuestion() ? true : false" [(ngModel)]="answerInput" class="w-full h-full p-2" placeholder="Enter response here..."></textarea>
+                        }
+                        @else if (selectedAnswer === "video") {
+                            <div class="flex items-center justify-center">
+                                @if (!finishedQuestion()) {
+                                    <video class="w-fit" #video autoplay muted></video>
+                                }
+                                @else {
+                                    <video class="w-fit" controls #recordedVideo></video>
+                                }
+                            </div>
+                        }    
+                        <div class="flex w-full justify-center">
+                            @if (!finishedQuestion() && timeState() === "response") {
+                                <button [disabled]="selectedAnswer === 'text' && !answerInput" matButton="filled" (click)="onFinishAnswering()">Finish</button>
+                            }
+                            @else if (finishedQuestion()) {
+                                <button [disabled]="disableSave()" (click)="saveAnswer()" matButton="filled">Save</button>
+                            }
+                        </div>
+                </div>
             </div>
-        </div>
+        }
     </div>
 }
