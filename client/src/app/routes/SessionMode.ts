@@ -6,7 +6,7 @@ import { FolderType } from "../types/FolderType";
 import { QuestionService } from "../services/QuestionService";
 import { QuestionType } from "../types/QuestionType";
 import { FormsModule } from "@angular/forms";
-import { Observable, shareReplay } from "rxjs";
+import { interval, Observable, shareReplay } from "rxjs";
 import moment from "moment-timezone";
 import { VideoDialog } from "../components/VideoDialog";
 import { VideoService } from "../services/VideoService";
@@ -38,7 +38,7 @@ export class SessionMode {
     currentQuestion! : QuestionType;
     randomIndexes : number[] = [];
     selectedFolderId = 0;
-    selectedNumberOfQuestions = 1;
+    selectedNumberOfQuestions = 0;
     selectedTime = signal(60);
     selectedAnswer = "video";
     modeView = signal(false);
@@ -89,12 +89,7 @@ export class SessionMode {
             this.selectedTime.update((num) => num -= 1);
 
             if (this.selectedTime() === 0) {
-                clearInterval(this.intervalId);
                 this.onFinishAnswering();
-
-                if (this.selectedAnswer === "video") {
-                    this.stopRecording();
-                }
             }
         }, 1000);
     }
@@ -121,6 +116,19 @@ export class SessionMode {
         });
     }
 
+    onNumberQuestionChange(event : Event) {
+        this.selectedNumberOfQuestions = parseInt((event.target as HTMLSelectElement).value);
+    }
+
+    startDisable() {
+        if (this.selectedNumberOfQuestions === 0 || 
+            this.folderRadioValue === "folder" && this.selectedFolderId === 0) {
+            return true;
+        }
+
+        return false;
+    }
+
     onStartMode() {
         this.modeView.set(true);
         this.onPreparationTime();
@@ -135,13 +143,16 @@ export class SessionMode {
     }
 
     onFinishAnswering() {
-        if (this.timeState() === "response") {
-            if (this.selectedAnswer === "text" && this.answerInput) {
-                this.finishedQuestion.set(true);
-            }
-            else if (this.selectedAnswer === "video") {
-                this.stopRecording();
-                this.finishedQuestion.set(true);
+        if (!this.finishedQuestion()) {
+            clearInterval(this.intervalId);
+            if (this.timeState() === "response") {
+                if (this.selectedAnswer === "text" && this.answerInput) {
+                    this.finishedQuestion.set(true);
+                }
+                else if (this.selectedAnswer === "video") {
+                    this.stopRecording();
+                    this.finishedQuestion.set(true);
+                }
             }
         }
     }
@@ -226,6 +237,8 @@ export class SessionMode {
     }
 
     onFinishMode() {
+        this.selectedTime.set(60);
+        clearInterval(this.intervalId);
         this.modeView.set(false);
     }
 
@@ -307,10 +320,10 @@ export class SessionMode {
 
     onFolderChange() {
         this.folderService.getAllQuestionsInFolder(this.selectedFolderId).subscribe((questions) => {
-            this.questionsInFolder = questions.map((question) => {
-                question.checked = false;
-                return question;
-            });
+            this.questionsInFolder = questions;
+            if (!this.questionsInFolder) {
+                
+            }
         })
     }
 }

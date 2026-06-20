@@ -1,6 +1,6 @@
 import { Component, inject, Signal, signal } from "@angular/core";
 import { AuthService } from "../services/AuthService";
-import { BehaviorSubject, forkJoin, map, Observable, shareReplay, switchMap } from "rxjs";
+import { BehaviorSubject, forkJoin, map, Observable, shareReplay, Subject, switchMap } from "rxjs";
 import { PagedQuestionType, QuestionType } from "../types/QuestionType";
 import { ActivatedRoute, Router } from "@angular/router";
 import { FolderService } from "../services/FolderService";
@@ -43,10 +43,8 @@ export class FolderPage {
     readonly dialog = inject(MatDialog);
 
     loading = signal(false);
-    
-    private questionsRefresh = new BehaviorSubject<void>(undefined);
-
-    questionsInFolder$!: Observable<PagedQuestionType>;
+    private questionSource = new Subject<PagedQuestionType>();
+    questionsInFolder$ = this.questionSource.asObservable();
     allQuestions : QuestionType[] | undefined;
 
     folder$: Observable<FolderType> | undefined;
@@ -66,7 +64,10 @@ export class FolderPage {
         this.activatedRoute.params.subscribe((params) => {
             this.id.set(parseInt(params['id']));
             
-            this.questionsInFolder$ = this.folderService.getQuestionsInFolder(parseInt(params['id']));
+            this.folderService.getQuestionsInFolder(parseInt(params['id'])).subscribe((questions) => {
+                this.questionSource.next(questions);
+            });
+
             this.folder$ = this.folderService.getFolder(parseInt(params['id']));
         });
 
@@ -87,10 +88,11 @@ export class FolderPage {
     }
 
     updateQuestions = () => {
-        this.questionsInFolder$ = this.folderService.getQuestionsInFolder(this.id(), this.pageIndex, this.pageSize, 
-            {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]});
-
-        this.questionsRefresh.next();
+        this.folderService.getQuestionsInFolder(this.id(), this.pageIndex, this.pageSize, 
+            {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]})
+            .subscribe((questions) => {
+                this.questionSource.next(questions);
+            })
     }
 
     createNewQuestion() {
