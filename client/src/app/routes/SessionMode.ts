@@ -15,6 +15,7 @@ import { getUserIdNumber, s3Client } from "../../utils";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { AuthService } from "../services/AuthService";
 import { MatDialog } from "@angular/material/dialog";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @Component({
     templateUrl: './session-mode.html',
@@ -22,6 +23,7 @@ import { MatDialog } from "@angular/material/dialog";
     MatAnchor,
     AsyncPipe,
     FormsModule,
+    MatProgressSpinnerModule
 ]
 })
 
@@ -44,6 +46,7 @@ export class SessionMode {
     modeView = signal(false);
     finishedQuestion = signal(false);
     disableSave = signal(false);
+    loading = signal(true);
     preparationTime = signal(10);
     timeState = signal("preparation");
     videoTitle = signal("");
@@ -65,7 +68,26 @@ export class SessionMode {
         const seconds = this.selectedTime() % 60;
         return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     });
-    
+
+    ngOnInit() {
+        this.setInitialNumberQuestions();
+    }
+
+    setInitialNumberQuestions() {
+        if (this.folderRadioValue === "no_folder") {    
+            this.questionService.getQuestions().subscribe((res) => {
+                this.selectedNumberOfQuestions = res.page.totalElements ? 1 : 0;
+                this.loading.set(false);
+            });
+        }
+        else {
+            this.folderService.getFolders().subscribe((res) => {
+                this.selectedNumberOfQuestions = res.page.totalElements ? 1 : 0;
+                this.loading.set(false);
+            });
+        }
+    }
+
     computeRandomIndexes() {
         for (let i = 0; i < this.selectedNumberOfQuestions; i++) {
             let index = Math.floor(Math.random() * this.selectedNumberOfQuestions);
@@ -75,13 +97,6 @@ export class SessionMode {
 
             this.randomIndexes.push(index);
         }
-    }
-
-    onCountDown() {
-        const timeoutId = setTimeout(() => {
-            // if video start recording
-            // text allow user to edit
-        }, 1000 * this.selectedTime());
     }
 
     onResponseTime() {
@@ -130,16 +145,22 @@ export class SessionMode {
     }
 
     onStartMode() {
+        console.log("1");
         this.modeView.set(true);
+        console.log("2");
         this.onPreparationTime();
+        console.log("3");
         this.computeRandomIndexes();
+        console.log("4");
         if (this.randomIndexes.length > 0) {
+        console.log("4.5");
             this.assignQuestion(this.randomIndexes[this.index++]);
         }
-
+        console.log("5");
         if (this.selectedAnswer === "video") {
             this.retrieveStream();
         }
+        console.log("6");
     }
 
     onFinishAnswering() {
@@ -158,7 +179,6 @@ export class SessionMode {
     }
 
     saveAnswer() {
-        this.openSnackBar("Saving...");
         if (this.selectedAnswer === "text") {
             this.questionService.postQuestion({user_id: this.currentQuestion.user_id, id: this.currentQuestion.id,
                 answer: this.currentQuestion.answer + "\n" + this.answerInput
@@ -167,9 +187,6 @@ export class SessionMode {
         else {
             this.openDialog(this.currentQuestion.user_id!, this.currentQuestion.id!);
         }
-
-        this.disableSave.set(true);
-        this.openSnackBar("Answer saved");
     }
 
     openDialog(userId: string, questionId: number): void {
@@ -195,7 +212,8 @@ export class SessionMode {
         try {
             const title = this.videoTitle().replaceAll(' ', '_');
 
-            this.videoService.postVideo({user_id: userId, created_at: this.timeCreated, question_id: questionId, title: title}).subscribe(async () => {
+            this.videoService.postVideo({user_id: userId, created_at: this.timeCreated, question_id: questionId, title: title})
+            .subscribe(async () => {
                 const videoBuffer = new Blob(this.recordedBlobs, {type: 'video/webm'});
                 const videoFile = new File([videoBuffer], "test.mp4", {type: 'video/webm'});
 
@@ -210,7 +228,9 @@ export class SessionMode {
         
                 this.disableSave.set(true);
             });
-
+                
+            this.disableSave.set(true);
+            this.openSnackBar("Answer saved");
             
             this.videoTitle.set("");
         }
@@ -219,13 +239,19 @@ export class SessionMode {
         }
     }
 
-    nextQuestion() {
-        this.assignQuestion(this.randomIndexes[this.index++]);
+    resetVariables() {
         this.preparationTime.set(10);
         this.selectedTime.set(60);
         this.timeState.set("preparation");
         this.finishedQuestion.set(false);
         this.disableSave.set(false);
+        this.randomIndexes = [];
+        this.index = 0;
+    }
+
+    nextQuestion() {
+        this.assignQuestion(this.randomIndexes[this.index++]);
+        this.resetVariables();
         this.onPreparationTime();
 
         if (this.selectedAnswer === "video") {
@@ -237,8 +263,8 @@ export class SessionMode {
     }
 
     onFinishMode() {
-        this.selectedTime.set(60);
-        clearInterval(this.intervalId);
+        this.resetVariables();
+        this.setInitialNumberQuestions();
         this.modeView.set(false);
     }
 
@@ -318,12 +344,14 @@ export class SessionMode {
         this.recordedVideoElement.nativeElement.play();
     }
 
-    onFolderChange() {
-        this.folderService.getAllQuestionsInFolder(this.selectedFolderId).subscribe((questions) => {
-            this.questionsInFolder = questions;
-            if (!this.questionsInFolder) {
-                
-            }
-        })
+    onFolderChange(event : Event) {
+        this.selectedFolderId = Number((event.target as HTMLSelectElement).value);
+        // folder_id = 0 means that no folders have been selected
+        if (Number(this.selectedFolderId) !== 0) {    
+            this.folderService.getAllQuestionsInFolder(this.selectedFolderId)
+            .subscribe((questions) => {
+                this.questionsInFolder = questions;
+            });
+        }
     }
 }
