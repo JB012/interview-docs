@@ -13,7 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import com.interviewdocs.server.error.QuestionNotFoundException;
 import com.interviewdocs.server.error.VideoNotFoundException;
+import com.interviewdocs.server.model.Question;
 import com.interviewdocs.server.model.Video;
 import com.interviewdocs.server.repository.*;
 import com.interviewdocs.server.services.VideoService;
@@ -21,36 +23,43 @@ import com.interviewdocs.server.services.VideoService;
 @RestController
 public class VideoController {
     private final S3Service s3Service;
-
-    private final VideoRepository repository;
+    private final VideoRepository videoRepository;
+    private final QuestionRepository questionRepository;
+    private final VideoService videoService;
     
     private static final String BUCKET_NAME = "interviewdocs-videos";
 
-    @Autowired
-    private VideoService videoService;
-
-    VideoController(VideoRepository repository, S3Service s3Service) {
-        this.repository = repository;
+    VideoController(VideoRepository videoRepository, QuestionRepository questionRepository, 
+        VideoService videoService, S3Service s3Service) {
+        this.videoRepository = videoRepository;
+        this.questionRepository = questionRepository;
+        this.videoService = videoService;
         this.s3Service = s3Service;
     }
 
     @GetMapping("/videos")
-    PagedModel<Video> all(Authentication auth, @RequestParam(name = "page", defaultValue = "0") int page, 
-    @RequestParam(name="size", defaultValue = "10") int size, @RequestParam(name = "sort", defaultValue = "viewed_at, desc") String sort) {
+    PagedModel<Video> all(Authentication auth, @RequestParam(name="questionId") String questionId, 
+    @RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name="size", defaultValue = "10") int size, 
+    @RequestParam(name = "sort", defaultValue = "viewed_at, desc") String sort) {
         if (auth.isAuthenticated()) {
             String id = videoService.getUserIdNumber(auth.getName());
 
-            return new PagedModel<>(videoService.getVideos(page, size, sort, id));
+            return new PagedModel<>(videoService.getVideos(page, size, sort, id, questionId));
         }     
         
         return null;
     }
 
     @PostMapping("/videos")
-    ResponseEntity<Video> newVideo(@RequestBody Video newVideo, Authentication auth) { 
-        if (auth.isAuthenticated() && newVideo.getUserId().equals(videoService.getUserIdNumber(auth.getName()))) {
-            repository.save(newVideo);
+    ResponseEntity<Video> newVideo(@RequestBody Video newVideo, @RequestParam(name="questionId") Long questionId, Authentication auth) { 
+        if (auth.isAuthenticated() && newVideo.getUserId().equals(videoService.getUserIdNumber(auth.getName()))) {            
+            Question question = questionRepository.findById(questionId)
+            .orElseThrow(() -> new QuestionNotFoundException(questionId));
 
+            question.addVideo(newVideo);
+
+            videoRepository.save(newVideo);
+            
             try {
                 videoService.setSourceToPresignedURL(newVideo);
             } catch (Exception e) {
@@ -66,7 +75,7 @@ public class VideoController {
     @GetMapping("/videos/{id}")
     ResponseEntity<Video> one(@PathVariable("id") Long id, Authentication auth) {
         if (auth.isAuthenticated()) {
-            Video video = repository.findById(id)
+            Video video = videoRepository.findById(id)
             .orElseThrow(() -> new VideoNotFoundException(id));
 
             try {
@@ -84,9 +93,7 @@ public class VideoController {
     @PutMapping("/videos/{id}")
     void replaceVideo(@RequestBody Video newVideo, @PathVariable("id") Long id, Authentication auth) {
         if (auth.isAuthenticated()) {
-            //newVideo.setUserId(videoService.getUserIdNumber(auth.getName()));
-
-            repository.findById(id)
+            videoRepository.findById(id)
             .map(video -> {
                 if (newVideo.getTitle() != null && !newVideo.getTitle().equals(video.getTitle())) { 
                     s3Service.changeObjectName(BUCKET_NAME, video.getKeyName(), newVideo.getKeyName());
@@ -98,7 +105,7 @@ public class VideoController {
                     video.setTime(newVideo);
                 }
                 
-                repository.save(video);
+                videoRepository.save(video);
 
                 try {
                     videoService.setSourceToPresignedURL(video);
@@ -109,7 +116,7 @@ public class VideoController {
                 return video;
             })
             .orElseGet(() -> {
-                repository.save(newVideo);
+                videoRepository.save(newVideo);
 
                 try {
                     videoService.setSourceToPresignedURL(newVideo);
@@ -125,11 +132,16 @@ public class VideoController {
     @DeleteMapping("/videos/{id}")
     void deleteQuestion(@PathVariable("id") Long id, Authentication auth) {
         if (auth.isAuthenticated()) {
-            Video video = repository.findById(id)
+            Video video = videoRepository.findById(id)
             .orElseThrow(() -> new VideoNotFoundException(id));
 
+            Question question = video.getQuestion();
+
             s3Service.deleteS3Object(BUCKET_NAME, video.getKeyName());
-            repository.deleteById(id);
+
+            question.removeVideo(video);
+            videoRepository.deleteById(id);
+            
         }
     } 
 }

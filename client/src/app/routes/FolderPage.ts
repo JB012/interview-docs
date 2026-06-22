@@ -99,8 +99,8 @@ export class FolderPage {
         const currentTime = moment().tz(moment.tz.guess(true)).format();
         this.questionService.postQuestion({user_id: this.userId, question: "What is your question?", viewed_at: currentTime, edited_at: currentTime})
             .subscribe((question) => {
-                this.folderService.postQuestionInFolder(this.id(), question.id!).subscribe(() => {
-                    this.router.navigate(['questions', question.id]);
+                this.folderService.postQuestionInFolder(this.id(), question.question_id!).subscribe(() => {
+                    this.router.navigate(['questions', question.question_id]);
                 });
         });
     }
@@ -125,7 +125,7 @@ export class FolderPage {
                 
                 const questions : QuestionType[] = result;
 
-                const tasks = questions.map(question => this.folderService.postQuestionInFolder(this.id(), question.id!));
+                const tasks = questions.map(question => this.folderService.postQuestionInFolder(this.id(), question.question_id!));
 
                 forkJoin(tasks).subscribe({
                     next: () => {

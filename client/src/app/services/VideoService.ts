@@ -7,8 +7,8 @@ import { VideoType, PagedVideoType } from "../types/VideoType";
 export class VideoService {
   private http = inject(HttpClient);
 
-  getAllVideos(pageIndex = 0, pageSize = 10, sort = {field: "viewedAt", direction: 'desc'}): Observable<PagedVideoType> {
-    return this.http.get<PagedVideoType>(`http://localhost:8080/videos?page=${pageIndex}&size=${pageSize}&sort=${sort.field},${sort.direction}`, {
+  getAllVideos(questionId : number, pageIndex = 0, pageSize = 10, sort = {field: "viewedAt", direction: 'desc'}): Observable<PagedVideoType> {
+    return this.http.get<PagedVideoType>(`http://localhost:8080/videos?questionId=${questionId}&page=${pageIndex}&size=${pageSize}&sort=${sort.field},${sort.direction}`, {
       withCredentials: true
     });
   }
@@ -19,8 +19,8 @@ export class VideoService {
     });
   }
 
-  postVideo(video: VideoType) : Observable<VideoType> {
-    return this.http.post<VideoType>(`http://localhost:8080/videos`, video, {
+  postVideo(video: VideoType, questionId : number) : Observable<VideoType> {
+    return this.http.post<VideoType>(`http://localhost:8080/videos?questionId=${questionId}`, video, {
       withCredentials: true
     });
   }

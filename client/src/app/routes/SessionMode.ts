@@ -180,12 +180,16 @@ export class SessionMode {
 
     saveAnswer() {
         if (this.selectedAnswer === "text") {
-            this.questionService.postQuestion({user_id: this.currentQuestion.user_id, id: this.currentQuestion.id,
+            this.openSnackBar("Saving...");
+            this.questionService.putQuestion({user_id: this.currentQuestion.user_id, 
                 answer: this.currentQuestion.answer + "\n" + this.answerInput
-            }).subscribe();
+            }, this.currentQuestion.question_id!).subscribe(() => {
+                this.openSnackBar("Answer saved");
+                this.disableSave.set(true);
+            });
         }
         else {
-            this.openDialog(this.currentQuestion.user_id!, this.currentQuestion.id!);
+            this.openDialog(getUserIdNumber(this.currentQuestion.user_id!), this.currentQuestion.question_id!);
         }
     }
 
@@ -212,7 +216,7 @@ export class SessionMode {
         try {
             const title = this.videoTitle().replaceAll(' ', '_');
 
-            this.videoService.postVideo({user_id: userId, created_at: this.timeCreated, question_id: questionId, title: title})
+            this.videoService.postVideo({user_id: userId, created_at: this.timeCreated, question_id: questionId, title: title}, questionId)
             .subscribe(async () => {
                 const videoBuffer = new Blob(this.recordedBlobs, {type: 'video/webm'});
                 const videoFile = new File([videoBuffer], "test.mp4", {type: 'video/webm'});
@@ -227,12 +231,12 @@ export class SessionMode {
                 await s3Client.send(command);
         
                 this.disableSave.set(true);
-            });
+
+                    
+                this.openSnackBar("Answer saved");
                 
-            this.disableSave.set(true);
-            this.openSnackBar("Answer saved");
-            
-            this.videoTitle.set("");
+                this.videoTitle.set("");
+            });
         }
         catch (err) {
             console.log(err);

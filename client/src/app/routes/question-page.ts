@@ -6,8 +6,6 @@ import { QuestionType } from "../types/QuestionType";
 import { Observable } from "rxjs/internal/Observable";
 import { AsyncPipe } from "@angular/common";
 import { AuthService } from "../services/AuthService";
-import { getUserIdNumber } from "../../utils";
-import { PagedVideoType } from "../types/VideoType";
 import moment from "moment-timezone";
 import { FolderSelectedDialog } from "../components/FolderSelectedDialog";
 import { MatDialog } from "@angular/material/dialog";
@@ -15,6 +13,8 @@ import { FolderService } from "../services/FolderService";
 import { FolderType } from "../types/FolderType";
 import { forkJoin } from "rxjs";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { Location } from '@angular/common';
+
 @Component({
     selector: "question-page",
     imports: [
@@ -82,12 +82,12 @@ export class QuestionPage {
         this.timeoutID = setTimeout(() => {
             if (targetId === "questionInput") {
                 const text = (event.target as HTMLSpanElement).textContent;
-                this.questionService.putQuestion({question: text, edited_at: editedAt, user_id: getUserIdNumber(this.user_id)}, this.id())
+                this.questionService.putQuestion({question: text, edited_at: editedAt, user_id: this.user_id}, this.id())
                 .subscribe();
             } 
             else if (targetId === "answerInput") {
                 const text = (event.target as HTMLTextAreaElement).value;
-                this.questionService.putQuestion({answer: text, edited_at: editedAt, user_id: getUserIdNumber(this.user_id)}, this.id()).subscribe();
+                this.questionService.putQuestion({answer: text, edited_at: editedAt, user_id: this.user_id}, this.id()).subscribe();
             }
             
             this.saveState.set("saved");
@@ -98,7 +98,7 @@ export class QuestionPage {
         }, 2000);
     }
     
-    constructor(public auth : AuthService ) {
+    constructor(public auth : AuthService, private _location: Location ) {
         this.activatedRoute.params.subscribe((params) => {
             this.id.set(parseInt(params['questionId']));
             
@@ -137,6 +137,11 @@ export class QuestionPage {
 
     updateOption(newValue : string) {
         this.option.set(newValue);
+
+        if (newValue === "text") {
+            const url = this.router.createUrlTree(["./"], {relativeTo: this.activatedRoute}).toString();
+            this._location.go(url);
+        }
     }
 
     openSnackBar() {

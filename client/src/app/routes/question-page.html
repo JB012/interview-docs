@@ -24,7 +24,7 @@
             </div>
         }
         @else {
-            <router-outlet></router-outlet>
+            <router-outlet [routerOutletData]="{questionId: question.question_id}"></router-outlet>
         }
     </div>
 }

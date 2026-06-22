@@ -10,10 +10,10 @@ import jakarta.persistence.*;
 
 @Entity
 @Table (name = "questions")
-@JsonIgnoreProperties({"folders"})
+@JsonIgnoreProperties({"folders", "videos"})
 public class Question {
-    private @Id
-    @GeneratedValue Long id;
+    private @Id @JsonProperty("question_id")
+    @GeneratedValue Long questionId;
 
     @Column(columnDefinition = "TEXT")
     private String question;
@@ -40,11 +40,14 @@ public class Question {
     
     @ManyToMany
     @JoinTable(name = "question_folder",
-            joinColumns = @JoinColumn(name = "id"),
+            joinColumns = @JoinColumn(name = "question_id"),
             inverseJoinColumns = @JoinColumn(name = "folder_id")
     )
     private Set<Folder> folders = new HashSet<>();
     
+    @OneToMany(mappedBy = "question")
+    private Set<Video> videos = new HashSet<>();
+
     Question() {}
 
     Question(String question) {
@@ -60,11 +63,11 @@ public class Question {
     }
 
     public void setId(Long id) {
-        this.id = id;
+        this.questionId = id;
     }
 
     public Long getId() {
-        return id;
+        return questionId;
     }
 
     public void setQuestion(String question) {
@@ -125,6 +128,19 @@ public class Question {
         folder.getQuestions().remove(this);
     }
 
+    public void addVideo(Video video) {
+        videos.add(video);
+        video.addQuestion(this);
+    }
+    
+    public void removeVideo(Video video) {
+        videos.remove(video);
+    }
+
+    public void removeAllVideos() {
+        videos.clear();
+    }
+
     public Set<Folder> getFolders() {
         return this.folders;
     }
@@ -139,7 +155,7 @@ public class Question {
 
     @Override 
     public String toString() {
-        return "Question: " + this.question + " User ID: " + this.userId + " ID: " + this.id 
+        return "Question: " + this.question + " User ID: " + this.userId + " ID: " + this.questionId 
         + " Created At: " + this.createdAt + " Viewed At: " + this.viewedAt + " Edited At: " + this.editedAt;
     }
 }

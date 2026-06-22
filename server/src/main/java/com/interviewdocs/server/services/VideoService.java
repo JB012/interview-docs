@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import com.interviewdocs.server.model.Video;
@@ -40,7 +41,7 @@ public class VideoService {
         return userId.split("\\|")[1];
     }
 
-    public Page<Video> getVideos(int page, int size, String sort, String userId) {
+    public Page<Video> getVideos(int page, int size, String sort, String userId, String questionId) {
         String[] sortOptions = sort.split(",");
         
         String field = sortOptions[0];
@@ -55,18 +56,19 @@ public class VideoService {
             pageable = PageRequest.of(page, size, Sort.by(field).ascending());
         }
         
-        List<Video> videos = videoRepository.findAllByUserId(userId);
+        Page<Video> videoPage = videoRepository.findAllByUserIdAndQuestionId(userId, questionId, pageable);
 
-        for (int i = 0; i < videos.size(); i++) {
-            try {
-                setSourceToPresignedURL(videos.get(i));
-            } catch (Exception e) {
+        videoPage.map((video) -> {
+            try { 
+                setSourceToPresignedURL(video);
+            }
+            catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+            
+            return video;
+        });
 
-        int toIndex = (page + 1) * size > videos.size() ? videos.size() : (page + 1) * size;
-        
-        return new PageImpl<>(videos.subList(page * size, toIndex), pageable, videos.size());
+        return videoPage;
     }
 }

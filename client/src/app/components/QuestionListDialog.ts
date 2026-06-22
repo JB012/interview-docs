@@ -52,7 +52,7 @@ export class QuestionListDialog {
             this.selectedQuestions.push(question);
         } 
         else {
-            const index = this.selectedQuestions.findIndex(x => x.id === question.id);
+            const index = this.selectedQuestions.findIndex(x => x.question_id === question.question_id);
             if (index > -1) {
             this.selectedQuestions.splice(index, 1);
             }

@@ -1,9 +1,11 @@
-import { Component } from "@angular/core";
-import { RouterOutlet } from "@angular/router";
+import { Component, inject, Signal } from "@angular/core";
+import { ROUTER_OUTLET_DATA, RouterOutlet } from "@angular/router";
 
 @Component({
-    template: `<router-outlet></router-outlet>`,
+    template: `<router-outlet [routerOutletData]="outletData()"></router-outlet>`,
     imports: [RouterOutlet]
 })
 
-export class VideoPage {}
+export class VideoPage {
+    outletData = inject(ROUTER_OUTLET_DATA) as Signal<{questionId: number}>;
+}

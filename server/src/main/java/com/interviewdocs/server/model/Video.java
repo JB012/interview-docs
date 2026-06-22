@@ -1,6 +1,8 @@
 package com.interviewdocs.server.model;
 import java.time.OffsetDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.*;
@@ -8,8 +10,8 @@ import jakarta.persistence.*;
 @Entity
 @Table (name = "videos")
 public class Video {
-    private @Id
-    @GeneratedValue long id;
+    private @Id @JsonProperty("video_id")
+    @GeneratedValue Long videoId;
     
     @JsonProperty("source") 
     @Column(columnDefinition = "TEXT")
@@ -22,13 +24,9 @@ public class Video {
     @JsonProperty("user_id")
     @Column(columnDefinition = "TEXT")
     private String userId;
-
-    @JsonProperty("question_id")
-    @Column(columnDefinition = "INT")
-    private long questionId;
     
     @JsonProperty("created_at")
-    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE", insertable = false)
     private OffsetDateTime createdAt;
 
     @JsonProperty("edited_at")
@@ -38,6 +36,10 @@ public class Video {
     @JsonProperty("viewed_at")
     @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private OffsetDateTime viewedAt;
+
+    @ManyToOne
+    @JoinColumn(name="question_id", nullable = false)
+    private Question question;
 
     Video() {}
 
@@ -54,11 +56,11 @@ public class Video {
     }
 
     public void setId(long id) {
-        this.id = id;
+        this.videoId = id;
     }
 
     public long getId() {
-        return id;
+        return videoId;
     }
 
     public void setTitle(String title) {
@@ -77,20 +79,8 @@ public class Video {
         return source;
     }
 
-    public void setQuestionId(long questionId) {
-        this.questionId = questionId;
-    }
-
-    public long getQuestionId() {
-        return this.questionId;
-    }
-
     public String getKeyName() {
         return userId + "/" + title;
-    }
-
-    public void setCreatedAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
     }
 
     public OffsetDateTime getCreatedAt() {
@@ -111,6 +101,15 @@ public class Video {
 
     public OffsetDateTime getViewedAt() {
         return this.viewedAt;
+    }
+
+    public void addQuestion(Question question) {
+        this.question = question;
+    }
+
+    @JsonIgnore
+    public Question getQuestion() {
+        return this.question;
     }
 
     public void setTime(Video video) {

@@ -33,7 +33,6 @@ public class FolderController {
     private final FolderRepository folderRepository;
     private final QuestionRepository questionRepository;
 
-    @Autowired
     FolderController(FolderRepository folderRepository, QuestionRepository questionRepository, 
         FolderService folderService) {
         this.folderRepository = folderRepository;

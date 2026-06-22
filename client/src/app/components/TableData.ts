@@ -56,9 +56,9 @@ export class TableData {
     });
 
     id = computed(() => {
-        if (this.question()) return this.question()?.id!
+        if (this.question()) return this.question()?.question_id!
         else if (this.folder()) return this.folder()?.folder_id!
-        return this.video()?.id!;
+        return this.video()?.video_id!;
     });
 
     title = computed(() => {
@@ -138,7 +138,7 @@ export class TableData {
                     this.router.navigate(['questions', id]);
                 }
                 else {
-                    const urlTree = this.router.createUrlTree(['/questions', this.question()!.id]);
+                    const urlTree = this.router.createUrlTree(['/questions', this.question()!.question_id]);
                     const serializedUrl = this.router.serializeUrl(urlTree);
                     window.open(serializedUrl, "_blank");
                 }
@@ -164,7 +164,7 @@ export class TableData {
 
     openQuestionToNewPage() {
         if (this.question()) {
-            const urlTree = this.router.createUrlTree(['/questions', this.question()!.id]);
+            const urlTree = this.router.createUrlTree(['/questions', this.question()!.question_id]);
 
             const serializedUrl = this.router.serializeUrl(urlTree);
             
@@ -174,13 +174,13 @@ export class TableData {
     
     onClick() {
         if (this.question()) {
-            this.navigateToQuestionPage(this.question()!.id!);
+            this.navigateToQuestionPage(this.question()!.question_id!);
         }
         else if (this.folder()) {
             this.navigateToFolderPage(this.folder()!.folder_id!);
         }
         else if (this.video()) {
-            this.navigateToVideoPage(this.video()!.id!);
+            this.navigateToVideoPage(this.video()!.video_id!);
         }
     }
 
@@ -226,13 +226,13 @@ export class TableData {
 
     onNewPageClick() {
         if (this.question()) {
-            this.navigateToQuestionPage(this.question()!.id!, true);
+            this.navigateToQuestionPage(this.question()!.question_id!, true);
         }
         else if (this.folder()) {
             this.navigateToFolderPage(this.folder()!.folder_id!, true);
         }
         else if (this.video()) {
-            this.navigateToVideoPage(this.video()!.id!, true);
+            this.navigateToVideoPage(this.video()!.video_id!, true);
         }
     }
 }

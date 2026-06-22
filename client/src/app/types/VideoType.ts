@@ -1,5 +1,5 @@
 export interface VideoType {
-    id?: number,
+    video_id?: number,
     created_at?: string,
     edited_at?: string,
     viewed_at?: string,
