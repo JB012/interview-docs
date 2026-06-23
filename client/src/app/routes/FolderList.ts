@@ -66,8 +66,9 @@ export class FolderList {
     }
 
     updateFolders = () => {
+        const field = this.sortValue() === "Alphabetical" ? "title" : sortFields[this.sortValue()];
         this.folderService.getFolders(this.pageIndex, this.pageSize, 
-            {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]})
+            {field: field, direction: orderDirection[this.orderValue()]})
             .subscribe((folders) => {
                 this.folderSource.next(folders);
             })

@@ -3,6 +3,7 @@ package com.interviewdocs.server.controller;
 import com.interviewdocs.server.services.FolderService;
 import com.interviewdocs.server.services.QuestionService;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -85,9 +86,9 @@ public class FolderController {
         if (auth.isAuthenticated() && newFolder.getUserId().equals(auth.getName())) {    
             folderRepository.findById(id)
             .map(folder -> {
-                if (newFolder.getTitle() != null && !newFolder.getTitle().equals(newFolder.getTitle())) {
+                if (newFolder.getTitle() != null && !newFolder.getTitle().equals(folder.getTitle())) {
                     folder.setTitle(newFolder.getTitle());
-                    folder.setEditedAt(newFolder.getEditedAt());
+                    folder.setEditedAt(OffsetDateTime.now());
                 }
                 else {
                     folder.setTime(newFolder);

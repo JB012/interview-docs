@@ -14,6 +14,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { FolderDialog } from "./FolderDialog";
 import { DeleteDialog } from "./DeleteDialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { TitleDialog } from "./TitleDialog";
 
 @Component({
     selector: '[question], [folder], [video]',
@@ -34,6 +35,9 @@ import { MatSnackBar } from "@angular/material/snack-bar";
                 <span [matMenuTriggerFor]="menu" class="material-symbols-outlined xxs xs:material-symbols-outlined xs lg:material-symbols-outlined lg">&#xe5d4;</span>
                 <mat-menu #menu="matMenu">
                 <button (click)="onNewPageClick()" mat-menu-item>Open in a new tab</button>
+                @if (video() || folder()) {
+                    <button (click)="openEditDialog()" mat-menu-item>Edit</button>
+                }
                 <button (click)="openDialog(type(), id())"  mat-menu-item>Delete</button>
                 </mat-menu>
             </div>
@@ -184,8 +188,8 @@ export class TableData {
         }
     }
 
-    openSnackBar() {
-        this._snackBar.open("Item deleted", "Close", {
+    openSnackBar(message: string) {
+        this._snackBar.open(message, "Close", {
             duration: 5000
         });
     }
@@ -218,11 +222,38 @@ export class TableData {
                     }
                 }
 
-                this.openSnackBar();
+                this.openSnackBar("Item deleted");
             }
         });
     }
     
+    openEditDialog(): void {
+        const dialogRef = this.dialog.open(TitleDialog, {
+        data: {title: this.title()},
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+        if (result !== undefined) {
+            this.editTitle(result);
+        }
+        });
+    }
+
+    editTitle(newTitle : string) {
+        this.openSnackBar("Editing...")
+        if (this.video()) {
+            this.videoService.putVideo({user_id: getUserIdNumber(this.userId!), title: newTitle}, this.video()?.video_id!).subscribe(() => {
+                this.updateVideos()?.();
+                this.openSnackBar("Video edited");
+            });
+        }
+        else {
+            this.folderService.putFolder({user_id: this.userId, title: newTitle}, this.folder()?.folder_id!).subscribe(() => {
+                    this.updateFolders()?.();
+                    this.openSnackBar("Folder edited");
+                });
+        }
+    }
 
     onNewPageClick() {
         if (this.question()) {

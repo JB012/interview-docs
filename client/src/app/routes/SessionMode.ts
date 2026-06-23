@@ -8,7 +8,7 @@ import { QuestionType } from "../types/QuestionType";
 import { FormsModule } from "@angular/forms";
 import { interval, Observable, shareReplay } from "rxjs";
 import moment from "moment-timezone";
-import { VideoDialog } from "../components/VideoDialog";
+import { TitleDialog } from "../components/TitleDialog";
 import { VideoService } from "../services/VideoService";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getUserIdNumber, s3Client } from "../../utils";
@@ -145,22 +145,15 @@ export class SessionMode {
     }
 
     onStartMode() {
-        console.log("1");
         this.modeView.set(true);
-        console.log("2");
         this.onPreparationTime();
-        console.log("3");
         this.computeRandomIndexes();
-        console.log("4");
         if (this.randomIndexes.length > 0) {
-        console.log("4.5");
             this.assignQuestion(this.randomIndexes[this.index++]);
         }
-        console.log("5");
         if (this.selectedAnswer === "video") {
             this.retrieveStream();
         }
-        console.log("6");
     }
 
     onFinishAnswering() {
@@ -194,7 +187,7 @@ export class SessionMode {
     }
 
     openDialog(userId: string, questionId: number): void {
-        const dialogRef = this.dialog.open(VideoDialog, {
+        const dialogRef = this.dialog.open(TitleDialog, {
         data: {title: this.videoTitle()},
         });
 
@@ -216,7 +209,7 @@ export class SessionMode {
         try {
             const title = this.videoTitle().replaceAll(' ', '_');
 
-            this.videoService.postVideo({user_id: userId, created_at: this.timeCreated, question_id: questionId, title: title}, questionId)
+            this.videoService.postVideo({user_id: userId, created_at: this.timeCreated, title: title}, questionId)
             .subscribe(async () => {
                 const videoBuffer = new Blob(this.recordedBlobs, {type: 'video/webm'});
                 const videoFile = new File([videoBuffer], "test.mp4", {type: 'video/webm'});
@@ -301,8 +294,6 @@ export class SessionMode {
         this.isRecording = !this.isRecording;
 
         this.timeCreated = moment().tz(moment.tz.guess(true)).format();
-        
-        console.log(this.timeCreated);
 
         this.onDataAvailableEvent();
         this.onStopRecordingEvent();

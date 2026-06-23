@@ -5,6 +5,7 @@ import com.interviewdocs.server.services.S3Service;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.time.OffsetDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.web.PagedModel;
@@ -99,7 +100,7 @@ public class VideoController {
                     s3Service.changeObjectName(BUCKET_NAME, video.getKeyName(), newVideo.getKeyName());
                     
                     video.setTitle(newVideo.getTitle());
-                    video.setEditedAt(newVideo.getEditedAt());
+                    video.setEditedAt(OffsetDateTime.now());
                 }
                 else {
                     video.setTime(newVideo);
@@ -135,11 +136,8 @@ public class VideoController {
             Video video = videoRepository.findById(id)
             .orElseThrow(() -> new VideoNotFoundException(id));
 
-            Question question = video.getQuestion();
-
             s3Service.deleteS3Object(BUCKET_NAME, video.getKeyName());
 
-            question.removeVideo(video);
             videoRepository.deleteById(id);
             
         }

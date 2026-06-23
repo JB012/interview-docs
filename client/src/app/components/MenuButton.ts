@@ -51,6 +51,12 @@ export class MenuButton {
             if (this.type() === "questions") {
                 this.updateQuestions()?.();
             }
+            else if (this.type() === "folders") {
+                this.updateFolders()!();
+            }
+            else {
+                this.updateVideos()!();
+            }
         }
     }
 

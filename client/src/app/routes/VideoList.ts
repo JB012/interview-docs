@@ -57,7 +57,6 @@ export class VideoList {
     }
     
     ngOnInit(): void {
-        
         this.videoService.getAllVideos(this.outletData().questionId).subscribe((videos) => {
             this.length = videos.page.totalElements;
             this.pageSize = videos.page.size;
@@ -81,8 +80,9 @@ export class VideoList {
 
     
     updateVideos = () => {
+        const field = this.sortValue() === "Alphabetical" ? "title" : sortFields[this.sortValue()];
         this.videoService.getAllVideos(this.outletData().questionId, this.pageIndex, this.pageSize, 
-            {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]})
+            {field: field, direction: orderDirection[this.orderValue()]})
             .subscribe((videos) => {
                 this.videoSource.next(videos);
             })

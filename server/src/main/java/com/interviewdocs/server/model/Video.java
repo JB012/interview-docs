@@ -107,6 +107,10 @@ public class Video {
         this.question = question;
     }
 
+    public void removeQuestion(Question question) {
+        this.question = null;
+    }
+
     @JsonIgnore
     public Question getQuestion() {
         return this.question;

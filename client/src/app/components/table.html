@@ -1,7 +1,7 @@
 <thead class="xxs:text-[8px] xs:text-[12px] lg:text-[16px]">
     <tr>
         <th class="w-5 font-normal text-left flex gap-2">
-            <div>{{questions() ? "Questions" : folders() ? "Folders" : "Videos"}}</div>
+            <div>{{questions() ? "Questions" : "Title"}}</div>
             <div class="flex gap-2 font-bold">
                 @if (sortValue() === "Alphabetical") {
                     @if (orderValue() === "A-Z") {
@@ -17,18 +17,28 @@
         <th class="flex gap-2 font-normal text-left">
             @if (sortValue() === "Date created") {
                 <div>Last created</div>
+                <div class="font-bold">
+                    @if (orderValue() === "Newest first") {
+                        <div>&uarr;</div>
+                    }
+                    @else {
+                        <div>&darr;</div>
+                    }
+                </div>
             }
-            @else if (sortValue() === "Last viewed"){
+            @else {
                 <div>Last viewed</div>
+                @if (sortValue() === "Last viewed") {
+                    <div class="font-bold">
+                        @if (orderValue() === "Newest first") {
+                            <div>&uarr;</div>
+                        }
+                        @else {
+                            <div>&darr;</div>
+                        }
+                    </div>
+                }
             }
-            <div class="font-bold">
-                @if (orderValue() === "Newest first") {
-                    <div>&uarr;</div>
-                }
-                @else {
-                    <div>&darr;</div>
-                }
-            </div>
         </th>
     </tr>
 </thead>

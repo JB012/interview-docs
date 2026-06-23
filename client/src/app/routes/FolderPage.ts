@@ -88,8 +88,9 @@ export class FolderPage {
     }
 
     updateQuestions = () => {
+        const field = this.sortValue() === "Alphabetical" ? "question" : sortFields[this.sortValue()];
         this.folderService.getQuestionsInFolder(this.id(), this.pageIndex, this.pageSize, 
-            {field: sortFields[this.sortValue()], direction: orderDirection[this.orderValue()]})
+            {field: field, direction: orderDirection[this.orderValue()]})
             .subscribe((questions) => {
                 this.questionSource.next(questions);
             })

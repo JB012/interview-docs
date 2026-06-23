@@ -14,17 +14,24 @@ import org.springframework.web.bind.annotation.*;
 import com.interviewdocs.server.error.QuestionNotFoundException;
 import com.interviewdocs.server.model.Folder;
 import com.interviewdocs.server.model.Question;
+import com.interviewdocs.server.model.Video;
 import com.interviewdocs.server.repository.*;
 import com.interviewdocs.server.services.QuestionService;
+import com.interviewdocs.server.services.S3Service;
 
 @RestController
 public class QuestionController {
     private final QuestionRepository questionRepository;
     private final QuestionService questionService;
+    private final S3Service s3Service;
 
-    QuestionController(QuestionRepository questionRepository, QuestionService questionService) {
+    private static final String BUCKET_NAME = "interviewdocs-videos";
+
+    QuestionController(QuestionRepository questionRepository, QuestionService questionService,
+        S3Service s3Service) {
         this.questionRepository = questionRepository;
         this.questionService = questionService;
+        this.s3Service = s3Service;
     }
 
     @GetMapping("/questions/all")
@@ -99,7 +106,13 @@ public class QuestionController {
             Question question = questionRepository.findById(id)
             .orElseThrow(() -> new QuestionNotFoundException(id));
 
-            question.removeAllVideos();
+            
+            Set<Video> videos = question.getVideos();
+
+            for (Video v : videos) {
+                s3Service.deleteS3Object(BUCKET_NAME, v.getKeyName());
+            }
+            
             questionRepository.deleteById(id);
         }
     } 

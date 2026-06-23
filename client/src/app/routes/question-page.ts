@@ -128,6 +128,13 @@ export class QuestionPage {
             auth.getCurrentUser().subscribe((res) => {
                 this.user_id = res!.user!.claims.sub;
             });
+
+            if (this.router.url.includes("videos")) {
+                this.option.set("video");
+            }
+            else {
+                this.option.set("text");
+            }
         });
     }
     

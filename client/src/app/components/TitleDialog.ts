@@ -14,8 +14,8 @@ import { MatButtonModule } from "@angular/material/button";
 import { FormsModule } from "@angular/forms";
 
 @Component({
-    selector: 'video-dialog',
-    templateUrl: 'video-dialog.html',
+    selector: 'title-dialog',
+    templateUrl: 'title-dialog.html',
     imports: [
     MatFormFieldModule,
     MatInputModule,
@@ -27,7 +27,7 @@ import { FormsModule } from "@angular/forms";
   ],
 })
 
-export class VideoDialog {
+export class TitleDialog {
     readonly dialogRef = inject(MatDialogRef<RecordedVideo>);
     readonly data = inject<{title: string}>(MAT_DIALOG_DATA);
     readonly title = model(this.data.title);

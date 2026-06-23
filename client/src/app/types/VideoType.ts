@@ -3,7 +3,6 @@ export interface VideoType {
     created_at?: string,
     edited_at?: string,
     viewed_at?: string,
-    question_id?: number,
     user_id?: string
     source?: string,
     title?: string,

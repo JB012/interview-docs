@@ -1,6 +1,5 @@
 export interface QuestionType {
     question_id?: number,
-    folder_id?: number,
     user_id?: string,
     created_at?: string,
     edited_at?: string,

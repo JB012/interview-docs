@@ -26,9 +26,7 @@ export class VideoService {
   }
 
   putVideo(video: VideoType, id: number) {
-    return this.http.put(`http://localhost:8080/videos/${id}`, {
-        video: video
-    }, {
+    return this.http.put(`http://localhost:8080/videos/${id}`, video, {
       withCredentials: true
     });
   }

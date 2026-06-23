@@ -20,7 +20,6 @@ export function getUserIdNumber(userId : String) {
 }
 
 export const sortFields : StringArray = {
-    'Alphabetical': 'question',
     'Date created': 'createdAt',
     'Last viewed': 'viewedAt'
 }; 

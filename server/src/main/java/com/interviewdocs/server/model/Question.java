@@ -45,7 +45,7 @@ public class Question {
     )
     private Set<Folder> folders = new HashSet<>();
     
-    @OneToMany(mappedBy = "question")
+    @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Video> videos = new HashSet<>();
 
     Question() {}
@@ -135,6 +135,11 @@ public class Question {
     
     public void removeVideo(Video video) {
         videos.remove(video);
+        video.removeQuestion(this);
+    }
+
+    public Set<Video> getVideos() {
+        return this.videos;
     }
 
     public void removeAllVideos() {

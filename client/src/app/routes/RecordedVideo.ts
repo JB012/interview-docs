@@ -15,7 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { VideoService } from '../services/VideoService';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getUserIdNumber, s3Client } from  '../../utils';
-import { VideoDialog } from '../components/VideoDialog';
+import { TitleDialog } from '../components/TitleDialog';
 import { AuthService } from '../services/AuthService';
 import { ActivatedRoute, Router, ROUTER_OUTLET_DATA } from '@angular/router';
 import moment from 'moment-timezone';
@@ -96,7 +96,7 @@ export class RecordedVideo implements OnInit {
     }
 
     openDialog(): void {
-        const dialogRef = this.dialog.open(VideoDialog, {
+        const dialogRef = this.dialog.open(TitleDialog, {
         data: {title: this.videoTitle()},
         });
 
@@ -145,8 +145,8 @@ export class RecordedVideo implements OnInit {
         try {
             this.openVideoSnackBar("Saving..."); 
             const title = this.videoTitle().replaceAll(' ', '_');
-
-            this.videoService.postVideo({user_id: this.userID, created_at: this.timeCreated, question_id: this.questionId, title: title}, this.questionId).subscribe(async () => {
+            this.videoService.postVideo({user_id: this.userID, created_at: this.timeCreated, 
+                viewed_at: this.timeCreated, edited_at: this.timeCreated, title: title}, this.questionId).subscribe(async () => {
                 const videoBuffer = new Blob(this.recordedBlobs, {type: 'video/webm'});
                 const videoFile = new File([videoBuffer], "test.mp4", {type: 'video/webm'});
 
