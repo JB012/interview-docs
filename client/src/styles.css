@@ -5,6 +5,22 @@
 @theme {
     --breakpoint-xs: 30rem;
     --breakpoint-xxs: 20rem;
+
+    --animate-right-slide: right-slide 0.3s ease-out;
+    @keyframes right-slide {
+        100% {
+        transform: translate(20px);
+        opacity: 0
+        }
+    }
+
+    --animate-left-slide: left-slide 0.3s ease-out;
+    @keyframes left-slide {
+        100% {
+        transform: translate(-20px);
+        opacity: 0
+        }
+    }
 }
 
 :host, app-root {
@@ -12,8 +28,11 @@
     height: 100%
 }
 
-html {
-    background-color: rgb(220, 214, 207);
+html, body {
+    background-color: #FDF9F0;
+    min-height: 100vh; 
+    margin: 0;
+    overflow: auto;
 }
 
 span {

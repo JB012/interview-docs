@@ -4,9 +4,9 @@
             <div class="text-xl md:text-2xl font-semibold py-4">Session Mode</div>
             <form class="flex flex-col w-full h-full gap-4 md:text-xl">
                 <div class="flex gap-2">
-                    <input [checked]="folderRadioValue === 'no_folder'" type="radio" id="no_folder" value="no_folder" name="folder_select" [(ngModel)]="folderRadioValue"/>
+                    <input (click)="onFolderRadioChange($event)" [checked]="folderRadioValue === 'no_folder'" type="radio" id="no_folder" value="no_folder" name="folder_select" [(ngModel)]="folderRadioValue"/>
                     <label for="no_folder">No folder</label>
-                    <input [checked]="folderRadioValue === 'folder'" type="radio" id="folder" value="folder" name="folder_select" [(ngModel)]="folderRadioValue"/>
+                    <input (click)="onFolderRadioChange($event)" [checked]="folderRadioValue === 'folder'" type="radio" id="folder" value="folder" name="folder_select" [(ngModel)]="folderRadioValue"/>
                     <label for="folder">Folder</label>
                 </div>
                 @if (folderRadioValue === "folder") {
@@ -24,18 +24,23 @@
                     </select>
                 }
                 <label for="number_of_questions">Number of questions</label>
-                <select name="total" id="number_of_questions" class="w-10" (change)="onNumberQuestionChange($event)">
-                    @if (questionsInFolder) {
-                        @for (question of questionsInFolder; track $index; let idx = $index) {
-                            <option [value]="idx+1">{{idx+1}}</option>                      
+                <select name="total" id="number_of_questions" class="w-10" [value]="selectedNumberOfQuestions" (change)="onNumberQuestionChange($event)">
+                    @if (folderRadioValue === "folder") {
+                        @if (questionsInFolder()) {
+                            @for (question of questionsInFolder(); track $index; let idx = $index) {
+                                <option [selected]="selectedNumberOfQuestions === idx+1" [value]="idx+1">{{idx+1}}</option>                      
+                            }
+                            @empty {
+                                <option selected value="0">0</option>
+                            }
                         }
-                        @empty {
-                            <option selected value="0">0</option>
+                        @else {
+                            <option selected value="2">04</option>
                         }
                     }
                     @else if (totalQuestions$ | async; as totalQuestions) {
                         @for (question of totalQuestions; track $index; let idx = $index) {
-                            <option [value]="idx+1">{{idx+1}}</option>
+                            <option [selected]="selectedNumberOfQuestions === idx+1" [value]="idx+1">{{idx+1}}</option>
                             
                         }
                         @empty {

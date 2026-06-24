@@ -1,3 +1,45 @@
-<div class="w-full h-full flex flex-col">
-    <app-login-button />
+<div class=" w-full h-full p-4 flex flex-col">
+    <app-login-button class="self-end p-4"/>
+    <div class="self-center font-semibold md:text-4xl text-3xl">Interview Docs</div>
+
+    <div class="flex w-full h-full p-4 gap-10 flex-col justify-center items-center">    
+        <div class="md:text-2xl xs:text-xl">Store and practice interview questions</div>
+        <img class="rounded-xl shadow-xl w-2/3 h-2/3" src="/home_page.png" />
+        <div class="md:text-2xl xs:text-xl">Answer questions via</div>
+        <div class="flex sm:flex-row sm:py-4 xxs:flex-col w-full h-full xxs:gap-16">
+            <div class="flex sm:flex-col w-full md:justify-around justify-between items-center">
+                <div class="xs:text-xl">Text</div>
+                <div class="flex justify-center items-center lg:max-w-175 lg:max-h-175 md:max-w-125 md:max-h-125 sm:max-w-100 sm:max-h-100 xs:max-w-75 xs:max-h-75 xxs:max-w-50 xxs:max-h-50">
+                    <img class="rounded-xl shadow-xl" src="/question_page_1.png" />
+                </div>
+            </div>
+            <div class="flex sm:flex-col-reverse w-full md:justify-around justify-between items-center">
+                <div class="flex justify-center items-center lg:max-w-175 lg:max-h-175 md:max-w-125 md:max-h-125 sm:max-w-100 sm:max-h-100 xs:max-w-75 xs:max-h-75 xxs:max-w-50 xxs:max-h-50">
+                    <img class="rounded-xl shadow-xl" src="/question_page_2.png" />
+                </div>
+                <div class="xs:text-xl">Video</div>
+            </div>
+        </div>
+        <div class="md:text-2xl xs:text-xl">Practice questions</div>
+        
+        <div class="flex justify-between items-center w-full gap-4">
+            <div (click)="onClick(this.imageIndex() - 1)" class="xs:text-xl cursor-pointer">&lt;</div>
+            <div class="flex justify-center items-center lg:max-w-175 lg:max-h-175 md:max-w-125 md:max-h-125 sm:max-w-100 sm:max-h-100 xxs:max-w-50 xxs:max-h-50">
+                <img #practiceImage class="rounded-xl shadow-xl" [src]="'session_page_' + this.imageIndex() + '.png'" />
+            </div>
+            <div (click)="onClick(this.imageIndex() + 1)" class="xs:text-xl cursor-pointer">&gt;</div>
+        </div>
+    </div>
+    <footer class="md:text-md xxs:text-xs flex justify-between items-center p-4">
+        <div class="flex sm:flex-row xxs:flex-col xxs:gap-1 sm:gap-4 xxs:items-start items-center">
+            <div>&copy; 2026 Jamal Bankole</div>
+            <a href="https://github.com/JB012/interview-docs" target="_blank" aria-label="GitHub Profile">
+                GitHub
+            </a>
+        </div>
+        <div class="flex xxs:gap-2 gap-16"> 
+            <div>Privacy Policy</div>
+            <div>Terms and Conditions</div>
+        </div>
+    </footer>
 </div>

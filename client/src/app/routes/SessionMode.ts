@@ -36,7 +36,7 @@ export class SessionMode {
     readonly dialog = inject(MatDialog);
     folders$ = this.folderService.getAllFolders().pipe(shareReplay(1));
     totalQuestions$ = this.questionService.getAllQuestions().pipe(shareReplay(1));
-    questionsInFolder : QuestionType[] | undefined;
+    questionsInFolder = signal<QuestionType[]>([]);
     currentQuestion! : QuestionType;
     randomIndexes : number[] = [];
     selectedFolderId = 0;
@@ -76,15 +76,21 @@ export class SessionMode {
     setInitialNumberQuestions() {
         if (this.folderRadioValue === "no_folder") {    
             this.questionService.getQuestions().subscribe((res) => {
-                this.selectedNumberOfQuestions = res.page.totalElements ? 1 : 0;
+                this.selectedNumberOfQuestions = res.page.totalElements;
                 this.loading.set(false);
             });
         }
-        else {
-            this.folderService.getFolders().subscribe((res) => {
-                this.selectedNumberOfQuestions = res.page.totalElements ? 1 : 0;
-                this.loading.set(false);
+    }
+
+    onFolderRadioChange(event : Event) {
+        if ((event.target as HTMLSelectElement).value === "no_folder") {
+            this.totalQuestions$.subscribe((questions) => {
+                this.selectedNumberOfQuestions = questions.length;
             });
+        }
+        else {
+            this.selectedNumberOfQuestions = 0;
+            this.questionsInFolder.set([]);
         }
     }
 
@@ -126,9 +132,14 @@ export class SessionMode {
     }
 
     assignQuestion(id: number) {
-        this.totalQuestions$.subscribe((questions) => {
-            this.currentQuestion = questions[id];
-        });
+        if (this.folderRadioValue === "no_folder") {
+            this.totalQuestions$.subscribe((questions) => {
+                this.currentQuestion = questions[id];
+            });
+        }
+        else {
+            this.currentQuestion = this.questionsInFolder()[id];
+        }
     }
 
     onNumberQuestionChange(event : Event) {
@@ -243,7 +254,6 @@ export class SessionMode {
         this.finishedQuestion.set(false);
         this.disableSave.set(false);
         this.randomIndexes = [];
-        this.index = 0;
     }
 
     nextQuestion() {
@@ -263,6 +273,7 @@ export class SessionMode {
         this.resetVariables();
         this.setInitialNumberQuestions();
         this.modeView.set(false);
+        this.index = 0;
     }
 
     retrieveStream() {
@@ -345,8 +356,13 @@ export class SessionMode {
         if (Number(this.selectedFolderId) !== 0) {    
             this.folderService.getAllQuestionsInFolder(this.selectedFolderId)
             .subscribe((questions) => {
-                this.questionsInFolder = questions;
+                this.questionsInFolder.set(questions);
+                this.selectedNumberOfQuestions = this.questionsInFolder().length;
+                
             });
+        }
+        else {
+            this.selectedNumberOfQuestions = 0;
         }
     }
 }
