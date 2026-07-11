@@ -58,16 +58,16 @@ export class VideoList {
     
     ngOnInit(): void {
         this.videoService.getAllVideos(this.outletData().questionId).subscribe((videos) => {
-            this.length = videos.page.totalElements;
-            this.pageSize = videos.page.size;
-            this.pageIndex = videos.page.number;
+            this.length = videos.totalSize;
+            this.pageSize = videos.pageSize;
+            this.pageIndex = videos.pageNumber;
 
             this.videoSource.next(videos);
         });
     }
     constructor(public auth : AuthService) {
         this.auth.getCurrentUser().subscribe((res) => {
-            this.userId = res!.user!.claims.sub;
+            this.userId = res!.user;
         });
     }
 
@@ -85,6 +85,10 @@ export class VideoList {
             {field: field, direction: orderDirection[this.orderValue()]})
             .subscribe((videos) => {
                 this.videoSource.next(videos);
+                    
+                this.length = videos.totalSize;
+                this.pageSize = videos.pageSize
+                this.pageIndex = videos.pageNumber;
             })
     }
 }

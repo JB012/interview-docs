@@ -10,10 +10,7 @@ export interface VideoType {
 
 export interface PagedVideoType {
     content: VideoType[]
-    page: {
-        size: number
-        number: number
-        totalElements: number
-        totalPages: number
-    }  
+    pageNumber: number,
+    pageSize: number,
+    totalSize: number 
 }

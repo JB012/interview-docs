@@ -10,10 +10,7 @@ export interface FolderType {
 
 export interface PagedFolderType {
     content: FolderType[]
-    page: {
-        size: number
-        number: number
-        totalElements: number
-        totalPages: number
-    }  
+    pageNumber: number,
+    pageSize: number,
+    totalSize: number  
 }

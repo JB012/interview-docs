@@ -112,11 +112,7 @@ export class RecordedVideo implements OnInit {
         this.retrieveStream();
 
         this.auth.getCurrentUser().subscribe((res) => {
-            const user = res?.user;
-
-            if (user?.claims.sub) {  
-                this.userID = getUserIdNumber(user?.claims.sub);
-            }
+            this.userID = getUserIdNumber(res!.user!);
         })
     }
 
@@ -189,8 +185,6 @@ export class RecordedVideo implements OnInit {
         this.isRecording = !this.isRecording;
 
         this.timeCreated = moment().tz(moment.tz.guess(true)).format();
-        
-        console.log(this.timeCreated);
 
         this.onDataAvailableEvent();
         this.onStopRecordingEvent();

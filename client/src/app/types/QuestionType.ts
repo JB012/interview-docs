@@ -10,11 +10,9 @@ export interface QuestionType {
 }
 
 export interface PagedQuestionType {
+    this: any
     content: QuestionType[]
-    page: {
-        size: number
-        number: number
-        totalElements: number
-        totalPages: number
-    }  
+    pageNumber: number,
+    pageSize: number,
+    totalSize: number
 }

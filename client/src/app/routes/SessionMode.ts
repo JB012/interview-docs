@@ -76,7 +76,7 @@ export class SessionMode {
     setInitialNumberQuestions() {
         if (this.folderRadioValue === "no_folder") {    
             this.questionService.getQuestions().subscribe((res) => {
-                this.selectedNumberOfQuestions = res.page.totalElements;
+                this.selectedNumberOfQuestions = res.totalSize;
                 this.loading.set(false);
             });
         }
@@ -95,6 +95,8 @@ export class SessionMode {
     }
 
     computeRandomIndexes() {
+        this.randomIndexes = [];
+        
         for (let i = 0; i < this.selectedNumberOfQuestions; i++) {
             let index = Math.floor(Math.random() * this.selectedNumberOfQuestions);
             while (this.randomIndexes.includes(index)) {
@@ -253,13 +255,13 @@ export class SessionMode {
         this.timeState.set("preparation");
         this.finishedQuestion.set(false);
         this.disableSave.set(false);
-        this.randomIndexes = [];
     }
 
     nextQuestion() {
         this.assignQuestion(this.randomIndexes[this.index++]);
         this.resetVariables();
         this.onPreparationTime();
+        this.disableSave.set(false);
 
         if (this.selectedAnswer === "video") {
             this.retrieveStream();

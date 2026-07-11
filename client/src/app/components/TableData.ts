@@ -104,7 +104,7 @@ export class TableData {
 
     constructor(auth: AuthService) {
         auth.getCurrentUser().subscribe((res) => {
-            this.userId = res!.user!.claims.sub;
+            this.userId = res!.user!;
         });
     }
 

@@ -45,8 +45,8 @@ export class FolderList {
 
     ngOnInit() {
         this.folderService.getFolders().subscribe((folders) => {
-            this.pageSize = folders.page.size;
-            this.pageIndex = folders.page.number;
+            this.pageSize = folders.pageSize;
+            this.pageIndex = folders.pageNumber;
 
             this.folderSource.next(folders);
         });
@@ -54,7 +54,7 @@ export class FolderList {
 
     constructor(public auth : AuthService) {
         this.auth.getCurrentUser().subscribe((res) => {
-            this.userId = res!.user!.claims.sub;
+            this.userId = res!.user!;
         });
     }
 
@@ -81,7 +81,6 @@ export class FolderList {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result !== undefined) {
-                console.log(result);
                 this.folderTitle.set(result);
                 this.saveFolder();
             }

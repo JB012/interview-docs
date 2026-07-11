@@ -49,6 +49,10 @@ export class Home implements OnInit {
             {field: field, direction: orderDirection[this.orderValue()]})
         .subscribe((questions) => {
             this.questionSource.next(questions);
+            
+            this.length = questions.totalSize;
+            this.pageSize = questions.pageSize
+            this.pageIndex = questions.pageNumber;
         })
     }
 
@@ -56,15 +60,15 @@ export class Home implements OnInit {
 
     constructor(public auth: AuthService) {
         this.auth.getCurrentUser().subscribe((res) => {
-            this.userId = res!.user!.claims.sub;
+            this.userId = res!.user;
         });
     }
     
     ngOnInit(): void {
         this.questionService.getQuestions().subscribe((questions) => {
-            this.length = questions.page.totalElements;
-            this.pageSize = questions.page.size;
-            this.pageIndex = questions.page.number;
+            this.length = questions.totalSize;
+            this.pageSize = questions.pageSize
+            this.pageIndex = questions.pageNumber;
 
             this.questionSource.next(questions);
         });

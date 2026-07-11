@@ -108,15 +108,11 @@ export class QuestionPage {
                 this.questionInput.set(res.question!);
             });
 
-            this.folderService.getFolders().subscribe((folders) => {
-                this.allFolders = folders.content;
-            });
-
-            this.questionService.getFolders(this.id()).subscribe((selectedFolders) => {
+            this.questionService.getFoldersThatHasQuestion(this.id()).subscribe((selectedFolders) => {
                 this.selectedFolders = selectedFolders;
 
-                this.folderService.getFolders().subscribe((allFolders) => {
-                    this.allFolders = allFolders.content.map(folder => {
+                this.folderService.getAllFolders().subscribe((allFolders) => {
+                    this.allFolders = allFolders.map(folder => {
                         if (selectedFolders.some(f => f.folder_id === folder.folder_id)) {
                             return {...folder, checked: true};
                         }
@@ -126,7 +122,7 @@ export class QuestionPage {
             })
 
             auth.getCurrentUser().subscribe((res) => {
-                this.user_id = res!.user!.claims.sub;
+                this.user_id = res!.user!;
             });
 
             if (this.router.url.includes("videos")) {

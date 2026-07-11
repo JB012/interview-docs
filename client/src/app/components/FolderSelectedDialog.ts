@@ -44,7 +44,6 @@ export class FolderSelectedDialog {
         }
         else {
             this.filteredFolders = this.allFolders.filter(folder => {
-                console.log(folder.title?.toLowerCase().includes(input.toLowerCase()));
                 return folder.title?.toLowerCase().includes(input.toLowerCase());
             });
         }

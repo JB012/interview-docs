@@ -6,5 +6,5 @@
 </mat-dialog-content>
 <mat-dialog-actions>
   <button matButton (click)="onNoClick()">Cancel</button>
-  <button matButton [mat-dialog-close]="title()" cdkFocusInitial>Save</button>
+  <button matButton [disabled]="title() === ''" [mat-dialog-close]="title()" cdkFocusInitial>Save</button>
 </mat-dialog-actions>

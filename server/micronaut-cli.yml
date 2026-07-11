@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: com.interviewdocs
+testFramework: junit
+sourceLanguage: java
+buildTool: gradle
+features: [app-name, aws-lambda, aws-lambda-events-serde, aws-lambda-handler-default, aws-v2-sdk, data, data-jpa, graalvm, gradle, http-client-jdk, http-client-test, java, java-application, jdbc-hikari, junit, logback, micronaut-aot, micronaut-build, micronaut-configuration-validation-gradle-plugin, micronaut-http-validation, postgres, properties, readme, serialization-jackson, shade, spring, spring-boot, spring-data-jpa, spring-web, static-resources, test-resources, validation, views-fieldset, views-thymeleaf, x86]

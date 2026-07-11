@@ -1,45 +1,144 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '4.0.5'
-	id 'io.spring.dependency-management' version '1.1.7'
+    id("io.micronaut.application") version "5.0.1"
+    id("com.gradleup.shadow") version "9.4.1"
+    id("io.micronaut.test-resources") version "5.0.1"
+    id("io.micronaut.aot") version "5.0.1"
 }
 
-group = 'com.interviewdocs'
-version = '0.0.1-SNAPSHOT'
+version = "0.1"
+group = "com.interviewdocs"
 
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(25)
-	}
+micronaut {
+    testResources {
+        enabled = false
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation("javax.xml.bind:jaxb-api")
-	testImplementation 'org.apache.httpcomponents.client5:httpclient5'
-	implementation(platform("software.amazon.awssdk:bom:2.27.21"))
+    annotationProcessor("io.micronaut.data:micronaut-data-processor")
+    annotationProcessor("io.micronaut.security:micronaut-security-processor")
+    annotationProcessor("io.micronaut:micronaut-http-validation")
+    annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
+    annotationProcessor("io.micronaut.spring:micronaut-spring-annotation")
+    annotationProcessor("io.micronaut.spring:micronaut-spring-boot-annotation")
+    annotationProcessor("io.micronaut.spring:micronaut-spring-web-annotation")
+    annotationProcessor("io.micronaut.validation:micronaut-validation-processor")
     implementation("software.amazon.awssdk:s3")
-	implementation 'software.amazon.awssdk:sso'
-	implementation 'software.amazon.awssdk:ssoid'
+	implementation("software.amazon.awssdk:sso")
 	implementation('software.amazon.awssdk:cloudfront')
-	implementation 'com.auth0:auth0-springboot-api:1.0.0-beta.0'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
-	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.postgresql:postgresql'
-	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation("io.micronaut:micronaut-http-client-jdk")
+    implementation("io.micronaut:micronaut-http-server-netty")
+    implementation("io.micronaut:micronaut-http-server")
+    implementation("io.micronaut.security:micronaut-security")
+    implementation("io.micronaut.security:micronaut-security-annotations")
+    implementation("io.micronaut.security:micronaut-security-oauth2")
+    implementation("io.micronaut.security:micronaut-security-jwt")
+    implementation("io.micronaut.aws:micronaut-aws-lambda-events-serde")
+    implementation("io.micronaut.data:micronaut-data-hibernate-jpa")
+    implementation("io.micronaut.data:micronaut-data-spring")
+    implementation("io.micronaut.data:micronaut-data-spring-jpa")
+    implementation('io.github.cdimascio:dotenv-java:3.0.0')
+    implementation("io.micronaut.serde:micronaut-serde-jackson")
+    implementation("io.micronaut.sql:micronaut-jdbc-hikari")
+    implementation("io.micronaut.validation:micronaut-validation")
+    implementation("io.micronaut.views:micronaut-views-fieldset")
+    implementation("io.micronaut.views:micronaut-views-thymeleaf")
+    implementation("jakarta.validation:jakarta.validation-api")
+    implementation("org.springframework:spring-orm")
+    implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    runtimeOnly("io.micronaut.spring:micronaut-spring-boot")
+    runtimeOnly("io.micronaut.spring:micronaut-spring-web")
+    runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("io.micronaut.sql:micronaut-jdbc-hikari")
+    testAnnotationProcessor("io.micronaut.spring:micronaut-spring-boot-annotation")
+    testAnnotationProcessor("io.micronaut.spring:micronaut-spring-web-annotation")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
+
+
+application {
+    mainClass = "com.interviewdocs.Application"
 }
+
+java {
+    sourceCompatibility = JavaVersion.toVersion("25")
+    targetCompatibility = JavaVersion.toVersion("25")
+}
+
+
+
+
+graalvmNative.toolchainDetection = false
+graalvmNative {
+    binaries {
+        all {
+            buildArgs.add("-H:+SharedArenaSupport")
+        }
+    }
+}
+
+
+
+
+micronaut {
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("com.interviewdocs.*")
+    }
+    testResources {
+        version = "4.0.0"
+    }
+    aot {
+        // Please review carefully the optimizations enabled below
+        // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
+        optimizeServiceLoading = false
+        convertYamlToJava = false
+        precomputeOperations = true
+        cacheEnvironment = true
+        optimizeClassLoading = true
+        deduceEnvironment = true
+        optimizeNetty = true
+        replaceLogbackXml = true
+    }
+
+}
+tasks.withType(io.micronaut.gradle.testresources.StartTestResourcesService).configureEach {
+    useClassDataSharing = false
+}
+
+tasks.named("dockerfile") {
+
+    baseImage = "eclipse-temurin:25-jre"
+}
+
+
+
+tasks.named("dockerfileNative") {
+    jdkVersion = "25"
+    args(
+        "-XX:MaximumHeapSizePercent=80",
+        "-Dio.netty.allocator.numDirectArenas=0",
+        "-Dio.netty.noPreferDirect=true"
+    )
+}
+
+
+
+
+
+// https://docs.gradle.org/current/userguide/upgrading_major_version_9.html#test_task_fails_when_no_tests_are_discovered
+tasks.withType(AbstractTestTask).configureEach {
+    failOnNoDiscoveredTests = false
+}
+
+
+
+

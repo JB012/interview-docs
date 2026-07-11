@@ -7,12 +7,12 @@
             </div>
             <menu-button type="folders" class="py-2" [updateFolders]="updateFolders" [(sortBy)]="sortValue" [(orderBy)]="orderValue" /> 
         </div>
-        @if (folders.content && folders.page.totalElements > 0) {
+        @if (folders.content && folders.totalSize > 0) {
             <table [updateFolders]="updateFolders" [folders]="folders.content" [sortValue]="sortValue()" [orderValue]="orderValue()"></table>
             <mat-paginator
             (page)="handlePageEvent($event)"
             [hidePageSize]="true"
-            [length]="folders.page.totalElements"
+            [length]="folders.totalSize"
             [pageSize]="pageSize"
             [pageIndex]="pageIndex"
             ></mat-paginator>

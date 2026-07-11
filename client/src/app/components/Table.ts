@@ -38,7 +38,7 @@ export class Table {
 
     constructor(public auth : AuthService) {
         this.auth.getCurrentUser().subscribe((res) => {
-            this.userId = res!.user!.claims.sub;
+            this.userId = res!.user!;
         });
     }
 }

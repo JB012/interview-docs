@@ -55,9 +55,9 @@ export class FolderPage {
 
     ngOnInit() {
         this.questionsInFolder$.subscribe((questions) => {
-            this.pageSize = questions.page.size;
-            this.pageIndex = questions.page.number;
-        })
+            this.pageSize = questions.pageSize;
+            this.pageIndex = questions.pageNumber;
+        });
     }
 
     constructor(public auth : AuthService ) {
@@ -76,7 +76,7 @@ export class FolderPage {
         });
 
         auth.getCurrentUser().subscribe((res) => {
-            this.userId = res?.user?.claims.sub;
+            this.userId = res!.user!;
         })
     } 
     
@@ -89,11 +89,14 @@ export class FolderPage {
 
     updateQuestions = () => {
         const field = this.sortValue() === "Alphabetical" ? "question" : sortFields[this.sortValue()];
-        this.folderService.getQuestionsInFolder(this.id(), this.pageIndex, this.pageSize, 
+        this.folderService.getQuestionsInFolder(this.id(), this.pageIndex, 10, 
             {field: field, direction: orderDirection[this.orderValue()]})
             .subscribe((questions) => {
                 this.questionSource.next(questions);
-            })
+                    
+                this.pageSize = questions.pageSize
+                this.pageIndex = questions.pageNumber;
+            });
     }
 
     createNewQuestion() {
