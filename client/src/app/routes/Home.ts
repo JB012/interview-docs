@@ -39,6 +39,8 @@ export class Home implements OnInit {
     sortValue = signal("Last viewed");
     orderValue = signal("Newest first");
 
+    addButtonDisable = signal(false);
+
     length = 0;
     pageSize = 0;
     pageIndex = 0;
@@ -91,6 +93,8 @@ export class Home implements OnInit {
     }
 
     navigateToQuestionPage(id: number) {
+        this.addButtonDisable.set(true);
+        
         this.questionService.putQuestion({viewed_at: moment().tz(moment.tz.guess(true)).format(), 
             user_id: this.userId }, id).subscribe(() => 
             {

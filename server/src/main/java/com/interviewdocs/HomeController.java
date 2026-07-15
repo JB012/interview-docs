@@ -11,7 +11,6 @@ import io.micronaut.security.annotation.Secured;
 public class HomeController {
 
     @Get
-    @Secured(SecurityRule.IS_AUTHENTICATED)
     public Map<String, Object> index() {
         return Collections.singletonMap("message", "Hello World");
     }

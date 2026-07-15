@@ -15,3 +15,5 @@ out/
 .factorypath
 *.env
 .aws/
+*.der
+*.pem

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
 
 @Serdeable
-
 public class PagedResponse<T> {
     @JsonInclude(JsonInclude.Include.ALWAYS)
     private List<T> content;

@@ -5,27 +5,28 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
-import com.interviewdocs.server.utils.PagedResponse;
 import io.micronaut.data.model.Sort;
-import org.springframework.stereotype.Service;
 
+import com.interviewdocs.server.utils.PagedResponse;
 import com.interviewdocs.server.error.FolderNotFoundException;
 import com.interviewdocs.server.model.Folder;
 import com.interviewdocs.server.model.Question;
 import com.interviewdocs.server.repository.FolderRepository;
 import com.interviewdocs.server.repository.QuestionRepository;
 
+import jakarta.inject.Singleton;
 
-@Service
+@Singleton
 public class FolderService {
-    @Autowired
-    private FolderRepository folderRepository;
+    private final FolderRepository folderRepository;
+    private final QuestionRepository questionRepository;
 
-    @Autowired
-    private QuestionRepository questionRepository;
+    public FolderService(FolderRepository folderRepository, QuestionRepository questionRepository) {
+        this.folderRepository = folderRepository;
+        this.questionRepository = questionRepository;
+    }
 
     public PagedResponse<Folder> getFolders(int page, int size, String sort, String userId) {
         String[] sortOptions = sort.split(",");

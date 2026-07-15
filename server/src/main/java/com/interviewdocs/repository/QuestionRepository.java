@@ -6,12 +6,11 @@ import java.util.Set;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.query.Param;
 import io.micronaut.data.repository.PageableRepository;
 import com.interviewdocs.server.model.Question;
 import io.micronaut.data.annotation.*;
-import java.util.Optional;
 import io.micronaut.context.annotation.Parameter;
+import java.util.Optional;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {

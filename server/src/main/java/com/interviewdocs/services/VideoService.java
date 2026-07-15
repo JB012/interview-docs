@@ -3,26 +3,28 @@ package com.interviewdocs.server.services;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import com.interviewdocs.server.utils.PagedResponse;
 import io.micronaut.data.model.Sort;
-import org.springframework.stereotype.Service;
 
 import com.interviewdocs.server.model.Video;
 import com.interviewdocs.server.repository.VideoRepository;
 
 import java.util.List;
 
-@Service
+import jakarta.inject.Singleton;
+
+@Singleton
 public class VideoService {
-    @Autowired
-    private S3Service s3Service;
+    private final S3Service s3Service;
+    private final VideoRepository videoRepository;
     
-    @Autowired
-    private VideoRepository videoRepository;
-    
+    public VideoService(S3Service s3Service, VideoRepository videoRepository) {
+        this.s3Service = s3Service;
+        this.videoRepository = videoRepository;
+    }
+
     private static String DEVELOPMENT_PRIVATE_KEY_PATH = "C:\\Users\\jamal\\OneDrive\\Documents\\web-projects\\interview-docs\\server\\private_key_pkcs8.der";
 
     public void setSourceToPresignedURL(Video video) throws Exception {

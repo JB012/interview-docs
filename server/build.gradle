@@ -23,9 +23,6 @@ dependencies {
     annotationProcessor("io.micronaut.security:micronaut-security-processor")
     annotationProcessor("io.micronaut:micronaut-http-validation")
     annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
-    annotationProcessor("io.micronaut.spring:micronaut-spring-annotation")
-    annotationProcessor("io.micronaut.spring:micronaut-spring-boot-annotation")
-    annotationProcessor("io.micronaut.spring:micronaut-spring-web-annotation")
     annotationProcessor("io.micronaut.validation:micronaut-validation-processor")
     implementation("software.amazon.awssdk:s3")
 	implementation("software.amazon.awssdk:sso")
@@ -37,31 +34,23 @@ dependencies {
     implementation("io.micronaut.security:micronaut-security-annotations")
     implementation("io.micronaut.security:micronaut-security-oauth2")
     implementation("io.micronaut.security:micronaut-security-jwt")
+    implementation("io.micronaut.aws:micronaut-aws-apigateway")
     implementation("io.micronaut.aws:micronaut-aws-lambda-events-serde")
     implementation("io.micronaut.data:micronaut-data-hibernate-jpa")
-    implementation("io.micronaut.data:micronaut-data-spring")
-    implementation("io.micronaut.data:micronaut-data-spring-jpa")
     implementation('io.github.cdimascio:dotenv-java:3.0.0')
     implementation("io.micronaut.serde:micronaut-serde-jackson")
-    implementation("io.micronaut.sql:micronaut-jdbc-hikari")
     implementation("io.micronaut.validation:micronaut-validation")
     implementation("io.micronaut.views:micronaut-views-fieldset")
     implementation("io.micronaut.views:micronaut-views-thymeleaf")
     implementation("jakarta.validation:jakarta.validation-api")
-    implementation("org.springframework:spring-orm")
-    implementation("org.springframework.boot:spring-boot-starter")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    runtimeOnly("ch.qos.logback:logback-classic")
-    runtimeOnly("io.micronaut.spring:micronaut-spring-boot")
-    runtimeOnly("io.micronaut.spring:micronaut-spring-web")
-    runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("io.micronaut.sql:micronaut-jdbc-hikari")
-    testAnnotationProcessor("io.micronaut.spring:micronaut-spring-boot-annotation")
-    testAnnotationProcessor("io.micronaut.spring:micronaut-spring-web-annotation")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    runtimeOnly("org.postgresql:postgresql")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testAnnotationProcessor("io.micronaut:micronaut-inject-java")
+    testImplementation("io.micronaut.test:micronaut-test-junit5")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
-
-
 
 application {
     mainClass = "com.interviewdocs.Application"
@@ -73,22 +62,19 @@ java {
 }
 
 
-
-
 graalvmNative.toolchainDetection = false
-graalvmNative {
-    binaries {
-        all {
-            buildArgs.add("-H:+SharedArenaSupport")
-        }
-    }
+
+
+test {
+    useJUnitPlatform()
 }
 
-
-
-
 micronaut {
+    runtime("lambda_java")
     testRuntime("junit5")
+    nativeLambda {
+        lambdaRuntimeClassName = "io.micronaut.function.aws.runtime.MicronautLambdaRuntime"
+    }
     processing {
         incremental(true)
         annotations("com.interviewdocs.*")
@@ -118,8 +104,6 @@ tasks.named("dockerfile") {
 
     baseImage = "eclipse-temurin:25-jre"
 }
-
-
 
 tasks.named("dockerfileNative") {
     jdkVersion = "25"

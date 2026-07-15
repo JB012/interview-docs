@@ -35,15 +35,15 @@ public class Video {
     private String userId;
     
     @JsonProperty("created_at")
-    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE", insertable = false)
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP WITH TIME ZONE", insertable = false)
     private OffsetDateTime createdAt;
 
     @JsonProperty("edited_at")
-    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    @Column(name="edited_at", columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private OffsetDateTime editedAt;
 
     @JsonProperty("viewed_at")
-    @Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
+    @Column(name="viewed_at", columnDefinition = "TIMESTAMP WITH TIME ZONE")
     private OffsetDateTime viewedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)

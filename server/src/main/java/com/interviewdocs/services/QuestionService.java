@@ -2,9 +2,7 @@ package com.interviewdocs.server.services;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import io.micronaut.data.model.Page;
-import org.springframework.stereotype.Service;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.Sort;
 
@@ -12,7 +10,9 @@ import com.interviewdocs.server.utils.PagedResponse;
 import com.interviewdocs.server.model.Question;
 import com.interviewdocs.server.repository.QuestionRepository;
 
-@Service
+import jakarta.inject.Singleton;
+
+@Singleton
 public class QuestionService {
     
     private QuestionRepository questionRepository;

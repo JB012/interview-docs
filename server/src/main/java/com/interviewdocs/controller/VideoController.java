@@ -5,29 +5,25 @@ import com.interviewdocs.server.services.S3Service;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import java.time.OffsetDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import io.micronaut.http.annotation.*;
+import io.micronaut.http.HttpResponse;
 
-import com.interviewdocs.server.error.QuestionNotFoundException;
-import com.interviewdocs.server.error.VideoNotFoundException;
-import com.interviewdocs.server.model.Question;
-import com.interviewdocs.server.model.Video;
 import com.interviewdocs.server.repository.*;
+import com.interviewdocs.server.error.*;
+import com.interviewdocs.server.model.*;
 import com.interviewdocs.server.services.VideoService;
+
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import java.security.Principal;
 
 import com.interviewdocs.server.utils.PagedResponse;
-import org.springframework.transaction.annotation.Transactional;
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
-@RestController
+@Controller("/videos")
 public class VideoController {
     private final S3Service s3Service;
     private final VideoRepository videoRepository;
@@ -44,17 +40,17 @@ public class VideoController {
         this.s3Service = s3Service;
     }
 
-    @GetMapping("/videos")
-    PagedResponse<Video> all(Principal auth, @RequestParam(name="questionId") Long questionId, 
-    @RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name="size", defaultValue = "10") int size, 
-    @RequestParam(name = "sort", defaultValue = "viewedAt, desc") String sort) {
+    @Get
+    PagedResponse<Video> all(Principal auth, @QueryValue(value="questionId") Long questionId, 
+    @QueryValue(value = "page", defaultValue = "0") int page, @QueryValue(value="size", defaultValue = "10") int size, 
+    @QueryValue(value = "sort", defaultValue = "viewedAt, desc") String sort) {
         String id = videoService.getUserIdNumber(auth.getName());
 
         return videoService.getVideos(page, size, sort, id, questionId);
     }
 
-    @PostMapping("/videos")
-    ResponseEntity<Video> newVideo(@RequestBody Video newVideo, @RequestParam(name="questionId") Long questionId, Principal auth) { 
+    @Post
+    HttpResponse<Video> newVideo(@Body Video newVideo, @QueryValue(value="questionId") Long questionId, Principal auth) { 
         if (newVideo.getUserId().equals(videoService.getUserIdNumber(auth.getName()))) {            
             Question question = questionRepository.findByQuestionId(questionId)
             .orElseThrow(() -> new QuestionNotFoundException(questionId));
@@ -66,31 +62,33 @@ public class VideoController {
             try {
                 videoService.setSourceToPresignedURL(newVideo);
             } catch (Exception e) {
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                e.printStackTrace();
+                return HttpResponse.serverError();
             }
 
-            return ResponseEntity.ok(newVideo);
+            return HttpResponse.ok(newVideo);
         }
 
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        return HttpResponse.unauthorized();
     }
 
-    @GetMapping("/videos/{id}")
-    ResponseEntity<Video> one(@PathVariable("id") Long id) {
+    @Get("/{id}")
+    HttpResponse<Video> one(@PathVariable("id") Long id) {
         Video video = videoRepository.findById(id)
         .orElseThrow(() -> new VideoNotFoundException(id));
 
         try {
             videoService.setSourceToPresignedURL(video);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+            return HttpResponse.serverError();
         }
 
-        return ResponseEntity.ok(video);
+        return HttpResponse.ok(video);
     }
 
-    @PutMapping("/videos/{id}")
-    void replaceVideo(@RequestBody Video newVideo, @PathVariable("id") Long id) {
+    @Put("/{id}")
+    void replaceVideo(@Body Video newVideo, @PathVariable("id") Long id) {
         videoRepository.findById(id)
         .map(video -> {
             if (newVideo.getTitle() != null && !newVideo.getTitle().equals(video.getTitle())) { 
@@ -126,7 +124,7 @@ public class VideoController {
         });
     }
 
-    @DeleteMapping("/videos/{id}")
+    @Delete("/{id}")
     void deleteQuestion(@PathVariable("id") Long id) {
         Video video = videoRepository.findById(id)
         .orElseThrow(() -> new VideoNotFoundException(id));

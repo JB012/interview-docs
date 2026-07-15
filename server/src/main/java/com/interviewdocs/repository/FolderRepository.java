@@ -9,7 +9,6 @@ import io.micronaut.data.annotation.*;
 import io.micronaut.context.annotation.Parameter;
 import io.micronaut.data.repository.CrudRepository;
 import com.interviewdocs.server.model.Folder;
-import org.springframework.data.repository.query.Param;
 import io.micronaut.core.annotation.NonNull;
 import java.util.Optional;
 
@@ -19,6 +18,8 @@ public interface FolderRepository extends JpaRepository<Folder, Long> {
     Optional<Folder> findById(Long id);
     List<Folder> findAllByUserId(String userId);
     Page<Folder> findAllByUserId(String userId, Pageable pageable);
-    @Query("SELECT f FROM Folder f WHERE f.userId = :userId AND EXISTS (SELECT 1 FROM f.questions q WHERE q.id = :questionId)")
+    @Query(value = "SELECT f FROM Folder f WHERE f.userId = :userId AND EXISTS (SELECT 1 FROM f.questions q WHERE q.id = :questionId)",
+        countQuery = "SELECT count(*) FROM Folder f WHERE f.userId = :userId AND EXISTS (SELECT 1 FROM f.questions q WHERE q.id = :questionId)"
+    )
     List<Folder> findAllByUserIdAndQuestionId(@Parameter("userId") String userId, @Parameter("questionId") Long id);
 }

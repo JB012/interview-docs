@@ -3,8 +3,6 @@ package com.interviewdocs.server.services;
 import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 
-import org.springframework.stereotype.Service;
-
 import software.amazon.awssdk.services.cloudfront.model.CannedSignerRequest;
 import software.amazon.awssdk.services.cloudfront.model.CreateInvalidationRequest;
 import software.amazon.awssdk.services.cloudfront.model.CreateInvalidationResponse;
@@ -21,7 +19,9 @@ import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities;
 
 import com.interviewdocs.server.utils.CreateCannedPolicyRequest;
 
-@Service
+import jakarta.inject.Singleton;
+
+@Singleton
 public class S3Service {
     private static final CloudFrontUtilities cloudFrontUtilities = CloudFrontUtilities.create();
     private static final CloudFrontAsyncClient cloudFrontClient = CloudFrontAsyncClient.create();

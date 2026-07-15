@@ -1,31 +1,16 @@
 package com.interviewdocs.server.controller;
 
-import com.interviewdocs.server.services.FolderService;
-import com.interviewdocs.server.services.QuestionService;
-
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import io.micronaut.data.model.Page;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import io.micronaut.http.annotation.*;
+import io.micronaut.http.HttpResponse;
 
-import com.interviewdocs.server.error.FolderNotFoundException;
-import com.interviewdocs.server.error.QuestionNotFoundException;
-import com.interviewdocs.server.model.Folder;
-import com.interviewdocs.server.model.Question;
-import com.interviewdocs.server.repository.FolderRepository;
-import com.interviewdocs.server.repository.QuestionRepository;
+import com.interviewdocs.server.error.*;
+import com.interviewdocs.server.model.*;
+import com.interviewdocs.server.services.*;
+import com.interviewdocs.server.repository.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import java.security.Principal;
@@ -33,7 +18,7 @@ import java.security.Principal;
 import com.interviewdocs.server.utils.PagedResponse;
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
-@RestController
+@Controller("/folders")
 public class FolderController {
     private final FolderService folderService;
     private final FolderRepository folderRepository;
@@ -46,36 +31,36 @@ public class FolderController {
         this.folderService = folderService;
     }
     
-    @GetMapping("/folders/all")
+    @Get("/all")
     List<Folder> getAllFolders(Principal auth) {
         return folderRepository.findAllByUserId(auth.getName());
     }
     
-    @GetMapping("/folders")
-    PagedResponse<Folder> getFolders(Principal auth, @RequestParam(name = "page", defaultValue = "0") int page, 
-    @RequestParam(name="size", defaultValue = "10") int size, @RequestParam(name = "sort", defaultValue = "viewedAt,desc") String sort) {
+    @Get
+    PagedResponse<Folder> getFolders(Principal auth, @QueryValue(value = "page", defaultValue = "0") int page, 
+    @QueryValue(value="size", defaultValue = "10") int size, @QueryValue(value = "sort", defaultValue = "viewedAt,desc") String sort) {
         return folderService.getFolders(page, size, sort, auth.getName());
     }
     
-    @PostMapping("/folders")
-    ResponseEntity<Folder> newFolder(@RequestBody Folder newFolder, Principal auth) {
+    @Post
+    HttpResponse<Folder> newFolder(@Body Folder newFolder, Principal auth) {
         if (newFolder.getUserId().equals(auth.getName())) {
-            return ResponseEntity.ok(folderRepository.save(newFolder));
+            return HttpResponse.ok(folderRepository.save(newFolder));
         }
 
-        return ResponseEntity.noContent().build();
+        return HttpResponse.noContent();
     }
 
-    @GetMapping("/folders/{id:[0-9]+}")
-    ResponseEntity<Folder> one(@PathVariable("id") Long id) {
+    @Get("/{id:[0-9]+}")
+    HttpResponse<Folder> one(@PathVariable("id") Long id) {
         Folder folder = folderRepository.findById(id)
         .orElseThrow(() -> new FolderNotFoundException(id));
     
-        return ResponseEntity.ok(folder);
+        return HttpResponse.ok(folder);
     }
 
-    @PutMapping("/folders/{id}")
-    void replaceFolder(Principal auth, @RequestBody Folder newFolder, @PathVariable("id") Long id) {
+    @Put("/{id}")
+    void replaceFolder(Principal auth, @Body Folder newFolder, @PathVariable("id") Long id) {
         if (newFolder.getUserId().equals(auth.getName())) {    
             folderRepository.findById(id)
             .map(folder -> {
@@ -95,7 +80,7 @@ public class FolderController {
         }
     }
 
-    @DeleteMapping("/folders/{id}")
+    @Delete("/{id}")
     void deleteQuestion(@PathVariable("id") Long id) {
         Folder folder = folderRepository.findById(id)
         .orElseThrow(() -> new FolderNotFoundException(id));
@@ -117,13 +102,13 @@ public class FolderController {
         folderRepository.deleteById(id);
     } 
 
-    @GetMapping("/folders/{id}/questions")
-    PagedResponse<Question> getQuestionsFromFolder(Principal auth, @PathVariable("id") Long id, @RequestParam(name = "page", defaultValue = "0") int page, 
-    @RequestParam(name="size", defaultValue = "10") int size, @RequestParam(name = "sort", defaultValue = "viewedAt, desc") String sort) {
+    @Get("/{id}/questions")
+    PagedResponse<Question> getQuestionsFromFolder(Principal auth, @PathVariable("id") Long id, @QueryValue(value = "page", defaultValue = "0") int page, 
+    @QueryValue(value="size", defaultValue = "10") int size, @QueryValue(value = "sort", defaultValue = "viewedAt, desc") String sort) {
         return folderService.getQuestionsInFolder(page, size, sort, auth.getName(), id);
     }
 
-    @GetMapping("/folders/{id}/questions/all")
+    @Get("/{id}/questions/all")
     public Set<Question> getAllQuestionsFromFolder(Principal auth, @PathVariable("id") Long id) {
         Folder folder = folderRepository.findById(id)
             .orElseThrow(() -> new FolderNotFoundException(id));
@@ -132,8 +117,8 @@ public class FolderController {
     }
     
 
-    @PostMapping("/folders/{id}/questions/add")
-    public void postQuestionToFolder(@PathVariable("id") Long folderId, @RequestBody Long questionId) {
+    @Post("/{id}/questions/add")
+    public void postQuestionToFolder(@PathVariable("id") Long folderId, @Body Long questionId) {
         Folder folder = folderRepository.findById(folderId)
         .orElseThrow(() -> new FolderNotFoundException(folderId));
 
@@ -146,27 +131,18 @@ public class FolderController {
         questionRepository.save(question);
     }
     
-    @DeleteMapping("/folders/{folderId}/questions/{questionId}/delete")
+    @Delete("/{folderId}/questions/{questionId}/delete")
     public void deleteQuestionInFolder(@PathVariable("folderId") Long folderId, @PathVariable("questionId") Long questionId) {
         Folder folder = folderRepository.findById(folderId)
         .orElseThrow(() -> new FolderNotFoundException(folderId));
 
         Question question = questionRepository.findById(questionId)
         .orElseThrow(() -> new QuestionNotFoundException(questionId));
-        
-        System.out.println(question.getFolders().contains(folder));
-        System.out.println(folder.getQuestions().contains(question));
     
         Folder folderInSet = question.getFolders().iterator().next();
 
-        System.out.println(folderInSet.getId().equals(folder.getId()));
-        
-        System.out.println(folderInSet.equals(folder));
         question.removeFromFolder(folder);
-        
-        System.out.println(folder.getQuestions().size());
-        System.out.println(question.getFolders().size());
-        
+    
         folderRepository.save(folder);
         questionRepository.save(question);
     }
