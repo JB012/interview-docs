@@ -1,0 +1,77 @@
+name: Deploy to Amazon S3
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy.client:
+    name: Deploy client to S3
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+    
+    - name: Node.js Setup
+      uses: actions/setup-node@v1
+      with:
+        node-version: 24.11.0
+
+    - name: Dependency Installation
+      run: npm install
+  
+    - name: Client Build
+      run: cd ./client && ng build 
+
+    - name: Deploy build to AWS S3
+      run: |
+        aws s3 sync ./client/dist/client/browser/ ${{ secrets.S3_CLIENT_BUCKET }} --delete 
+        && 
+        aws s3 sync ./client/dist/client/ ${{ secrets.S3_CLIENT_BUCKET}} --exclude "./client/dist/client/browser/*"
+    
+    - name: Create CloudFront Invalidation
+      run: aws cloudfront create-invalidation --distribution-id ${{ secrets.STATIC_DISTRIBUTION_ID }} --paths "/*"
+
+  deploy.server:
+    name: Deploy server jar to S3
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+    
+    - name: Set up JDK 25
+      uses: actions/setup-java@v4
+      with:
+        java-version: '25'
+        distribution: 'temurin'
+
+    # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
+    # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+
+    - name: Server Build with Gradle Wrapper
+      run: cd ./server && ./gradlew shadowJar 
+
+    - name: Deploy build to S3
+      run: aws s3 sync ./server/build/libs/* ${{ secrets.S3_SERVER_BUCKET }} --delete
+    
