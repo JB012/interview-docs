@@ -27,12 +27,9 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 24.11.0
-
-    - name: Dependency Installation
-      run: npm install
   
     - name: Client Build
-      run: cd ./client && ng build 
+      run: cd ./client && npm install && ng build 
 
     - name: Deploy build to AWS S3
       run: |
