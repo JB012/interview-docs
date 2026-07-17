@@ -43,6 +43,10 @@ jobs:
     - name: Create CloudFront Invalidation
       run: aws cloudfront create-invalidation --distribution-id ${{ secrets.STATIC_DISTRIBUTION_ID }} --paths "/*"
 
+    - name: Cancel workflow on failure
+      if: ${{ failure() }}
+      uses: andymckay/cancel-action@0.5
+      
   deploy_server:
     name: Deploy server jar to S3
     runs-on: ubuntu-latest
@@ -74,4 +78,8 @@ jobs:
 
     - name: Deploy build to S3
       run: aws s3 sync ./server/build/libs/* ${{ secrets.S3_SERVER_BUCKET }} --delete
+    
+    - name: Cancel workflow on failure
+      if: ${{ failure() }}
+      uses: andymckay/cancel-action@0.5
     
