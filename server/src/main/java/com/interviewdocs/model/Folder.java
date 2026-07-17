@@ -17,7 +17,7 @@ import io.micronaut.serde.annotation.Serdeable;
 
 @Serdeable
 @Entity
-@Table (name = "folders")
+@Table(name = "folders")
 @JsonIgnoreProperties({"questions"})
 public class Folder {
     @Id @JsonProperty("folder_id")

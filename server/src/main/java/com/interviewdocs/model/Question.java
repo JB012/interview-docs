@@ -14,7 +14,7 @@ import org.hibernate.annotations.BatchSize;
 
 @Serdeable
 @Entity
-@Table (name = "questions")
+@Table(name = "questions")
 @JsonIgnoreProperties({"folders", "videos"})
 public class Question {
     private @Id @JsonProperty("question_id") @Column(name="question_id")

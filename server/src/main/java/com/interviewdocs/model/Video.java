@@ -16,7 +16,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Serdeable
 @Entity
-@Table (name = "videos")
+@Table(name = "videos")
 public class Video {
     @Id @JsonProperty("video_id") 
     @GeneratedValue @Column(name="video_id") 
