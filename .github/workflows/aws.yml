@@ -37,7 +37,6 @@ jobs:
     - name: Deploy build to AWS S3
       run: |
         aws s3 sync ./client/dist/client/browser/ ${{ secrets.S3_CLIENT_BUCKET }} --delete 
-        && 
         aws s3 sync ./client/dist/client/ ${{ secrets.S3_CLIENT_BUCKET}} --exclude "./client/dist/client/browser/*"
     
     - name: Create CloudFront Invalidation
