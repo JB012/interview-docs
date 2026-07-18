@@ -33,6 +33,9 @@ jobs:
   
     - name: Client Build
       run: cd ./client && ng build 
+      env:
+        NG_APP_AWS_ACCESS_ID: ${{ secrets.NG_APP_AWS_ACCESS_ID }}
+        NG_APP_AWS_SECRET_ACCESS_KEY: ${{ secrets.NG_APP_AWS_SECRET_ACCESS_KEY }}
 
     - name: Deploy build to AWS S3
       run: |
@@ -73,7 +76,12 @@ jobs:
       uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
     - name: Server Build with Gradle Wrapper
-      run: cd ./server && ./gradlew shadowJar 
+      run: cd ./server && ./gradlew shadowJar
+      env:
+        DB_USERNAME: ${{ secrets.DB_USERNAME }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_HOST: ${{ secrets.DB_HOST }}
+        AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
 
     - name: Deploy build to S3
       run: aws s3 sync ./server/build/libs/* ${{ secrets.S3_SERVER_BUCKET }} --delete
