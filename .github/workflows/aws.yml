@@ -74,7 +74,7 @@ jobs:
       uses: gradle/actions/setup-gradle@v6
 
     - name: Server Build with Gradle Wrapper
-      run: cd ./server && ./gradlew shadowJar
+      run: cd ./server && gradle shadowJar
       env:
         DB_USERNAME: ${{ secrets.DB_USERNAME }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
