@@ -1,4 +1,4 @@
-package com.interviewdocs.server.model;
+package com.interviewdocs.model;
 
 import java.time.OffsetDateTime;
 import java.util.*;

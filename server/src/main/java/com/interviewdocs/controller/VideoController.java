@@ -1,6 +1,6 @@
-package com.interviewdocs.server.controller;
+package com.interviewdocs.controller;
 
-import com.interviewdocs.server.services.S3Service;
+import com.interviewdocs.services.S3Service;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,16 +11,16 @@ import java.time.OffsetDateTime;
 import io.micronaut.http.annotation.*;
 import io.micronaut.http.HttpResponse;
 
-import com.interviewdocs.server.repository.*;
-import com.interviewdocs.server.error.*;
-import com.interviewdocs.server.model.*;
-import com.interviewdocs.server.services.VideoService;
+import com.interviewdocs.repository.*;
+import com.interviewdocs.error.*;
+import com.interviewdocs.model.*;
+import com.interviewdocs.services.VideoService;
 
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import java.security.Principal;
 
-import com.interviewdocs.server.utils.PagedResponse;
+import com.interviewdocs.utils.PagedResponse;
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller("/videos")

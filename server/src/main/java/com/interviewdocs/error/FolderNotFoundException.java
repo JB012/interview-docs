@@ -1,4 +1,4 @@
-package com.interviewdocs.server.error;
+package com.interviewdocs.error;
 
 public class FolderNotFoundException extends RuntimeException {
     public FolderNotFoundException(Long id) {

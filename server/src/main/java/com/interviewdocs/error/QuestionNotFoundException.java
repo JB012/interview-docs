@@ -1,4 +1,4 @@
-package com.interviewdocs.server.error;
+package com.interviewdocs.error;
 
 public class QuestionNotFoundException extends RuntimeException {
     public QuestionNotFoundException(Long id) {

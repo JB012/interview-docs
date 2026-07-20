@@ -1,4 +1,4 @@
-package com.interviewdocs.server.utils;
+package com.interviewdocs.utils;
 
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 

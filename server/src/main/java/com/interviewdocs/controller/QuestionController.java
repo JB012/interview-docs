@@ -1,4 +1,4 @@
-package com.interviewdocs.server.controller;
+package com.interviewdocs.controller;
 
 import java.util.List;
 import java.util.Set;
@@ -6,16 +6,16 @@ import java.util.Set;
 import io.micronaut.http.annotation.*;
 import io.micronaut.http.HttpResponse;
 
-import com.interviewdocs.server.error.QuestionNotFoundException;
-import com.interviewdocs.server.model.*;
-import com.interviewdocs.server.repository.*;
-import com.interviewdocs.server.services.*;
+import com.interviewdocs.error.QuestionNotFoundException;
+import com.interviewdocs.model.*;
+import com.interviewdocs.repository.*;
+import com.interviewdocs.services.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import java.security.Principal;
-import com.interviewdocs.server.utils.PagedResponse;
+import com.interviewdocs.utils.PagedResponse;
 
-@Secured(SecurityRule.IS_AUTHENTICATED)
+//@Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller("/questions")
 public class QuestionController {
     private final QuestionRepository questionRepository;
@@ -51,11 +51,11 @@ public class QuestionController {
     }
 
     @Get("/{id:[0-9]+}")
-    HttpResponse<Question> one(@PathVariable("id") Long id) {
+    Question one(@PathVariable("id") Long id) {
         Question question = questionRepository.findById(id)
         .orElseThrow(() -> new QuestionNotFoundException(id));
 
-        return HttpResponse.ok(question);
+        return question;
     }
 
     @Get("/{questionId}/folders")

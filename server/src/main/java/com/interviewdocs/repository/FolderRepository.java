@@ -1,4 +1,4 @@
-package com.interviewdocs.server.repository;
+package com.interviewdocs.repository;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ import io.micronaut.data.jpa.repository.JpaRepository;
 import io.micronaut.data.annotation.*;
 import io.micronaut.context.annotation.Parameter;
 import io.micronaut.data.repository.CrudRepository;
-import com.interviewdocs.server.model.Folder;
+import com.interviewdocs.model.Folder;
 import io.micronaut.core.annotation.NonNull;
 import java.util.Optional;
 

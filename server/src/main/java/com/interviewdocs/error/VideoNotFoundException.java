@@ -1,4 +1,4 @@
-package com.interviewdocs.server.error;
+package com.interviewdocs.error;
 
 public class VideoNotFoundException extends RuntimeException {
     public VideoNotFoundException(Long id) {

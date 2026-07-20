@@ -1,4 +1,4 @@
-package com.interviewdocs.server.services;
+package com.interviewdocs.services;
 
 import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
@@ -17,7 +17,7 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 import software.amazon.awssdk.services.cloudfront.CloudFrontAsyncClient;
 import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities;
 
-import com.interviewdocs.server.utils.CreateCannedPolicyRequest;
+import com.interviewdocs.utils.CreateCannedPolicyRequest;
 
 import jakarta.inject.Singleton;
 

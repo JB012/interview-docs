@@ -1,14 +1,12 @@
-package com.interviewdocs.server.services;
-
-import java.util.List;
+package com.interviewdocs.services;
 
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.Sort;
 
-import com.interviewdocs.server.utils.PagedResponse;
-import com.interviewdocs.server.model.Question;
-import com.interviewdocs.server.repository.QuestionRepository;
+import com.interviewdocs.utils.PagedResponse;
+import com.interviewdocs.model.Question;
+import com.interviewdocs.repository.QuestionRepository;
 
 import jakarta.inject.Singleton;
 
@@ -17,7 +15,7 @@ public class QuestionService {
     
     private QuestionRepository questionRepository;
 
-    QuestionService(QuestionRepository questionRepository) {
+    public QuestionService(QuestionRepository questionRepository) {
         this.questionRepository = questionRepository;
     }
 

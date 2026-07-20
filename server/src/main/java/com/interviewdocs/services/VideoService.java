@@ -1,15 +1,15 @@
-package com.interviewdocs.server.services;
+package com.interviewdocs.services;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
-import com.interviewdocs.server.utils.PagedResponse;
+import com.interviewdocs.utils.PagedResponse;
 import io.micronaut.data.model.Sort;
 
-import com.interviewdocs.server.model.Video;
-import com.interviewdocs.server.repository.VideoRepository;
+import com.interviewdocs.model.Video;
+import com.interviewdocs.repository.VideoRepository;
 
 import java.util.List;
 

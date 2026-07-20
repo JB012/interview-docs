@@ -1,4 +1,4 @@
-package com.interviewdocs.server.utils;
+package com.interviewdocs.utils;
 
 import io.micronaut.serde.annotation.Serdeable;
 import com.fasterxml.jackson.annotation.JsonInclude;

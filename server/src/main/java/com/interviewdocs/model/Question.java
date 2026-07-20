@@ -1,4 +1,4 @@
-package com.interviewdocs.server.model;
+package com.interviewdocs.model;
 import java.time.OffsetDateTime;
 
 import java.util.*;
@@ -6,7 +6,6 @@ import java.util.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.micronaut.data.annotation.MappedEntity;
 import jakarta.persistence.*;
 import io.micronaut.serde.annotation.Serdeable;
 
@@ -58,6 +57,30 @@ public class Question {
 
     Question(String question) {
         this.question = question;
+    }
+
+    public Question(Long id, String userId, String question) {
+        this.id = id;
+        this.userId = userId;
+        this.question = question;
+    }
+
+    public Question(Long id, String userId, String question, String answer) {
+        this.id = id;
+        this.userId = userId;
+        this.question = question;
+        this.answer = answer;
+    }
+
+    public Question(Long id, String userId, String question, String answer,
+        OffsetDateTime createdAt, OffsetDateTime editedAt, OffsetDateTime viewedAt) {
+        this.id = id;
+        this.userId = userId;
+        this.question = question;
+        this.answer = answer;
+        this.createdAt = createdAt;
+        this.editedAt = editedAt;
+        this.viewedAt = viewedAt;
     }
 
     public void setUserId(String userId) {

@@ -1,4 +1,4 @@
-package com.interviewdocs.server.repository;
+package com.interviewdocs.repository;
 
 import java.util.List;
 
@@ -6,8 +6,8 @@ import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.data.jpa.repository.JpaRepository;
 
-import com.interviewdocs.server.model.Video;
-import com.interviewdocs.server.model.Question;
+import com.interviewdocs.model.Video;
+import com.interviewdocs.model.Question;
 
 import io.micronaut.data.annotation.*;
 import io.micronaut.context.annotation.Parameter;

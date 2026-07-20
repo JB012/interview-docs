@@ -1,4 +1,4 @@
-package com.interviewdocs.server.services;
+package com.interviewdocs.services;
 
 import java.util.List;
 import java.util.Set;
@@ -9,12 +9,12 @@ import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.Sort;
 
-import com.interviewdocs.server.utils.PagedResponse;
-import com.interviewdocs.server.error.FolderNotFoundException;
-import com.interviewdocs.server.model.Folder;
-import com.interviewdocs.server.model.Question;
-import com.interviewdocs.server.repository.FolderRepository;
-import com.interviewdocs.server.repository.QuestionRepository;
+import com.interviewdocs.utils.PagedResponse;
+import com.interviewdocs.error.FolderNotFoundException;
+import com.interviewdocs.model.Folder;
+import com.interviewdocs.model.Question;
+import com.interviewdocs.repository.FolderRepository;
+import com.interviewdocs.repository.QuestionRepository;
 
 import jakarta.inject.Singleton;
 

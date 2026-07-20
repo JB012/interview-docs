@@ -1,8 +1,7 @@
-package com.interviewdocs.server.controller;
+package com.interviewdocs.controller;
 
 import java.util.Map;
 
-import java.security.Principal;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.utils.SecurityService;
 import io.micronaut.security.annotation.Secured;
