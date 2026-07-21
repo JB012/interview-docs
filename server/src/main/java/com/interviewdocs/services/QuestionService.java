@@ -31,6 +31,7 @@ public class QuestionService {
             pageable = Pageable.from(page, size, Sort.of(Sort.Order.desc(field)));
         }
         else {
+            // instead of else, do else if (asc)
             pageable = Pageable.from(page, size, Sort.of(Sort.Order.asc(field)));
         }
 
