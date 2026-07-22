@@ -19,6 +19,7 @@ import jakarta.inject.Singleton;
 public class VideoService {
     private final S3Service s3Service;
     private final VideoRepository videoRepository;
+    public Object setSourceToPresignedURL;
     
     public VideoService(S3Service s3Service, VideoRepository videoRepository) {
         this.s3Service = s3Service;

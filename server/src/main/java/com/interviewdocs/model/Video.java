@@ -53,7 +53,7 @@ public class Video {
 
     public Video() {}
 
-    Video(String title) {
+    public Video(String title) {
         this.title = title;
     }
 

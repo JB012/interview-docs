@@ -52,6 +52,12 @@ public class Folder {
     Folder(String title) {
         this.title = title;
     }
+    
+    public Folder(Long id, String userId, String title) {
+        this.id = id;
+        this.userId = userId;
+        this.title = title;
+    }
 
     public void setUserId(String userId) {
         this.userId = userId;
@@ -100,6 +106,10 @@ public class Folder {
 
     public OffsetDateTime getViewedAt() {
         return this.viewedAt;
+    }
+
+    public void setQuestions(Set<Question> questions) {
+        this.questions = questions;
     }
 
     public Set<Question> getQuestions() {
