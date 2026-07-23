@@ -59,6 +59,11 @@ public class Question {
         this.question = question;
     }
 
+    public Question(String userId, String question) {
+        this.userId = userId;
+        this.question = question;
+    }
+
     public Question(Long id, String userId, String question) {
         this.id = id;
         this.userId = userId;

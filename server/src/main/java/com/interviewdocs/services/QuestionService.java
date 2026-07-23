@@ -27,11 +27,10 @@ public class QuestionService {
 
         Pageable pageable = null;
 
-        if (direction.equals("desc")) {
+        if (direction.trim().toLowerCase().equals("desc")) {
             pageable = Pageable.from(page, size, Sort.of(Sort.Order.desc(field)));
         }
-        else {
-            // instead of else, do else if (asc)
+        else if (direction.trim().toLowerCase().equals("asc")) {
             pageable = Pageable.from(page, size, Sort.of(Sort.Order.asc(field)));
         }
 

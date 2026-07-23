@@ -1,8 +1,6 @@
 package com.interviewdocs.services;
 
-import java.util.List;
 import java.util.Set;
-import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import io.micronaut.data.model.Page;
@@ -36,10 +34,10 @@ public class FolderService {
 
         Pageable pageable = null;
 
-        if (direction.equals("desc")) {
+        if (direction.trim().toLowerCase().equals("desc")) {
             pageable = Pageable.from(page, size, Sort.of(Sort.Order.desc(field)));
         }
-        else {
+        else if (direction.trim().toLowerCase().equals("asc")) {
             pageable = Pageable.from(page, size, Sort.of(Sort.Order.asc(field)));
         }
 
@@ -61,10 +59,10 @@ public class FolderService {
 
         Pageable pageable = null;
 
-        if (direction.equals("desc")) {
+        if (direction.trim().toLowerCase().equals("desc")) {
             pageable = Pageable.from(page, size, Sort.of(Sort.Order.desc(field)));
         }
-        else {
+        else if (direction.trim().toLowerCase().equals("asc")) {
             pageable = Pageable.from(page, size, Sort.of(Sort.Order.asc(field)));
         }
 

@@ -52,6 +52,11 @@ public class Folder {
     Folder(String title) {
         this.title = title;
     }
+
+    public Folder(String userId, String title) {
+        this.userId = userId;
+        this.title = title;
+    }
     
     public Folder(Long id, String userId, String title) {
         this.id = id;
