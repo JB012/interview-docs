@@ -17,9 +17,6 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
     @Query(value = "SELECT v FROM Video v WHERE v.question.id = :id AND v.userId = :userId",
         countQuery = "SELECT count(*) FROM Video v WHERE v.question.id = :id AND v.userId = :userId")
     List<Video> findAllByUserIdAndQuestionId(@Parameter("userId") String userId, @Parameter("id") Long id);
-    @Query(value = "SELECT v FROM Video v WHERE v.question.id = :id AND v.userId = :userId",
-        countQuery = "SELECT count(*) FROM Video v WHERE v.question.id = :id AND v.userId = :userId"
-    )
     Page<Video> findAllByUserIdAndQuestionId(@Parameter("userId") String userId, @Parameter("id") Long id, Pageable pageable);
     void deleteByQuestion(Question question);
     Page<Video> findAllByUserId(String userId, Pageable pageable);

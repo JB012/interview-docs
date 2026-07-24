@@ -1,7 +1,7 @@
 plugins {
     id("io.micronaut.application") version "5.0.1"
     id("com.gradleup.shadow") version "9.4.1"
-    id("io.micronaut.test-resources") version "5.0.1"
+    id("io.micronaut.test-resources") version "5.0.1" apply false
     id("io.micronaut.aot") version "5.0.1"
 }
 
@@ -89,8 +89,12 @@ micronaut {
         optimizeNetty = true
         replaceLogbackXml = true
     }
-
 }
+
+if (gradle.startParameter.taskNames.any { it.contains("test") }) {
+    apply plugin: 'io.micronaut.test-resources'
+}
+
 tasks.withType(io.micronaut.gradle.testresources.StartTestResourcesService).configureEach {
     useClassDataSharing = false
 }

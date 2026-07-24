@@ -27,7 +27,7 @@ public class Video {
     private String source;
     
     @JsonProperty("title") 
-    @Column(columnDefinition = "TEXT")
+    @Column(name="title", columnDefinition = "TEXT")
     private String title;
     
     @JsonProperty("user_id")
@@ -54,6 +54,11 @@ public class Video {
     public Video() {}
 
     public Video(String title) {
+        this.title = title;
+    }
+
+    public Video(String userId, String title) {
+        this.userId = userId;
         this.title = title;
     }
 
