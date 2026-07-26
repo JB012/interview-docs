@@ -81,11 +81,8 @@ jobs:
         DB_HOST: ${{ secrets.DB_HOST }}
         AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
 
-    - name: List workspace files
-      run: cd server/build/libs && ls -la
-
     - name: Deploy build to S3
-      run: aws s3 sync ./server/build/libs/*all.jar ${{ secrets.S3_SERVER_BUCKET }} --delete
+      run: aws s3 sync ./server/build/libs/server-0.1-all.jar ${{ secrets.S3_SERVER_BUCKET }} --delete
     
     - name: Cancel workflow on failure
       if: ${{ failure() }}
