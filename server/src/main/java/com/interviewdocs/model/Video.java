@@ -62,6 +62,13 @@ public class Video {
         this.title = title;
     }
 
+    public Video(String userId, String title, OffsetDateTime editedAt, OffsetDateTime viewedAt) {
+        this.userId = userId;
+        this.title = title;
+        this.editedAt = editedAt;
+        this.viewedAt = viewedAt;
+    }
+
     public void setUserId(String userId) {
         this.userId = userId;
     }
@@ -146,7 +153,8 @@ public class Video {
 
     @Override
     public String toString() {
-        return "Video is named " + this.title;
+        return "Video: " + this.title + " User ID: " + this.userId + " ID: " + this.id 
+        + " Created At: " + this.createdAt + " Viewed At: " + this.viewedAt + " Edited At: " + this.editedAt;
     }
 
     @Override

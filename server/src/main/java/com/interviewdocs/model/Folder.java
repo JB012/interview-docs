@@ -53,15 +53,22 @@ public class Folder {
         this.title = title;
     }
 
-    public Folder(String userId, String title) {
-        this.userId = userId;
-        this.title = title;
-    }
-    
     public Folder(Long id, String userId, String title) {
         this.id = id;
         this.userId = userId;
         this.title = title;
+    }
+    
+    public Folder(String userId, String title) {
+        this.userId = userId;
+        this.title = title;
+    }
+
+    public Folder(String userId, String title, OffsetDateTime editedAt, OffsetDateTime viewedAt) {
+        this.userId = userId;
+        this.title = title;
+        this.editedAt = editedAt;
+        this.viewedAt = viewedAt;
     }
 
     public void setUserId(String userId) {

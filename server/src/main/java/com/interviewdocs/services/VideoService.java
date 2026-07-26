@@ -11,8 +11,6 @@ import io.micronaut.data.model.Sort;
 import com.interviewdocs.model.Video;
 import com.interviewdocs.repository.VideoRepository;
 
-import java.util.List;
-
 import jakarta.inject.Singleton;
 
 @Singleton
@@ -56,7 +54,7 @@ public class VideoService {
         else if (direction.trim().toLowerCase().equals("asc")) {
             pageable = Pageable.from(page, size, Sort.of(Sort.Order.asc(field)));
         }
-        
+
         Page<Video> videoPage = videoRepository.findAllByUserIdAndQuestionId(userId, questionId, pageable);
 
         videoPage.map((video) -> {

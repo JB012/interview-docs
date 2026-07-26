@@ -58,32 +58,22 @@ public class Question {
     Question(String question) {
         this.question = question;
     }
-
-    public Question(String userId, String question) {
-        this.userId = userId;
-        this.question = question;
-    }
-
+    
     public Question(Long id, String userId, String question) {
         this.id = id;
         this.userId = userId;
         this.question = question;
     }
-
-    public Question(Long id, String userId, String question, String answer) {
-        this.id = id;
+    
+    public Question(String userId, String question) {
         this.userId = userId;
         this.question = question;
-        this.answer = answer;
     }
-
-    public Question(Long id, String userId, String question, String answer,
-        OffsetDateTime createdAt, OffsetDateTime editedAt, OffsetDateTime viewedAt) {
-        this.id = id;
+    
+    public Question(String userId, String question,
+        OffsetDateTime editedAt, OffsetDateTime viewedAt) {
         this.userId = userId;
         this.question = question;
-        this.answer = answer;
-        this.createdAt = createdAt;
         this.editedAt = editedAt;
         this.viewedAt = viewedAt;
     }
