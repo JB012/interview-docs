@@ -82,7 +82,7 @@ jobs:
         AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
 
     - name: Deploy build to S3
-      run: aws s3 sync ./server/build/libs/*all.jar ${{ secrets.S3_SERVER_BUCKET }} --delete
+      run: aws s3 sync ./server/build/libs/*.jar ${{ secrets.S3_SERVER_BUCKET }} --delete
     
     - name: Cancel workflow on failure
       if: ${{ failure() }}
