@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
     url: 'https://api.interviewdocs.net',
-    logoutURL : "https://dev-ccqkvb14q4wkazd6.us.auth0.com/v2/logout?client_id=J49enmYEIqkzDdzS7gFPXIn4CbPpdKKy&returnTo=https://www.interviewdocs.net"
+    logoutURL : `${import.meta.env.NG_APP_AUTH0_ISSUER}/v2/logout?client_id=${import.meta.env.NG_APP_AUTH0_CLIENT_ID}&returnTo=https://www.interviewdocs.net`
 };

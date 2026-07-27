@@ -3,6 +3,9 @@ declare interface Env {
   readonly NODE_ENV: string;
   readonly NG_APP_AWS_ACCESS_ID: string;
   readonly NG_APP_AWS_SECRET_ACCESS_KEY: string;
+  readonly NG_APP_VIDEO_S3_BUCKET: string;
+  readonly NG_APP_AUTH0_ISSUER : string;
+  readonly NG_APP_AUTH0_CLIENT_ID : string;
   // Replace the following with your own environment variables.
   // Example: NGX_VERSION: string;
   [key: string]: any;

@@ -75,6 +75,8 @@ export class RecordedVideo implements OnInit {
     router = inject(Router);
     route = inject(ActivatedRoute);
 
+    videoBucket = import.meta.env.NG_APP_VIDEO_S3_BUCKET;
+
     constructor(public auth: AuthService) {
          this.activatedRoute.params.subscribe((params) => {
             if (params['videoId']) {
@@ -148,7 +150,7 @@ export class RecordedVideo implements OnInit {
 
                 const command = new PutObjectCommand({
                     Key: `${this.userID}/${title}`,
-                    Bucket: 'interviewdocs-videos',
+                    Bucket: this.videoBucket,
                     Body: videoFile,
                     ContentType: videoFile.type
                 });
