@@ -3,7 +3,7 @@ import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { QuestionType, PagedQuestionType } from "../types/QuestionType";
 import { FolderType } from "../types/FolderType";
-import { environment } from "../environments/environment";
+import { environment } from "../environments/environment.development";
 
 @Injectable({providedIn: 'root'})
 export class QuestionService {

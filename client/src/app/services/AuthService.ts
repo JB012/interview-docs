@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, isDevMode } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, Observable, of, shareReplay, take } from 'rxjs';
-import { environment } from '../environments/environment';
-
+import { environment as prodEnvironment} from '../environments/environment';
+import { environment as devEnvironment} from '../environments/environment.development';
 export interface AuthResponse {
   authenticated : boolean,
   user?: string
@@ -15,15 +15,18 @@ export interface AuthResponse {
 export class AuthService {
   private user$?: Observable<AuthResponse | null>;
 
-  constructor(private http: HttpClient) {}
-  apiHost = environment.url;
+  constructor(private http: HttpClient) {
+    console.log(isDevMode())
+  }
+
+  apiHost = isDevMode() ? devEnvironment.url : prodEnvironment.url;
 
   login() {
     window.location.href = `${this.apiHost}/oauth/login/auth0`;
   }
 
   logout() {
-    window.location.href = environment.logoutURL;
+    window.location.href = isDevMode() ? devEnvironment.logoutURL : prodEnvironment.logoutURL;
   }
 
   getCurrentUser() : Observable<AuthResponse | null> {

@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { VideoType, PagedVideoType } from "../types/VideoType";
-import { environment } from "../environments/environment";
+import { environment } from "../environments/environment.development";
 
 @Injectable({providedIn: 'root'})
 export class VideoService {
