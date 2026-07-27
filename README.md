@@ -23,6 +23,21 @@ npm install npm@latest -g
 - [Java 25+](https://www.oracle.com/java/technologies/downloads/)
 
 - [An AWS account](https://aws.amazon.com/)
+  - Create an S3 bucket where your videos will be stored
+  - Create a CloudFront distribution and set its origins to the S3 bucket
+    1. Create a public key
+      ```
+      openssl genrsa -traditional -out private_key.pem 2048
+      ```
+    2. Create a private key
+      ```
+      openssl rsa -pubout -in private_key.pem -out public_key.pem
+      ```
+    3. Add public key and create a key group in CloudFront Key Management
+    4. In the behaviors section of the distribution, create a behavior and do the following:
+       1. Set Restrict viewer actions to Yes
+       2. Set Trusted authorization type to Trusted key groups (recommended)
+       3. Add your key group 
 
 - [An Auth0 Regular Web Application](https://auth0.com/)
   - In Application URIs:
