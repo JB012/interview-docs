@@ -84,6 +84,9 @@ jobs:
     - name: Deploy build to S3
       run:  aws s3 cp ./server/build/libs/server-0.1-all.jar ${{ secrets.S3_SERVER_BUCKET }}/server-0.1-all.jar
     
+    - name: Update code function in Lambda
+      run: aws lambda update-function-code interviewdocs-micronaut --s3-bucket ${{ secrets.S3_SERVER_BUCKET }} --s3-key server-0.1-all.jar --s3-object-storage-mode COPY
+    
     - name: Cancel workflow on failure
       if: ${{ failure() }}
       uses: andymckay/cancel-action@0.5
