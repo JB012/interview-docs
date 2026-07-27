@@ -15,11 +15,7 @@ export interface AuthResponse {
 export class AuthService {
   private user$?: Observable<AuthResponse | null>;
 
-  constructor(private http: HttpClient) {
-    console.log(isDevMode())
-  }
-
-  apiHost = isDevMode() ? devEnvironment.url : prodEnvironment.url;
+  constructor(private http: HttpClient) {}
 
   login() {
     window.location.href = `http://localhost:8080/oauth/login/auth0`;
@@ -34,7 +30,7 @@ export class AuthService {
       return this.user$;
     }
 
-    this.user$ = this.http.get<AuthResponse>(`${this.apiHost}/auth/me`, {
+    this.user$ = this.http.get<AuthResponse>(`http://localhost:8080/auth/me`, {
       withCredentials: true
     }).pipe(
       catchError(() => of(null)),
