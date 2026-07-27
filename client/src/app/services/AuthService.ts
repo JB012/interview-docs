@@ -22,7 +22,7 @@ export class AuthService {
   apiHost = isDevMode() ? devEnvironment.url : prodEnvironment.url;
 
   login() {
-    window.location.href = `${this.apiHost}/oauth/login/auth0`;
+    window.location.href = `http://localhost:8080/oauth/login/auth0`;
   }
 
   logout() {
