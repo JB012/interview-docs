@@ -15,7 +15,7 @@ import io.micronaut.security.rules.SecurityRule;
 import java.security.Principal;
 import com.interviewdocs.utils.PagedResponse;
 
-//@Secured(SecurityRule.IS_AUTHENTICATED)
+@Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller("/questions")
 public class QuestionController {
     private final QuestionRepository questionRepository;
