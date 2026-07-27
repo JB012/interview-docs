@@ -27,15 +27,15 @@ public class S3Service {
     private static final CloudFrontAsyncClient cloudFrontClient = CloudFrontAsyncClient.create();
     private static final S3AsyncClient s3Client = S3AsyncClient.create();
 
-    public String createSignedUrl(String keyName, String keyPairId,
+    public String createSignedUrl(String keyName, String publicKeyId,
                                   String privateKeyPath, Instant expiration,
                                   String hashAlgorithm) throws Exception {
-        String distributionDomainName = "d2b2nwmiecq4jm.cloudfront.net";
+        String distributionDomainName = System.getenv("VIDEO_CLOUDFRONT_DISTRIBUTION");
         CannedSignerRequest request = CreateCannedPolicyRequest.createRequestForCannedPolicy(
             distributionDomainName, 
             keyName, 
             privateKeyPath, 
-            keyPairId
+            publicKeyId
         );
 
         SignedUrl signedUrl = cloudFrontUtilities.getSignedUrlWithCannedPolicy(request);

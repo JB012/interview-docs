@@ -30,7 +30,7 @@ public class VideoController {
     private final QuestionRepository questionRepository;
     private final VideoService videoService;
     
-    private static final String BUCKET_NAME = "interviewdocs-videos";
+    private static final String BUCKET_NAME = System.getenv("VIDEO_S3_BUCKET");
 
     VideoController(VideoRepository videoRepository, QuestionRepository questionRepository, 
         VideoService videoService, S3Service s3Service) {

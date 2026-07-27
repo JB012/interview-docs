@@ -24,13 +24,13 @@ public class VideoService {
         this.videoRepository = videoRepository;
     }
 
-    private static String DEVELOPMENT_PRIVATE_KEY_PATH = "C:\\Users\\jamal\\OneDrive\\Documents\\web-projects\\interview-docs\\server\\private_key_pkcs8.der";
+    private static String DEVELOPMENT_PRIVATE_KEY_PATH = System.getenv("PRIVATE_KEY_PATH");
 
     public void setSourceToPresignedURL(Video video) throws Exception {
-        String keyPairId = "K2YICAIZIAAWQH";
+        String publicKeyId = System.getenv("PUBLIC_KEY_ID");
         Instant expiration = Instant.now().plus(1, ChronoUnit.HOURS);
 
-        String signedURL = s3Service.createSignedUrl(video.getKeyName(), keyPairId, DEVELOPMENT_PRIVATE_KEY_PATH, expiration, "SHA256");
+        String signedURL = s3Service.createSignedUrl(video.getKeyName(), publicKeyId, DEVELOPMENT_PRIVATE_KEY_PATH, expiration, "SHA256");
         video.setSource(signedURL);
     }
 
