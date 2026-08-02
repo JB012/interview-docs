@@ -17,8 +17,10 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
+  apiURL = isDevMode() ? devEnvironment.url : prodEnvironment.url;
+
   login() {
-    window.location.href = `http://localhost:8080/oauth/login/auth0`;
+    window.location.href = `${this.apiURL}/oauth/login/auth0`;
   }
 
   logout() {
@@ -30,7 +32,7 @@ export class AuthService {
       return this.user$;
     }
 
-    this.user$ = this.http.get<AuthResponse>(`http://localhost:8080/auth/me`, {
+    this.user$ = this.http.get<AuthResponse>(`http://${this.apiURL}/auth/me`, {
       withCredentials: true
     }).pipe(
       catchError(() => of(null)),
