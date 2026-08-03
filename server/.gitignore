@@ -17,3 +17,5 @@ out/
 .aws/
 *.der
 *.pem
+*.crt
+*.p12
