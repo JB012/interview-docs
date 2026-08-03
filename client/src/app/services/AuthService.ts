@@ -32,7 +32,7 @@ export class AuthService {
       return this.user$;
     }
 
-    this.user$ = this.http.get<AuthResponse>(`http://${this.apiURL}/auth/me`, {
+    this.user$ = this.http.get<AuthResponse>(`${this.apiURL}/auth/me`, {
       withCredentials: true
     }).pipe(
       catchError(() => of(null)),
