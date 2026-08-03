@@ -1,13 +1,14 @@
 import { HttpClient } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
+import { inject, Injectable, isDevMode } from "@angular/core";
 import { Observable } from "rxjs";
 import { VideoType, PagedVideoType } from "../types/VideoType";
-import { environment } from "../environments/environment.development";
+import { environment as devEnvironment} from "../environments/environment.development";
+import { environment as prodEnvironment } from "../environments/environment";
 
 @Injectable({providedIn: 'root'})
 export class VideoService {
   private http = inject(HttpClient);
-  apiHost = environment.url;
+  apiHost = isDevMode() ? devEnvironment.url : prodEnvironment.url;
 
   getAllVideos(questionId : number, pageIndex = 0, pageSize = 10, sort = {field: "viewedAt", direction: 'desc'}): Observable<PagedVideoType> {
     return this.http.get<PagedVideoType>(`${this.apiHost}/videos?questionId=${questionId}&page=${pageIndex}&size=${pageSize}&sort=${sort.field},${sort.direction}`, {

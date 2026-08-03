@@ -1,14 +1,15 @@
 import { HttpClient } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
+import { inject, Injectable, isDevMode } from "@angular/core";
 import { Observable } from "rxjs";
 import { QuestionType, PagedQuestionType } from "../types/QuestionType";
 import { FolderType } from "../types/FolderType";
-import { environment } from "../environments/environment.development";
+import { environment as devEnvironment } from "../environments/environment.development";
+import { environment as prodEnvironment } from "../environments/environment";
 
 @Injectable({providedIn: 'root'})
 export class QuestionService {
   private http = inject(HttpClient);
-  apiHost = environment.url;
+  apiHost = isDevMode() ? devEnvironment.url : prodEnvironment.url;
 
   getAllQuestions() : Observable<QuestionType[]> {
     return this.http.get<QuestionType[]>(`${this.apiHost}/questions/all`, {

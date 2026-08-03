@@ -1,14 +1,15 @@
 import { HttpClient } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
+import { inject, Injectable, isDevMode } from "@angular/core";
 import { Observable } from "rxjs";
 import { FolderType, PagedFolderType } from "../types/FolderType";
 import { PagedQuestionType, QuestionType } from "../types/QuestionType";
-import { environment } from "../environments/environment.development";
+import { environment as devEnvironment} from "../environments/environment.development";
+import { environment as prodEnvironment } from "../environments/environment";
 
 @Injectable({providedIn: 'root'})
 export class FolderService {
   private http = inject(HttpClient);
-  apiHost = environment.url;
+  apiHost = isDevMode() ? devEnvironment.url : prodEnvironment.url;
 
   getFolders(pageIndex = 0, pageSize = 10, sort = {field: "viewedAt", direction: 'desc'}): Observable<PagedFolderType> {
     return this.http.get<PagedFolderType>(`${this.apiHost}/folders?page=${pageIndex}&size=${pageSize}&sort=${sort.field},${sort.direction}`, {
