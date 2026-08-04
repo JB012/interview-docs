@@ -20,8 +20,12 @@ public class QuestionService {
     }
 
     public PagedResponse<Question> getQuestions(int page, int size, String sort, String userId) {
+        System.out.println(sort);
         String[] sortOptions = sort.split(",");
         
+        for (String s : sortOptions) {
+            System.out.println(s);
+        }
         String field = sortOptions[0];
         String direction = sortOptions[1];
 
