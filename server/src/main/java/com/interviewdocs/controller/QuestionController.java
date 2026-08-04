@@ -41,7 +41,8 @@ public class QuestionController {
     
     @Get
     PagedResponse<Question> getQuestions(Principal auth, @QueryValue(value = "page", defaultValue = "0") int page, 
-    @QueryValue(value="size", defaultValue = "10") int size, @QueryValue(value = "sort", defaultValue = "viewedAt, desc") String sort) {
+    @QueryValue(value="size", defaultValue = "10") int size,  @QueryValue(value = "field", defaultValue = "viewedAt") String field, @QueryValue(value="direction", defaultValue = "desc") String direction) {
+        String sort = field + "," + direction;
         return questionService.getQuestions(page, size, sort, auth.getName());
     }
     

@@ -38,7 +38,8 @@ public class FolderController {
     
     @Get
     PagedResponse<Folder> getFolders(Principal auth, @QueryValue(value = "page", defaultValue = "0") int page, 
-    @QueryValue(value="size", defaultValue = "10") int size, @QueryValue(value = "sort", defaultValue = "viewedAt,desc") String sort) {
+    @QueryValue(value="size", defaultValue = "10") int size, @QueryValue(value = "field", defaultValue = "viewedAt") String field, @QueryValue(value = "direction", defaultValue = "desc") String direction) {
+        String sort = field + "," + direction;
         return folderService.getFolders(page, size, sort, auth.getName());
     }
     
@@ -104,7 +105,9 @@ public class FolderController {
 
     @Get("/{id}/questions")
     PagedResponse<Question> getQuestionsFromFolder(Principal auth, @PathVariable("id") Long id, @QueryValue(value = "page", defaultValue = "0") int page, 
-    @QueryValue(value="size", defaultValue = "10") int size, @QueryValue(value = "sort", defaultValue = "viewedAt, desc") String sort) {
+    @QueryValue(value="size", defaultValue = "10") int size, @QueryValue(value = "field", defaultValue = "viewedAt") String field, 
+    @QueryValue(value="direction", defaultValue = "desc") String direction) {
+        String sort = field + "," + direction;
         return folderService.getQuestionsInFolder(page, size, sort, auth.getName(), id);
     }
 

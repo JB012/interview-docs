@@ -43,9 +43,9 @@ public class VideoController {
     @Get
     PagedResponse<Video> all(Principal auth, @QueryValue(value="questionId") Long questionId, 
     @QueryValue(value = "page", defaultValue = "0") int page, @QueryValue(value="size", defaultValue = "10") int size, 
-    @QueryValue(value = "sort", defaultValue = "viewedAt, desc") String sort) {
+     @QueryValue(value = "field", defaultValue = "viewedAt") String field, @QueryValue(value="direction", defaultValue = "desc") String direction) {
         String id = videoService.getUserIdNumber(auth.getName());
-
+        String sort = field + "," + direction;
         return videoService.getVideos(page, size, sort, id, questionId);
     }
 

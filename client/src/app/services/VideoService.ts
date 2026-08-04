@@ -11,7 +11,7 @@ export class VideoService {
   apiHost = isDevMode() ? devEnvironment.url : prodEnvironment.url;
 
   getAllVideos(questionId : number, pageIndex = 0, pageSize = 10, sort = {field: "viewedAt", direction: 'desc'}): Observable<PagedVideoType> {
-    return this.http.get<PagedVideoType>(`${this.apiHost}/videos?questionId=${questionId}&page=${pageIndex}&size=${pageSize}&sort=${sort.field},${sort.direction}`, {
+    return this.http.get<PagedVideoType>(`${this.apiHost}/videos?questionId=${questionId}&page=${pageIndex}&size=${pageSize}&field=${sort.field}&direction=${sort.direction}`, {
       withCredentials: true
     });
   }

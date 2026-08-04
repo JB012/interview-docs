@@ -12,7 +12,7 @@ export class FolderService {
   apiHost = isDevMode() ? devEnvironment.url : prodEnvironment.url;
 
   getFolders(pageIndex = 0, pageSize = 10, sort = {field: "viewedAt", direction: 'desc'}): Observable<PagedFolderType> {
-    return this.http.get<PagedFolderType>(`${this.apiHost}/folders?page=${pageIndex}&size=${pageSize}&sort=${sort.field},${sort.direction}`, {
+    return this.http.get<PagedFolderType>(`${this.apiHost}/folders?page=${pageIndex}&size=${pageSize}&field=${sort.field}&direction=${sort.direction}`, {
       withCredentials: true
     });
   }
@@ -24,7 +24,7 @@ export class FolderService {
   }
   
   getQuestionsInFolder(id : number, pageIndex = 0, pageSize = 10, sort = {field: "viewedAt", direction: 'desc'}): Observable<PagedQuestionType> {
-    return this.http.get<PagedQuestionType>(`${this.apiHost}/folders/${id}/questions?page=${pageIndex}&size=${pageSize}&sort=${sort.field},${sort.direction}`, {
+    return this.http.get<PagedQuestionType>(`${this.apiHost}/folders/${id}/questions?page=${pageIndex}&size=${pageSize}&field=${sort.field}&direction=${sort.direction}`, {
       withCredentials: true
     });
   }
