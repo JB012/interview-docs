@@ -20,11 +20,7 @@ public class QuestionService {
     }
 
     public PagedResponse<Question> getQuestions(int page, int size, String sort, String userId) {
-        String[] sortOptions = sort.split(",");
-        
-        if (sortOptions.length == 1) {
-            sortOptions = sort.split("%2C");
-        }
+        String[] sortOptions = sort.replace("%2C", ",").split(",");
 
         String field = sortOptions[0];
         String direction = sortOptions[1];

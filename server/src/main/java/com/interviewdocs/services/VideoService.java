@@ -41,7 +41,7 @@ public class VideoService {
     }
 
     public PagedResponse<Video> getVideos(int page, int size, String sort, String userId, Long questionId) {
-        String[] sortOptions = sort.split(",");
+        String[] sortOptions = sort.replace("%2C", ",").split(",");
         
         String field = sortOptions[0];
         String direction = sortOptions[1];

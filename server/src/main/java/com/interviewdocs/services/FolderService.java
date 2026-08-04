@@ -27,7 +27,7 @@ public class FolderService {
     }
 
     public PagedResponse<Folder> getFolders(int page, int size, String sort, String userId) {
-        String[] sortOptions = sort.split(",");
+        String[] sortOptions = sort.replace("%2C", ",").split(",");
         
         String field = sortOptions[0];
         String direction = sortOptions[1];
@@ -52,7 +52,7 @@ public class FolderService {
     }
 
     public PagedResponse<Question> getQuestionsInFolder(int page, int size, String sort, String userId, Long folderId) {
-        String[] sortOptions = sort.split(",");
+        String[] sortOptions = sort.replace("%2C", ",").split(",");
         
         String field = sortOptions[0];
         String direction = sortOptions[1];
