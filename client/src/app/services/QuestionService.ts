@@ -18,7 +18,13 @@ export class QuestionService {
   }
 
   getQuestions(pageIndex = 0, pageSize = 10, sort = {field: "viewedAt", direction: 'desc'}): Observable<PagedQuestionType> {
-    return this.http.get<PagedQuestionType>(`${this.apiHost}/questions?page=${pageIndex}&size=${pageSize}&sort=${sort.field},${sort.direction}`, {
+    const params = new URLSearchParams({
+      page: `${pageIndex}`,
+      size: `${pageSize}`,
+      sort: `${sort.field},${sort.direction}`
+    });
+
+    return this.http.get<PagedQuestionType>(`${this.apiHost}/questions?${params}`, {
       withCredentials: true
     });
   }
