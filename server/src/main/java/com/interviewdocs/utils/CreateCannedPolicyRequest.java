@@ -9,9 +9,10 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 public class CreateCannedPolicyRequest {
-    public CannedSignerRequest createRequestForCannedPolicy(String distributionDomainName,
-        String fileName, String privateKeyFullPath, String publicKeyId) throws Exception {
-            
+
+    public static CannedSignerRequest createRequestForCannedPolicy(String distributionDomainName,
+            String fileName,
+            String privateKeyFullPath, String publicKeyId) throws Exception {
         String protocol = "https";
         String resourcePath = "/" + fileName;
 
