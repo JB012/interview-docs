@@ -3,14 +3,24 @@ package com.interviewdocs.utils;
 import software.amazon.awssdk.services.cloudfront.model.CannedSignerRequest;
 
 import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-public class CreateCannedPolicyRequest {
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
-    public static CannedSignerRequest createRequestForCannedPolicy(String distributionDomainName,
+@Singleton
+public class CreateCannedPolicyRequest {
+    private final CloudFrontKeyFile cloudFrontKeyFile;
+
+    public CreateCannedPolicyRequest(CloudFrontKeyFile cloudFrontKeyFile) {
+        this.cloudFrontKeyFile = cloudFrontKeyFile;
+    }
+    
+    public CannedSignerRequest createRequestForCannedPolicy(String distributionDomainName,
             String fileName,
             String privateKeyFullPath, String publicKeyId) throws Exception {
         String protocol = "https";
@@ -18,13 +28,13 @@ public class CreateCannedPolicyRequest {
 
         String cloudFrontUrl = new URI(protocol + "://" + distributionDomainName + resourcePath).toURL().toString();
         Instant expirationDate = Instant.now().plus(1, ChronoUnit.HOURS);
-        Path path = Paths.get(privateKeyFullPath);
-
+        
         return CannedSignerRequest.builder()
-                .resourceUrl(cloudFrontUrl)
-                .privateKey(path)
-                .keyPairId(publicKeyId)
-                .expirationDate(expirationDate)
-                .build();
+            .resourceUrl(cloudFrontUrl)
+            .privateKey(cloudFrontKeyFile.getPath())
+            .keyPairId(publicKeyId)
+            .expirationDate(expirationDate)
+            .build();
+        
     }
 }
