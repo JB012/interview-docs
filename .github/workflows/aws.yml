@@ -34,8 +34,6 @@ jobs:
     - name: Client Build
       run: cd ./client && ng build --configuration production
       env:
-        NG_APP_AWS_ACCESS_ID: ${{ secrets.NG_APP_AWS_ACCESS_ID }}
-        NG_APP_AWS_SECRET_ACCESS_KEY: ${{ secrets.NG_APP_AWS_SECRET_ACCESS_KEY }}
         NG_APP_VIDEO_S3_BUCKET: ${{ secrets.NG_APP_VIDEO_S3_BUCKET }}
         NG_APP_AUTH0_ISSUER: ${{ secrets.NG_APP_AUTH0_ISSUER }}
         NG_APP_AUTH0_CLIENT_ID: ${{ secrets.NG_APP_AUTH0_CLIENT_ID }}

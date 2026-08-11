@@ -38,7 +38,7 @@ npm install npm@latest -g
        1. Set Restrict viewer actions to Yes
        2. Set Trusted authorization type to Trusted key groups (recommended)
        3. Add your key group 
-
+    
 - [An Auth0 Regular Web Application](https://auth0.com/)
   - In Application URIs:
     - In Allowed Callback URLs, set the following:

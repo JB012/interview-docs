@@ -2,14 +2,12 @@ package com.interviewdocs.controller;
 
 import com.interviewdocs.services.S3Service;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import java.time.OffsetDateTime;
 
 import io.micronaut.http.annotation.*;
+import io.micronaut.http.multipart.CompletedFileUpload;
 import io.micronaut.http.HttpResponse;
+import io.micronaut.http.MediaType;
 
 import com.interviewdocs.repository.*;
 import com.interviewdocs.error.*;
@@ -18,6 +16,8 @@ import com.interviewdocs.services.VideoService;
 
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
+
+import java.io.IOException;
 import java.security.Principal;
 
 import com.interviewdocs.utils.PagedResponse;
@@ -30,7 +30,7 @@ public class VideoController {
     private final QuestionRepository questionRepository;
     private final VideoService videoService;
     
-    private static final String BUCKET_NAME = System.getenv("VIDEO_S3_BUCKET");
+    private static final String BUCKET_NAME = System.getProperty("VIDEO_S3_BUCKET");
 
     VideoController(VideoRepository videoRepository, QuestionRepository questionRepository, 
         VideoService videoService, S3Service s3Service) {
@@ -49,27 +49,34 @@ public class VideoController {
         return videoService.getVideos(page, size, sort, id, questionId);
     }
 
-    @Post
-    HttpResponse<Video> newVideo(@Body Video newVideo, @QueryValue(value="questionId") Long questionId, Principal auth) { 
-        if (newVideo.getUserId().equals(videoService.getUserIdNumber(auth.getName()))) {            
-            Question question = questionRepository.findByQuestionId(questionId)
-            .orElseThrow(() -> new QuestionNotFoundException(questionId));
-
-            question.addVideo(newVideo);
-            newVideo.addQuestion(question);
-            videoRepository.save(newVideo);
-            
-            try {
-                videoService.setSourceToPresignedURL(newVideo);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return HttpResponse.serverError();
-            }
-
-            return HttpResponse.ok(newVideo);
+    @Post(consumes = MediaType.MULTIPART_FORM_DATA, value = "/upload")
+    boolean uploadVideo(@Part("videoBuffer") CompletedFileUpload videoBuffer) {
+        try {
+            return s3Service.putS3Object(BUCKET_NAME, videoBuffer.getFilename(), videoBuffer.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        return HttpResponse.unauthorized();
+        return false;
+    }
+
+    @Post
+    HttpResponse<Video> newVideo(@Body Video newVideo, @QueryValue(value="questionId") Long questionId) { 
+        Question question = questionRepository.findByQuestionId(questionId)
+        .orElseThrow(() -> new QuestionNotFoundException(questionId));
+
+        question.addVideo(newVideo);
+        newVideo.addQuestion(question);
+        videoRepository.save(newVideo);
+        
+        try {
+            videoService.setSourceToPresignedURL(newVideo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return HttpResponse.serverError();
+        }
+
+        return HttpResponse.ok(newVideo);
     }
 
     @Get("/{id}")

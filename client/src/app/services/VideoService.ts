@@ -22,6 +22,16 @@ export class VideoService {
     });
   }
 
+  uploadVideoToS3(videoBuffer : File) : Observable<boolean> {
+    const formData = new FormData();
+
+    formData.append("videoBuffer", videoBuffer);
+
+    return this.http.post<boolean>(`${this.apiHost}/videos/upload`, formData, {
+      withCredentials: true
+    });
+  }
+
   postVideo(video: VideoType, questionId : number) : Observable<VideoType> {
     return this.http.post<VideoType>(`${this.apiHost}/videos?questionId=${questionId}`, video, {
       withCredentials: true

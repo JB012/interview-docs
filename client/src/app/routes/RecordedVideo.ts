@@ -5,7 +5,6 @@ import {
   ElementRef,
   signal,
   inject,
-  model,
   Signal
 } from '@angular/core';
 import { VideoControls } from "../components/VideoControls";
@@ -13,8 +12,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { VideoService } from '../services/VideoService';
-import { PutObjectCommand } from '@aws-sdk/client-s3';
-import { getUserIdNumber, s3Client } from  '../../utils';
+import { getUserIdNumber } from  '../../utils';
 import { TitleDialog } from '../components/TitleDialog';
 import { AuthService } from '../services/AuthService';
 import { ActivatedRoute, Router, ROUTER_OUTLET_DATA } from '@angular/router';
@@ -143,29 +141,20 @@ export class RecordedVideo implements OnInit {
         try {
             this.openVideoSnackBar("Saving..."); 
             const title = this.videoTitle().replaceAll(' ', '_');
-            this.videoService.postVideo({user_id: this.userID, created_at: this.timeCreated, 
-                viewed_at: this.timeCreated, edited_at: this.timeCreated, title: title}, this.questionId).subscribe(async () => {
-                const videoBuffer = new Blob(this.recordedBlobs, {type: 'video/webm'});
-                const videoFile = new File([videoBuffer], "test.mp4", {type: 'video/webm'});
-
-                const command = new PutObjectCommand({
-                    Key: `${this.userID}/${title}`,
-                    Bucket: this.videoBucket,
-                    Body: videoFile,
-                    ContentType: videoFile.type
-                });
-
-                await s3Client.send(command);
-        
-                this.disableSave.set(true);
-                this.openVideoSnackBar("Video saved!");
+            this.videoService.uploadVideoToS3(new File(this.recordedBlobs, this.userID + "/" + title, {type: 'video/webm'})).subscribe((result) => {
+                if (result) {
+                    this.videoService.postVideo({user_id: this.userID, created_at: this.timeCreated, 
+                    viewed_at: this.timeCreated, edited_at: this.timeCreated, title: title}, this.questionId).subscribe(() => {
+                        this.disableSave.set(true);
+                        this.openVideoSnackBar("Video saved!");
+                    });
+                }
             });
-
             
             this.videoTitle.set("");
         }
         catch (err) {
-            console.log(err);
+            console.error("Error saving video", err);
         }
     }
 

@@ -24,13 +24,11 @@ public class VideoService {
         this.videoRepository = videoRepository;
     }
 
-    private static String DEVELOPMENT_PRIVATE_KEY_PATH = System.getenv("PRIVATE_KEY_PATH");
-
     public void setSourceToPresignedURL(Video video) throws Exception {
-        String publicKeyId = System.getenv("PUBLIC_KEY_ID");
+        String publicKeyId = System.getProperty("PUBLIC_KEY_ID");
         Instant expiration = Instant.now().plus(1, ChronoUnit.HOURS);
 
-        String signedURL = s3Service.createSignedUrl(video.getKeyName(), publicKeyId, DEVELOPMENT_PRIVATE_KEY_PATH, expiration, "SHA256");
+        String signedURL = s3Service.createSignedUrl(video.getKeyName(), publicKeyId, expiration, "SHA256");
         video.setSource(signedURL);
     }
 

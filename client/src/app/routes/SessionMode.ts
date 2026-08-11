@@ -1,19 +1,16 @@
 import { Component, computed, ElementRef, inject, signal, ViewChild } from "@angular/core";
 import { MatAnchor } from "@angular/material/button";
 import { FolderService } from "../services/FolderService";
-import { AsyncPipe, NgClass } from "@angular/common";
-import { FolderType } from "../types/FolderType";
+import { AsyncPipe } from "@angular/common";
 import { QuestionService } from "../services/QuestionService";
 import { QuestionType } from "../types/QuestionType";
 import { FormsModule } from "@angular/forms";
-import { interval, Observable, shareReplay } from "rxjs";
+import { shareReplay } from "rxjs";
 import moment from "moment-timezone";
 import { TitleDialog } from "../components/TitleDialog";
 import { VideoService } from "../services/VideoService";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
-import { getUserIdNumber, s3Client } from "../../utils";
+import { getUserIdNumber } from "../../utils";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { AuthService } from "../services/AuthService";
 import { MatDialog } from "@angular/material/dialog";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
@@ -222,26 +219,14 @@ export class SessionMode {
         try {
             const title = this.videoTitle().replaceAll(' ', '_');
 
-            this.videoService.postVideo({user_id: userId, created_at: this.timeCreated, title: title}, questionId)
-            .subscribe(async () => {
-                const videoBuffer = new Blob(this.recordedBlobs, {type: 'video/webm'});
-                const videoFile = new File([videoBuffer], "test.mp4", {type: 'video/webm'});
-
-                const command = new PutObjectCommand({
-                    Key: `${userId}/${title}`,
-                    Bucket: 'interviewdocs-videos',
-                    Body: videoFile,
-                    ContentType: videoFile.type
-                });
-
-                await s3Client.send(command);
-        
-                this.disableSave.set(true);
-
-                    
-                this.openSnackBar("Answer saved");
-                
-                this.videoTitle.set("");
+            this.videoService.uploadVideoToS3(new File(this.recordedBlobs, userId + "/" + title, {type: 'video/webm'})).subscribe((result) => {
+                if (result) {
+                    this.videoService.postVideo({user_id: userId, created_at: this.timeCreated, title: title}, questionId).subscribe(() => { 
+                        this.disableSave.set(true);
+                        this.openSnackBar("Answer saved");
+                        this.videoTitle.set("");
+                    });
+                }
             });
         }
         catch (err) {

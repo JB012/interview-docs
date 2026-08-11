@@ -18,6 +18,8 @@ dependencies {
     annotationProcessor("io.micronaut:micronaut-http-validation")
     annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
     annotationProcessor("io.micronaut.validation:micronaut-validation-processor")
+    implementation(platform("software.amazon.awssdk:bom:2.27.21"))
+    implementation("software.amazon.awssdk:sts")
     implementation("software.amazon.awssdk:ssm")
     implementation("software.amazon.awssdk:s3")
 	implementation("software.amazon.awssdk:sso")
@@ -98,20 +100,6 @@ if (gradle.startParameter.taskNames.any { it.contains("test") }) {
 
 tasks.withType(io.micronaut.gradle.testresources.StartTestResourcesService).configureEach {
     useClassDataSharing = false
-}
-
-tasks.named("dockerfile") {
-
-    baseImage = "eclipse-temurin:25-jre"
-}
-
-tasks.named("dockerfileNative") {
-    jdkVersion = "25"
-    args(
-        "-XX:MaximumHeapSizePercent=80",
-        "-Dio.netty.allocator.numDirectArenas=0",
-        "-Dio.netty.noPreferDirect=true"
-    )
 }
 
 
