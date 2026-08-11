@@ -30,7 +30,6 @@ public class VideoController {
     private final QuestionRepository questionRepository;
     private final VideoService videoService;
     
-    private static final String BUCKET_NAME = System.getProperty("VIDEO_S3_BUCKET");
 
     VideoController(VideoRepository videoRepository, QuestionRepository questionRepository, 
         VideoService videoService, S3Service s3Service) {
@@ -52,7 +51,7 @@ public class VideoController {
     @Post(consumes = MediaType.MULTIPART_FORM_DATA, value = "/upload")
     boolean uploadVideo(@Part("videoBuffer") CompletedFileUpload videoBuffer) {
         try {
-            return s3Service.putS3Object(BUCKET_NAME, videoBuffer.getFilename(), videoBuffer.getBytes());
+            return s3Service.putS3Object(videoBuffer.getFilename(), videoBuffer.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -99,7 +98,7 @@ public class VideoController {
         videoRepository.findById(id)
         .map(video -> {
             if (newVideo.getTitle() != null && !newVideo.getTitle().equals(video.getTitle())) { 
-                s3Service.changeObjectName(BUCKET_NAME, video.getKeyName(), newVideo.getKeyName());
+                s3Service.changeObjectName(video.getKeyName(), newVideo.getKeyName());
                 
                 video.setTitle(newVideo.getTitle());
                 video.setEditedAt(OffsetDateTime.now());
@@ -136,7 +135,7 @@ public class VideoController {
         Video video = videoRepository.findById(id)
         .orElseThrow(() -> new VideoNotFoundException(id));
 
-        s3Service.deleteS3Object(BUCKET_NAME, video.getKeyName());
+        s3Service.deleteS3Object(video.getKeyName());
 
         videoRepository.deleteById(id);
     } 

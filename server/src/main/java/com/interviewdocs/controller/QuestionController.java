@@ -23,8 +23,6 @@ public class QuestionController {
     private final QuestionService questionService;
     private final S3Service s3Service;
 
-    private static final String BUCKET_NAME = "interviewdocs-videos";
-
     QuestionController(QuestionRepository questionRepository, VideoRepository videoRepository,
         QuestionService questionService, S3Service s3Service) {
         this.questionRepository = questionRepository;
@@ -90,7 +88,7 @@ public class QuestionController {
         Set<Video> videos = question.getVideos();
 
         for (Video v : videos) {
-            s3Service.deleteS3Object(BUCKET_NAME, v.getKeyName());
+            s3Service.deleteS3Object(v.getKeyName());
         }
         
         videoRepository.deleteByQuestion(question);

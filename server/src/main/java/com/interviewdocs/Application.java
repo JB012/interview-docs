@@ -12,7 +12,7 @@ public class Application {
 
         Micronaut.build(args)
              .mainClass(Application.class)
-             .defaultEnvironments("prod")
+             .defaultEnvironments("dev")
              .start();
     }
 }

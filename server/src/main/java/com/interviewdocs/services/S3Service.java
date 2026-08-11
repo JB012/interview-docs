@@ -1,11 +1,6 @@
 package com.interviewdocs.services;
 
-import java.io.File;
-import java.nio.ByteBuffer;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.util.Locale;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import software.amazon.awssdk.services.cloudfront.model.CannedSignerRequest;
@@ -22,22 +17,12 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import software.amazon.awssdk.services.cloudfront.CloudFrontAsyncClient;
-import software.amazon.awssdk.services.cloudfront.CloudFrontClient;
 import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.sts.StsClient;
-import software.amazon.awssdk.services.sts.model.AssumeRoleRequest;
-import software.amazon.awssdk.services.sts.model.StsException;
-import software.amazon.awssdk.services.sts.model.AssumeRoleResponse;
-import software.amazon.awssdk.services.sts.model.Credentials;
-import software.amazon.awssdk.services.sts.auth.StsAssumeRoleCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
-import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 
 import com.interviewdocs.utils.CreateCannedPolicyRequest;
 
-import io.netty.buffer.ByteBuf;
+import io.micronaut.context.env.Environment;
 import jakarta.inject.Singleton;
 
 @Singleton
@@ -49,13 +34,26 @@ public class S3Service {
 
     private final CreateCannedPolicyRequest requestFactory;
 
-    public S3Service(CreateCannedPolicyRequest requestFactory) {
+    private String distributionDomainName;
+    private String bucketName;
+
+    public S3Service(CreateCannedPolicyRequest requestFactory, Environment environment) {
         this.requestFactory = requestFactory;
+
+        if (environment.getActiveNames().contains(Environment.DEVELOPMENT)) {
+            distributionDomainName = System.getProperty("VIDEO_CLOUDFRONT_DISTRIBUTION");
+            
+            bucketName = System.getProperty("VIDEO_S3_BUCKET");
+        }
+        else {
+            distributionDomainName = System.getenv("VIDEO_CLOUDFRONT_DISTRIBUTION");
+            
+            bucketName = System.getenv("VIDEO_S3_BUCKET");
+        }
     }
 
     public String createSignedUrl(String keyName, String publicKeyId, Instant expiration,
                                   String hashAlgorithm) throws Exception {
-        String distributionDomainName = System.getProperty("VIDEO_CLOUDFRONT_DISTRIBUTION");
         CannedSignerRequest request = requestFactory.createRequestForCannedPolicy(
             distributionDomainName, 
             keyName, 
@@ -67,7 +65,7 @@ public class S3Service {
         return signedUrl.url();
     }
 
-    public boolean putS3Object(String bucketName, String keyName, byte[] videoBytes) {
+    public boolean putS3Object(String keyName, byte[] videoBytes) {
         PutObjectRequest putReq = PutObjectRequest.builder()
             .bucket(bucketName)
             .key(keyName)
@@ -90,7 +88,7 @@ public class S3Service {
         return true;
     }
 
-    public void deleteS3Object(String bucketName, String keyName) {
+    public void deleteS3Object(String keyName) {
         DeleteObjectRequest deleteReq = DeleteObjectRequest.builder()
             .bucket(bucketName)
             .key(keyName)
@@ -135,7 +133,7 @@ public class S3Service {
             }
         });
     }
-    public void changeObjectName(String bucketName, String keyName, String newKeyName) {
+    public void changeObjectName(String keyName, String newKeyName) {
         CopyObjectRequest copyReq = CopyObjectRequest.builder()
             .sourceBucket(bucketName)
             .sourceKey(keyName)
@@ -147,7 +145,7 @@ public class S3Service {
         response.whenComplete((copyRes, ex) -> {
             if (copyRes != null) {
                 System.out.println("The object with the name " + newKeyName + " was copied to " + bucketName);
-                deleteS3Object(bucketName, keyName);
+                deleteS3Object(keyName);
             } else {
                 System.out.println("ex is " + ex.toString());
                 throw new RuntimeException("An S3 exception occurred during copy", ex);

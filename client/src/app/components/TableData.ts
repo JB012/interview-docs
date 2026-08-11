@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, signal, SimpleChanges } from "@angular/core";
+import { Component, computed, inject, input, signal } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { QuestionService } from "../services/QuestionService";
 import { AuthService } from "../services/AuthService";
@@ -11,7 +11,6 @@ import { VideoType } from "../types/VideoType";
 import { VideoService } from "../services/VideoService";
 import { getUserIdNumber } from "../../utils";
 import { MatDialog } from "@angular/material/dialog";
-import { FolderDialog } from "./FolderDialog";
 import { DeleteDialog } from "./DeleteDialog";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { TitleDialog } from "./TitleDialog";

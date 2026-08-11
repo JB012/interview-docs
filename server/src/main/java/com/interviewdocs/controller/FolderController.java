@@ -141,8 +141,6 @@ public class FolderController {
 
         Question question = questionRepository.findById(questionId)
         .orElseThrow(() -> new QuestionNotFoundException(questionId));
-    
-        Folder folderInSet = question.getFolders().iterator().next();
 
         question.removeFromFolder(folder);
     

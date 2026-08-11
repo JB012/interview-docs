@@ -1,7 +1,6 @@
-import { Component, inject, model } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { MatCheckboxChange, MatCheckboxModule } from "@angular/material/checkbox";
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogActions, MatDialogClose, MatDialogContent } from "@angular/material/dialog";
-import { QuestionType } from "../types/QuestionType";
 import { QuestionPage } from "../routes/question-page";
 import { FolderType } from "../types/FolderType";
 import { FormsModule } from "@angular/forms";

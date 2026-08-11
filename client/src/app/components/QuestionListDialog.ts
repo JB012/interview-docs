@@ -6,7 +6,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { FolderPage } from "../routes/FolderPage";
 import {MatCheckboxChange, MatCheckboxModule} from '@angular/material/checkbox';
-import { MatPaginatorModule, PageEvent } from "@angular/material/paginator";
+import { MatPaginatorModule } from "@angular/material/paginator";
 import { QuestionType } from "../types/QuestionType";
 
 @Component({

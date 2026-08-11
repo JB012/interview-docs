@@ -1,6 +1,6 @@
-import { Component, inject, model } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { TableData } from "./TableData";
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogClose } from "@angular/material/dialog";
+import { MatDialogRef, MatDialogActions, MatDialogContent, MatDialogClose } from "@angular/material/dialog";
 import { FormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatFormFieldModule } from "@angular/material/form-field";

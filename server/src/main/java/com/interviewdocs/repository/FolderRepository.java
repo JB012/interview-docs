@@ -7,9 +7,7 @@ import io.micronaut.data.model.Pageable;
 import io.micronaut.data.jpa.repository.JpaRepository;
 import io.micronaut.data.annotation.*;
 import io.micronaut.context.annotation.Parameter;
-import io.micronaut.data.repository.CrudRepository;
 import com.interviewdocs.model.Folder;
-import io.micronaut.core.annotation.NonNull;
 import java.util.Optional;
 
 @Repository

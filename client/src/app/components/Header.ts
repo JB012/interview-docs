@@ -1,5 +1,4 @@
-import { Component, inject, model, } from "@angular/core";
-import { MatButtonModule } from "@angular/material/button";
+import { Component, model } from "@angular/core";
 import { LoginButtonComponent } from "./login-button-component";
 import { LogoutButtonComponent } from "./logout-button-component";
 import { AsyncPipe } from "@angular/common";

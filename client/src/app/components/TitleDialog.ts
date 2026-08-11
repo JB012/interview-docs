@@ -1,11 +1,10 @@
-import { Component, inject, model, signal } from "@angular/core";
+import { Component, inject, model } from "@angular/core";
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
   MatDialogClose,
   MatDialogContent,
-  MatDialogRef,
-  MatDialogTitle,
+  MatDialogRef
 } from '@angular/material/dialog';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';

@@ -3,7 +3,6 @@ package com.interviewdocs.utils;
 import jakarta.inject.Singleton;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ssm.SsmClient;
-import software.amazon.awssdk.services.ssm.SsmClientBuilder;
 import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
 
 @Singleton

@@ -3,13 +3,9 @@ package com.interviewdocs.utils;
 import software.amazon.awssdk.services.cloudfront.model.CannedSignerRequest;
 
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
 @Singleton

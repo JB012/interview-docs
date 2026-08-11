@@ -2,7 +2,7 @@ import { Component, inject, signal } from "@angular/core";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MenuButton } from "../components/MenuButton";
 import { MatPaginator, PageEvent } from "@angular/material/paginator";
-import { BehaviorSubject, shareReplay, Subject } from "rxjs";
+import { Subject } from "rxjs";
 import { AuthService } from "../services/AuthService";
 import { FolderService } from "../services/FolderService";
 import { orderDirection, sortFields } from "../../utils";

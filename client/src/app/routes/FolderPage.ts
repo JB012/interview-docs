@@ -1,6 +1,6 @@
-import { Component, inject, Signal, signal } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
 import { AuthService } from "../services/AuthService";
-import { BehaviorSubject, forkJoin, map, Observable, shareReplay, Subject, switchMap } from "rxjs";
+import { forkJoin, Observable, shareReplay, Subject } from "rxjs";
 import { PagedQuestionType, QuestionType } from "../types/QuestionType";
 import { ActivatedRoute, Router } from "@angular/router";
 import { FolderService } from "../services/FolderService";
@@ -15,7 +15,6 @@ import { MatMenu, MatMenuModule } from "@angular/material/menu";
 import { QuestionService } from "../services/QuestionService";
 import { MatDialog } from "@angular/material/dialog";
 import { QuestionListDialog } from "../components/QuestionListDialog";
-import {toSignal} from '@angular/core/rxjs-interop';
 import moment from "moment-timezone";
 
 @Component({
