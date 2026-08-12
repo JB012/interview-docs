@@ -3,7 +3,6 @@ export interface StringArray {
 }
 
 export async function putFileToS3Bucket(file : File, preSignedURL : string) {
-    console.log(preSignedURL);
     const res = await fetch(preSignedURL, {
         method: "PUT",
         headers: {
