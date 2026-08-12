@@ -1,27 +1,37 @@
 package com.interviewdocs.services;
 
+import java.io.IOException;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 
+import io.micronaut.context.BeanProvider;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
-import com.interviewdocs.utils.PagedResponse;
-import io.micronaut.data.model.Sort;
+import io.micronaut.http.multipart.CompletedFileUpload;
 
+import com.interviewdocs.utils.PagedResponse;
+import com.interviewdocs.utils.Utils;
+import com.interviewdocs.error.QuestionNotFoundException;
+import com.interviewdocs.error.VideoNotFoundException;
+import com.interviewdocs.model.Question;
 import com.interviewdocs.model.Video;
+import com.interviewdocs.repository.QuestionRepository;
 import com.interviewdocs.repository.VideoRepository;
 
 import jakarta.inject.Singleton;
+import jakarta.transaction.Transactional;
 
 @Singleton
-public class VideoService {
+public class VideoService extends Utils {
     private final S3Service s3Service;
-    private final VideoRepository videoRepository;
-    public Object setSourceToPresignedURL;
+    private final BeanProvider<VideoRepository> videoRepositoryProvider;
+    private final BeanProvider<QuestionRepository> questionRepositoryProvider;
     
-    public VideoService(S3Service s3Service, VideoRepository videoRepository) {
+    public VideoService(S3Service s3Service, BeanProvider<VideoRepository> videoRepositoryProvider, BeanProvider<QuestionRepository> questionRepositoryProvider) {
         this.s3Service = s3Service;
-        this.videoRepository = videoRepository;
+        this.videoRepositoryProvider = videoRepositoryProvider;
+        this.questionRepositoryProvider = questionRepositoryProvider;
     }
 
     public void setSourceToPresignedURL(Video video) throws Exception {
@@ -38,22 +48,90 @@ public class VideoService {
         return userId.split("\\|")[1];
     }
 
+    public Video getVideo(Long id) {
+        Video video = videoRepositoryProvider.get().findById(id)
+        .orElseThrow(() -> new VideoNotFoundException(id));
+
+        try {
+            setSourceToPresignedURL(video);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return video;
+    }
+
+    public Video saveVideo(Video video) {
+        return videoRepositoryProvider.get().save(video);
+    }
+
+    @Transactional
+    public Video postVideo(Video newVideo, Long questionId) {
+        Question question = questionRepositoryProvider.get().findById(questionId)
+        .orElseThrow(() -> new QuestionNotFoundException(questionId));
+
+        question.addVideo(newVideo);
+        newVideo.addQuestion(question);
+
+        videoRepositoryProvider.get().save(newVideo);
+        
+        try {
+            setSourceToPresignedURL(newVideo);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return newVideo;
+    }
+
+    public void putVideo(Long id, Video newVideo) {
+        Video video = videoRepositoryProvider.get().findById(id)
+        .orElse(newVideo);
+
+        if (newVideo.getTitle() != null && !newVideo.getTitle().equals(video.getTitle())) { 
+            s3Service.changeObjectName(video.getKeyName(), newVideo.getKeyName());
+            
+            video.setTitle(newVideo.getTitle());
+            video.setEditedAt(OffsetDateTime.now());
+        }
+        else {
+            video.setTime(newVideo);
+        }
+        
+        saveVideo(video);
+    }
+
+    public void deleteVideo(Long id) {
+        Video video = getVideo(id);
+
+        s3Service.deleteS3Object(video.getKeyName());
+
+        videoRepositoryProvider.get().deleteById(id);
+    }
+
+    public void deleteByQuestion(Question question) {
+        videoRepositoryProvider.get().deleteByQuestion(question);
+    }
+
+    public boolean uploadVideo(CompletedFileUpload videoBuffer) {
+        try {
+            return s3Service.putS3Object(videoBuffer.getFilename(), videoBuffer.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+    
     public PagedResponse<Video> getVideos(int page, int size, String sort, String userId, Long questionId) {
         String[] sortOptions = sort.split(",");
         
         String field = sortOptions[0];
         String direction = sortOptions[1];
 
-        Pageable pageable = null;
+        Pageable pageable = getPageable(page, size, field, direction);
 
-        if (direction.trim().toLowerCase().equals("desc")) {
-            pageable = Pageable.from(page, size, Sort.of(Sort.Order.desc(field)));
-        }
-        else if (direction.trim().toLowerCase().equals("asc")) {
-            pageable = Pageable.from(page, size, Sort.of(Sort.Order.asc(field)));
-        }
-
-        Page<Video> videoPage = videoRepository.findAllByUserIdAndQuestionId(userId, questionId, pageable);
+        Page<Video> videoPage = videoRepositoryProvider.get().findAllByUserIdAndQuestionId(userId, questionId, pageable);
 
         videoPage.map((video) -> {
             try { 

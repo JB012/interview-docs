@@ -6,9 +6,7 @@ import java.util.Set;
 import io.micronaut.http.annotation.*;
 import io.micronaut.http.HttpResponse;
 
-import com.interviewdocs.error.QuestionNotFoundException;
 import com.interviewdocs.model.*;
-import com.interviewdocs.repository.*;
 import com.interviewdocs.services.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
@@ -18,23 +16,15 @@ import com.interviewdocs.utils.PagedResponse;
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller("/questions")
 public class QuestionController {
-    private final QuestionRepository questionRepository;
-    private final VideoRepository videoRepository;
     private final QuestionService questionService;
-    private final S3Service s3Service;
 
-    QuestionController(QuestionRepository questionRepository, VideoRepository videoRepository,
-        QuestionService questionService, S3Service s3Service) {
-        this.questionRepository = questionRepository;
-        this.videoRepository = videoRepository;
+    QuestionController(QuestionService questionService) {
         this.questionService = questionService;
-        this.s3Service = s3Service;
     }
 
     @Get("/all")
-    HttpResponse<List<Question>> getAllQuestions(Principal auth) {
-        return HttpResponse.ok(questionRepository.findAllByUserId(auth.getName()));
-       
+    HttpResponse<List<Question>> all(Principal auth) {
+        return HttpResponse.ok(questionService.getAllQuestions(auth));
     }
     
     @Get
@@ -46,52 +36,26 @@ public class QuestionController {
     
     @Post
     HttpResponse<Question> newQuestion(@Body Question newQuestion) {
-        return HttpResponse.ok(questionRepository.save(newQuestion));
+        return HttpResponse.ok(questionService.saveQuestion(newQuestion));
     }
 
     @Get("/{id:[0-9]+}")
-    Question one(@PathVariable("id") Long id) {
-        Question question = questionRepository.findById(id)
-        .orElseThrow(() -> new QuestionNotFoundException(id));
-
-        return question;
+    HttpResponse<Question> one(@PathVariable("id") Long id) {
+        return HttpResponse.ok(questionService.getQuestion(id));
     }
 
     @Get("/{questionId}/folders")
     HttpResponse<Set<Folder>> getFolders(@PathVariable("questionId") Long id) {
-        Question question = questionRepository.findById(id)
-        .orElseThrow(() -> new QuestionNotFoundException(id));
-    
-        return HttpResponse.ok(question.getFolders());
+        return HttpResponse.ok(questionService.getFoldersContainingQuestion(id));
     }
 
     @Put("/{id}")
-    void replaceQuestion(Principal auth, @Body Question newQuestion, @PathVariable("id") Long id) {
-        if (newQuestion.getUserId().equals(auth.getName())) {    
-            questionRepository.findById(id)
-            .map(question -> {
-                question.setEverything(newQuestion);
-                return questionRepository.save(question);
-            })
-            .orElseGet(() -> {
-                return questionRepository.save(newQuestion);
-            });
-        }
+    void replaceQuestion(@Body Question newQuestion, @PathVariable("id") Long id) {
+        questionService.putQuestion(id, newQuestion);
     }
 
     @Delete("/{id}")
     void deleteQuestion(@PathVariable("id") Long id) {
-        Question question = questionRepository.findByQuestionId(id)
-        .orElseThrow(() -> new QuestionNotFoundException(id));
-
-        
-        Set<Video> videos = question.getVideos();
-
-        for (Video v : videos) {
-            s3Service.deleteS3Object(v.getKeyName());
-        }
-        
-        videoRepository.deleteByQuestion(question);
-        questionRepository.deleteById(id);
+        deleteQuestion(id);
     } 
 }

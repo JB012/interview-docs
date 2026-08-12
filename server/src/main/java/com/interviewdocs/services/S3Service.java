@@ -42,12 +42,10 @@ public class S3Service {
 
         if (environment.getActiveNames().contains(Environment.DEVELOPMENT)) {
             distributionDomainName = System.getProperty("VIDEO_CLOUDFRONT_DISTRIBUTION");
-            
             bucketName = System.getProperty("VIDEO_S3_BUCKET");
         }
         else {
             distributionDomainName = System.getenv("VIDEO_CLOUDFRONT_DISTRIBUTION");
-            
             bucketName = System.getenv("VIDEO_S3_BUCKET");
         }
     }
