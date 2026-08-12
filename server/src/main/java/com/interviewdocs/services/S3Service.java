@@ -66,6 +66,7 @@ public class S3Service {
             PutObjectRequest objectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
                     .key(keyName)
+                    .contentType("video/webm")
                     .build();
 
             PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
