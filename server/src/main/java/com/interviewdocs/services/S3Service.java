@@ -36,21 +36,24 @@ public class S3Service {
 
     private String distributionDomainName;
     private String bucketName;
+    private String publicKeyId;
 
     public S3Service(CreateCannedPolicyRequest requestFactory, Environment environment) {
         this.requestFactory = requestFactory;
 
         if (environment.getActiveNames().contains(Environment.DEVELOPMENT)) {
             distributionDomainName = System.getProperty("VIDEO_CLOUDFRONT_DISTRIBUTION");
-            bucketName = System.getProperty("VIDEO_S3_BUCKET");
+            bucketName = System.getProperty("VIDEO_S3_BUCKET");  
+            publicKeyId = System.getProperty("PUBLIC_KEY_ID");
         }
         else {
             distributionDomainName = System.getenv("VIDEO_CLOUDFRONT_DISTRIBUTION");
             bucketName = System.getenv("VIDEO_S3_BUCKET");
+            publicKeyId = System.getenv("PUBLIC_KEY_ID");
         }
     }
 
-    public String createSignedUrl(String keyName, String publicKeyId, Instant expiration,
+    public String createSignedUrl(String keyName, Instant expiration,
                                   String hashAlgorithm) throws Exception {
         CannedSignerRequest request = requestFactory.createRequestForCannedPolicy(
             distributionDomainName, 

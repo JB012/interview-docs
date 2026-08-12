@@ -35,10 +35,9 @@ public class VideoService extends Utils {
     }
 
     public void setSourceToPresignedURL(Video video) throws Exception {
-        String publicKeyId = System.getProperty("PUBLIC_KEY_ID");
         Instant expiration = Instant.now().plus(1, ChronoUnit.HOURS);
 
-        String signedURL = s3Service.createSignedUrl(video.getKeyName(), publicKeyId, expiration, "SHA256");
+        String signedURL = s3Service.createSignedUrl(video.getKeyName(), expiration, "SHA256");
         video.setSource(signedURL);
     }
 

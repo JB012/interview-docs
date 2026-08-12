@@ -56,7 +56,7 @@ public class VideoServiceUnitTest {
         Pageable pageable = Pageable.from(page, size, Sort.of(Sort.Order.asc(field)));
         Page<Video> videoPage = Page.of(videos, pageable, Long.valueOf(size));
 
-        when(s3Service.createSignedUrl(any(), any(), any(), any())).thenReturn("signed-url");
+        when(s3Service.createSignedUrl(any(), any(), any())).thenReturn("signed-url");
         when(videoRepository.findAllByUserIdAndQuestionId(USER_ID, QUESTION_ID, pageable)).thenReturn(videoPage);
         
         PagedResponse<Video> pagedResponseResult = videoService.getVideos(page, size, "title,asc", USER_ID, QUESTION_ID);
@@ -72,7 +72,7 @@ public class VideoServiceUnitTest {
         Pageable pageable = Pageable.from(page, size, Sort.of(Sort.Order.asc(field)));
         Page<Video> videoPage = Page.of(videos, pageable, Long.valueOf(size));
 
-        when(s3Service.createSignedUrl(any(), any(), any(), any())).thenReturn("signed-url");
+        when(s3Service.createSignedUrl(any(), any(), any())).thenReturn("signed-url");
         when(videoRepository.findAllByUserIdAndQuestionId(USER_ID, QUESTION_ID, pageable)).thenReturn(videoPage);
 
         videoService.getVideos(page, size, "title,asc", USER_ID, QUESTION_ID);
@@ -97,7 +97,7 @@ public class VideoServiceUnitTest {
         Pageable pageable = Pageable.from(page, size, Sort.of(Sort.Order.desc(field)));
         Page<Video> videoPage = Page.of(videos, pageable, Long.valueOf(size));
 
-        when(s3Service.createSignedUrl(any(), any(), any(), any())).thenReturn("signed-url");
+        when(s3Service.createSignedUrl(any(), any(), any())).thenReturn("signed-url");
         when(videoRepository.findAllByUserIdAndQuestionId(USER_ID, QUESTION_ID, pageable)).thenReturn(videoPage);
 
         videoService.getVideos(page, size, "title,desc", USER_ID, QUESTION_ID);
