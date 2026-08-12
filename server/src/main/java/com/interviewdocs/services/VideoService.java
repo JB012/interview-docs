@@ -34,7 +34,7 @@ public class VideoService extends Utils {
         this.questionRepositoryProvider = questionRepositoryProvider;
     }
 
-    public void setSourceToPresignedURL(Video video) throws Exception {
+    public void setSourceToSignedURL(Video video) throws Exception {
         Instant expiration = Instant.now().plus(1, ChronoUnit.HOURS);
 
         String signedURL = s3Service.createSignedUrl(video.getKeyName(), expiration, "SHA256");
@@ -52,7 +52,7 @@ public class VideoService extends Utils {
         .orElseThrow(() -> new VideoNotFoundException(id));
 
         try {
-            setSourceToPresignedURL(video);
+            setSourceToSignedURL(video);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -75,7 +75,8 @@ public class VideoService extends Utils {
         videoRepositoryProvider.get().save(newVideo);
         
         try {
-            setSourceToPresignedURL(newVideo);
+            String preSignedURL = s3Service.createPresignedPutUrl(newVideo.getKeyName());
+            newVideo.setSource(preSignedURL);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -111,16 +112,6 @@ public class VideoService extends Utils {
     public void deleteByQuestion(Question question) {
         videoRepositoryProvider.get().deleteByQuestion(question);
     }
-
-    public boolean uploadVideo(CompletedFileUpload videoBuffer) {
-        try {
-            return s3Service.putS3Object(videoBuffer.getFilename(), videoBuffer.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
     
     public PagedResponse<Video> getVideos(int page, int size, String sort, String userId, Long questionId) {
         String[] sortOptions = sort.split(",");
@@ -134,7 +125,7 @@ public class VideoService extends Utils {
 
         videoPage.map((video) -> {
             try { 
-                setSourceToPresignedURL(video);
+                setSourceToSignedURL(video);
             }
             catch (Exception e) {
                 e.printStackTrace();

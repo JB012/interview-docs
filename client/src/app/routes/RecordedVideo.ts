@@ -12,7 +12,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
 import { MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { VideoService } from '../services/VideoService';
-import { getUserIdNumber } from  '../../utils';
+import { getUserIdNumber, putFileToS3Bucket } from  '../../utils';
 import { TitleDialog } from '../components/TitleDialog';
 import { AuthService } from '../services/AuthService';
 import { ActivatedRoute, Router, ROUTER_OUTLET_DATA } from '@angular/router';
@@ -141,13 +141,13 @@ export class RecordedVideo implements OnInit {
         try {
             this.openVideoSnackBar("Saving..."); 
             const title = this.videoTitle().replaceAll(' ', '_');
-            this.videoService.uploadVideoToS3(new File(this.recordedBlobs, this.userID + "/" + title, {type: 'video/webm'})).subscribe((result) => {
-                if (result) {
-                    this.videoService.postVideo({user_id: this.userID, created_at: this.timeCreated, 
-                    viewed_at: this.timeCreated, edited_at: this.timeCreated, title: title}, this.questionId).subscribe(() => {
-                        this.disableSave.set(true);
-                        this.openVideoSnackBar("Video saved!");
-                    });
+            const file = new File(this.recordedBlobs, this.userID + "/" + title, {type: 'video/webm'});
+               
+            this.videoService.postVideo({user_id: this.userID, created_at: this.timeCreated, 
+            viewed_at: this.timeCreated, edited_at: this.timeCreated, title: title}, this.questionId).subscribe(async (video) => {
+                if (await putFileToS3Bucket(file, video.source!)) {
+                    this.disableSave.set(true);
+                    this.openVideoSnackBar("Video saved!");
                 }
             });
             

@@ -9,7 +9,7 @@ import { shareReplay } from "rxjs";
 import moment from "moment-timezone";
 import { TitleDialog } from "../components/TitleDialog";
 import { VideoService } from "../services/VideoService";
-import { getUserIdNumber } from "../../utils";
+import { getUserIdNumber, putFileToS3Bucket } from "../../utils";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { MatDialog } from "@angular/material/dialog";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
@@ -219,15 +219,16 @@ export class SessionMode {
         try {
             const title = this.videoTitle().replaceAll(' ', '_');
 
-            this.videoService.uploadVideoToS3(new File(this.recordedBlobs, userId + "/" + title, {type: 'video/webm'})).subscribe((result) => {
-                if (result) {
-                    this.videoService.postVideo({user_id: userId, created_at: this.timeCreated, title: title}, questionId).subscribe(() => { 
-                        this.disableSave.set(true);
-                        this.openSnackBar("Answer saved");
-                        this.videoTitle.set("");
-                    });
+            const file = new File(this.recordedBlobs, userId + "/" + title, {type: 'video/webm'});
+            
+            this.videoService.postVideo({user_id: userId, created_at: this.timeCreated, title: title}, questionId).subscribe(async (video) => { 
+                if (await putFileToS3Bucket(file, video.source!)) {    
+                    this.disableSave.set(true);
+                    this.openSnackBar("Answer saved");
+                    this.videoTitle.set("");
                 }
             });
+                
         }
         catch (err) {
             console.log(err);

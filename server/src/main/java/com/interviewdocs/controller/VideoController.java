@@ -34,11 +34,6 @@ public class VideoController {
         return videoService.getVideos(page, size, sort, id, questionId);
     }
 
-    @Post(consumes = MediaType.MULTIPART_FORM_DATA, value = "/upload")
-    boolean uploadVideo(@Part("videoBuffer") CompletedFileUpload videoBuffer) {
-        return videoService.uploadVideo(videoBuffer);
-    }
-
     @Post
     HttpResponse<Video> newVideo(@Body Video newVideo, @QueryValue(value="questionId") Long questionId) { 
         return HttpResponse.ok(videoService.postVideo(newVideo, questionId));
